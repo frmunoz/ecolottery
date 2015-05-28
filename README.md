@@ -1,0 +1,2 @@
+# lottery
+R package Lottery
