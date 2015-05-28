@@ -1,0 +1,19 @@
+Package: Lottery
+Type: Package
+Title: Lottery
+Version: 0.01
+Date: 2015-05-28 
+Author: Francois Munoz, Fabien Laroche, Adrien Taudiere, Cyrille Violle ...
+Maintainer: Adrien Taudiere <adrien.taudiere@cefe.cnrs.fr>
+Depends: 
+    R (>= 3.0.2),
+    ape, 
+    untb,
+Imports: 
+     vegan
+Suggests: 
+    knitr,
+    testthat
+Description: 
+License: GPL (>= 2)
+URL: https://github.com/adrientaudiere/lottery
