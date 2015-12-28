@@ -10,24 +10,23 @@ Simulates the composition of a community based on immigration from a regional po
 \usage{
 coalesc(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50 * J)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{J}{
+ \item{J}{
 Number of individuals in the local community.
 }
-  \item{theta}{
+ \item{theta}{
 Parameter of neutral dynamics in the regional pool (used only if pool=NULL).
 }
-  \item{m}{
+ \item{m}{
 Migration rate (if m=1 the community is a subsample of the regional pool).
 }
-  \item{filt}{
+ \item{filt}{
 A function representing the effect of local habitat filtering. For a given trait value, t, filt(t) represents the probability that an individual with trait t enters the local community. If filt=NULL, the lottery function provides a neutral community.
 }
-  \item{pool}{
+ \item{pool}{
 The regional pool of species providing immigrants to the local community. If NULL, the pool is simulated as a metacommunity at speciation-drift equilibrium, based on parameter theta. In this case, a random trait value is given to individuals of the regional pool, from a uniform distribution between 0 and 1. Otherwise, input value of pool must include the label of individual on first column, of its species on second column, and a trait attribute on the third column.
 }
-  \item{Jpool}{
+ \item{Jpool}{
 If pool = NULL, represents the number of individuals to be simulated in the regional pool.
 }
 }
@@ -46,37 +45,28 @@ Gravel, D., C. D. Canham, M. Beaudet and C. Messier (2006). "Reconciling niche a
 
 Munoz, F., P. Couteron, B. R. Ramesh and R. S. Etienne (2007). "Estimating parameters of neutral communities: from one Single Large to Several Small samples." Ecology 88(10): 2482-2488.
 
-Munoz, F., B. R. Ramesh and P. Couteron (2014). "How do habitat filtering and niche conservatism affect community composition at different taxonomic resolutions?" Ecology 95(8): 2179–2191. 
+Munoz, F., B. R. Ramesh and P. Couteron (2014). "How do habitat filtering and niche conservatism affect community composition at different taxonomic resolutions?" Ecology 95(8): 2179-2191. 
 }
 \author{
 François Munoz
 }
-\note{
-%%  ~~further notes~~
-}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
 # Simulation of a neutral community including 100 individuals
 J <- 100; theta <- 50; m <- 0.1;
-comm <- coalesc(J,theta,m) 
-hist(comm[,3])
+comm1 <- coalesc(J, theta, m) 
+hist(comm1[, 3])
 
 # Directional habitat filtering toward t = 0
-comm <- coalesc(J,theta,m,filt=function(x) 1-x)
-hist(comm[,3])
+comm2 <- coalesc(J, theta, m, filt = function(x) 1 - x)
+hist(comm2[, 3])
 
 # Stabilizing habitat filtering around t = 0.5
-comm <- coalesc(J,theta,m,filt=function(x) 0.5-abs(0.5-x))
-hist(comm[,3])
+comm3 <- coalesc(J, theta, m, filt = function(x) 0.5 - abs(0.5 - x))
+hist(comm3[, 3])
 }
 
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ coalescent }
-\keyword{ neutral dynamics }
-\keyword{ niche-based dynamics }
+
+\keyword{coalescent}
+\keyword{neutral dynamics}
+\keyword{niche-based dynamics}

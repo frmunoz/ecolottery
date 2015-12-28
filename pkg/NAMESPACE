@@ -2,11 +2,6 @@ exportPattern("^[^\\.]")
 
 ## Import all packages listed as Imports or Depends
 
-import(ape)
-
-import(vegan)
-import(untb)
-
 # Registered S3 methods
 #S3method(barplot, Tstats)
 #S3method(summary, Tstats)

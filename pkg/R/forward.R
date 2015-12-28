@@ -46,12 +46,13 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE, pool = N
     # The ids of individuals present in the initial community begi with "init"
   a <- data.frame(id = paste("init", 1:J, sep = ""), sp = initial, trait = rep(NA, J), stringsAsFactors = F) 
   }
-  else if(is.vector(initial)) {
-    J <- sum(initial)
-    a <- data.frame(id = paste("init", 1:J, sep = ""), sp = unlist(sapply(sp.names, function(x) rep(x, initial[x]))), trait = rep(NA, J), stringsAsFactors = F)
-  }
-  else{
+  #else if(is.vector(initial)) {
+  #  J <- sum(initial)
+  #  a <- data.frame(id = paste("init", 1:J, sep = ""), sp = unlist(sapply(sp.names, function(x) rep(x, initial[x]))), trait = rep(NA, J), stringsAsFactors = F)
+  #}
+  else {
   if(ncol(initial)<3) print("Two - column initial community: assumed to represent species and trait information; individual ids will be generated")
+	J <- nrow(initial)
     a <- data.frame(id = paste("init", 1:J, sep = ""), sp = initial[, 1], trait = initial[, 2], stringsAsFactors = F)
   }
   
@@ -64,7 +65,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE, pool = N
   # {
   # sp.pool.tmean <- tapply(pool[, 3], pool[, 2], mean)
   # sp.init.tmean <- tapply(a[, 3], a[, 2], mean)
-  # if(any(sp.pool.tmean[rownames(sp.init.tmean)]! = sp.init.tmean) | any(sp.init.tmean[rownames(sp.pool.tmean)]! = sp.pool.tmean)) warning("Mismatch of mean trait values per species in initial community and in regional pool")
+  # if(any(sp.pool.tmean[rownames(sp.init.tmean)]!= sp.init.tmean) | any(sp.init.tmean[rownames(sp.pool.tmean)]!= sp.pool.tmean)) warning("Mismatch of mean trait values per species in initial community and in regional pool")
   # }
   
   # Limiting similarity will be based on trait distances in the metacommunity plus the initial community
@@ -90,7 +91,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE, pool = N
     limit.sim.t <- c()
     for (i in 1:gens) {
       aa[[i]] <- a
-      a <- select(a, D = D, prob = prob, pool = pool, prob.death = prob.death, limit.sim = limit.sim, coeff.lim.sim = coeff.lim.sim, sigma = sigma, filt = filt, new.index = new.index)
+      a <- pick(a, D = D, prob = prob, pool = pool, prob.death = prob.death, limit.sim = limit.sim, coeff.lim.sim = coeff.lim.sim, sigma = sigma, filt = filt, new.index = new.index)
       if(!is.null(limit.sim)) {limit.sim.t <- c(limit.sim.t, a$limit.sim.t)}
       new.index <- a$new.index
       a <- a$a
@@ -99,7 +100,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE, pool = N
   }
   else{
     for(i in 1:gens) {
-      a <- select(a, D = D, prob = prob, pool = pool, prob.death = prob.death, limit.sim = limit.sim, coeff.lim.sim = coeff.lim.sim, sigma = sigma, filt = filt, new.index = new.index)
+      a <- pick(a, D = D, prob = prob, pool = pool, prob.death = prob.death, limit.sim = limit.sim, coeff.lim.sim = coeff.lim.sim, sigma = sigma, filt = filt, new.index = new.index)
       new.index <- a$new.index
       a <- a$a
     }
@@ -108,12 +109,16 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE, pool = N
 }
   
 # Return "mutate" individuals if pool = NULL, else return immigrate individuals
-select <- function (a, D = 1, prob = 0, pool = NULL, prob.death = prob.death, limit.sim = NULL, coeff.lim.sim = 2, sigma = 0.1, filt = NULL, new.index = new.index) {
-  if(is.null(pool)) return(select.mutate(a, D = D, prob.of.mutate = prob, new.index = new.index)) else return(select.immigrate(a, D = D, prob.of.immigrate = prob, pool = pool, prob.death = prob.death, limit.sim = limit.sim, coeff.lim.sim = coeff.lim.sim, sigma = sigma, filt = filt))
+pick <- function (a, D = 1, prob = 0, pool = NULL, prob.death = prob.death, limit.sim = NULL, coeff.lim.sim = 2, sigma = 0.1, filt = NULL, new.index = new.index) {
+  if(is.null(pool)) {
+    return(pick.mutate(a, D = D, prob.of.mutate = prob, new.index = new.index)) 
+  } else {
+	return(pick.immigrate(a, D = D, prob.of.immigrate = prob, pool = pool, prob.death = prob.death, limit.sim = limit.sim, coeff.lim.sim = coeff.lim.sim, sigma = sigma, filt = filt))
+  }
 }
 
 # Return "mutate" individuals
-select.mutate <- function(a, D = 1, prob.of.mutate = 0, new.index = 0) {
+pick.mutate <- function(a, D = 1, prob.of.mutate = 0, new.index = 0) {
   if(is.vector(a)) {
     J <- length(a)
     a <- data.frame(id = paste("ind", 1:J, sep = ""), sp = as.character(a), trait = rep(NA, J), stringsAsFactors = F)
@@ -125,7 +130,7 @@ select.mutate <- function(a, D = 1, prob.of.mutate = 0, new.index = 0) {
       a[, 1] <- as.character(a[, 2])
     }
   } 
-  else stop("select.mutate: misdefined community composition")
+  else stop("pick.mutate: misdefined community composition")
   
   died <- sample(J, D, replace = TRUE)
   mutated <- runif(length(died)) < prob.of.mutate
@@ -143,7 +148,7 @@ select.mutate <- function(a, D = 1, prob.of.mutate = 0, new.index = 0) {
 
 # Return "immigrate" individuals
 # limit.sim = distances de traits; filt = fonction pour habitat filtering
-select.immigrate <- function(a, D = 1, prob.of.immigrate = 0, pool, prob.death = NULL, limit.sim = NULL, coeff.lim.sim = 2, sigma = 0.1, filt = NULL) {
+pick.immigrate <- function(a, D = 1, prob.of.immigrate = 0, pool, prob.death = NULL, limit.sim = NULL, coeff.lim.sim = 2, sigma = 0.1, filt = NULL) {
   if(is.vector(a)) {
     J <- length(a)
     a <- data.frame(id = paste("ind", 1:J, sep = ""), sp = as.character(a), trait = rep(NA, J), stringsAsFactors = F)
@@ -155,12 +160,16 @@ select.immigrate <- function(a, D = 1, prob.of.immigrate = 0, pool, prob.death =
       a[, 2] <- as.character(a[, 2])
     }
   } 
-  else stop("select.immigrate: misdefined community composition")
+  else stop("pick.immigrate: misdefined community composition")
   
   # Function defining habitat filtering according to trait value
   if(!is.null(filt)) {
-    filt1 <- function(x) filt(x) else filt1 <- function(x) sapply(x, function(x) 1)
+    filt1 <- function(x) filt(x)
+  }  
+  else {
+	filt1 <- function(x) sapply(x, function(x) 1)
   }
+  
   a.init <- a
   # For debug:
   #print(a[(nrow(a) - 10):nrow(a), ])
@@ -187,7 +196,7 @@ select.immigrate <- function(a, D = 1, prob.of.immigrate = 0, pool, prob.death =
     }
     died <- rmultinom(1, D, prob.death)
     a <- a[ - died, ] # Community composition after mortality
-    if(sum(is.na(a[, 1]))! = 0) stop("Error: NA values in community composition (2)")
+    if(sum(is.na(a[, 1]))!= 0) stop("Error: NA values in community composition (2)")
   } 
   immigrated <- runif(D) < prob.of.immigrate
   J1 <- sum(immigrated)
@@ -197,7 +206,7 @@ select.immigrate <- function(a, D = 1, prob.of.immigrate = 0, pool, prob.death =
     if(is.null(filt)) {
       add <- pool[sample(1:nrow(pool), J1, replace = TRUE), 1:3]
       a <- rbind(a, add)
-      if(sum(is.na(a[, 1]))! = 0) {
+      if(sum(is.na(a[, 1]))!= 0) {
         stop("Error: NA values in immigrants")
       }
     }

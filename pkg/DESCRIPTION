@@ -3,17 +3,18 @@ Type: Package
 Title: Coalescent-based simulation of ecological communities
 Version: 0.1
 Date: 2015-12-21 
-Author: François Munoz and Adrien Taudiere
+Author: Francois Munoz and Adrien Taudiere
 Maintainer: <francois.munoz@cirad.fr>
 Depends: 
-    R (>= 3.0.2),
-    ape, 
-    untb,
+    R (>= 3.0.2), 
 Imports: 
-     vegan
-Suggests: 
+Suggests:
+    vegan,
     knitr,
-    testthat
-Description: Coalescent-based simulation of ecological communities
+    testthat,
+    untb,
+    ape
+Description: Coalescent-based simulation of ecological communities.
 License: GPL (>= 2)
 URL: https://github.com/adrientaudiere/lottery
+Encoding: latin1
