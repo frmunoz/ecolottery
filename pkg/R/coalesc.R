@@ -60,11 +60,15 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
   if (m < 1) {
     I <- m * (J - 1) / (1 - m) # Number of available immigrants
     X <- runif(J)
-    R_com <- I / (I + (1:J) - 1) # Probability that new migrant ancestor arrives in the community
+    # Probability that new migrant ancestor arrives in the community
+    R_com <- I / (I + (1:J) - 1)
     assign_com <- which(X <= R_com)
     unassign_com <- which(X > R_com)
-  } else { # migration rate set at its maximum, unlimited regional pool. All new individuals taken from the regional pool
-    assign_com = 1:J; unassign_com = c()
+  } else {
+    # migration rate set at its maximum, unlimited regional pool.
+    # All new individuals taken from the regional pool
+    assign_com = 1:J
+    unassign_com = NULL
   }
   
   com_species <- length(assign_com) # Number of individuals taken from the regional pool
@@ -76,25 +80,27 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
   sp_com_lab[assign_com] <- pool[migrants, 2] # Assign species
   
   sp_com_trait[assign_com] <- pool[migrants, 3] # Assign traits
-
-  for (j in 1:length(unassign_com)) {
-    if (j > 1) {
-      
-      if (ind_com_lab[unassign_com[j]] != 0) {
-        stop("Error in the assignation of ancestors")
+  
+  if (!is.null(unassign_com)) {
+    for (j in 1:length(unassign_com)) {
+      if (j > 1) {
+        
+        if (ind_com_lab[unassign_com[j]] != 0) {
+          stop("Error in the assignation of ancestors")
+        }
+        
+        existing_sp <- sample(c(assign_com[assign_com < unassign_com[j]], unassign_com[1:(j - 1)]), 1)
+      }
+      else {
+        existing_sp <- sample(assign_com[assign_com < unassign_com[j]], 1)
       }
       
-      existing_sp <- sample(c(assign_com[assign_com < unassign_com[j]], unassign_com[1:(j - 1)]), 1)
-    }
-    else {
-      jj <- sample(assign_com[assign_com < unassign_com[j]], 1)
-    }
-    
     ind_com_lab[unassign_com[j]] <- ind_com_lab[existing_sp]
     sp_com_lab[unassign_com[j]] <- sp_com_lab[existing_sp]
     sp_com_trait[unassign_com[j]] <- sp_com_trait[existing_sp]
+    }
   }
-  
+    
   com <- cbind(ind_com_lab, sp_com_lab, sp_com_trait)
   
   return(com)
