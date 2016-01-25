@@ -9,10 +9,10 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
     Y <- runif(pool_size)  # Generate a vector to determine species
     
     # Vector to determine species
-    R_pool <- theta / (theta + (1:pool_size) - 1)
+    R_pool <- theta / (theta + (1:pool_size) - 1) # Probability that new species arrives in the regional pool
     assign_pool <- which(Y <= R_pool)  # Get all individuals with different species
     
-    # All individuals that are reassigned to previous secies
+    # All individuals that are reassigned to previous species
     unassign_pool <- which(Y > R_pool)
     
     sp_pool_lab[assign_pool] <- 1:length(assign_pool)  # Set species number
@@ -21,11 +21,12 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
     # For all individuals without an assigned species
     for (j in 1:length(unassign_pool)) {
       # Select randomly a previously assigned individual
-      jj <- max(round(runif(1) * unassign_pool[j] - 1), 1)
+      existing_sp <- max(round(runif(1) * unassign_pool[j] - 1), 1) # existing_sp <- sample(assign_pool, 1)
       
-      ind_pool_lab[unassign_pool[j]] <- ind_pool_lab[jj]  # ??? Replace value in individual list
-      sp_pool_lab[unassign_pool[j]] <- sp_pool_lab[jj]  # Assign species of previously assigned individual
-      sp_trait[unassign_pool[j]] <- sp_trait[jj]  # Assign species trait
+      
+      #ind_pool_lab[unassign_pool[j]] <- ind_pool_lab[existing_sp]  # ??? Replace value in individual list => problem : several times
+      sp_pool_lab[unassign_pool[j]] <- sp_pool_lab[existing_sp]  # Assign species of previously assigned individual
+      sp_trait[unassign_pool[j]] <- sp_trait[existing_sp]  # Assign species trait
 
     }
     pool <- cbind(ind_pool_lab, sp_pool_lab, sp_trait)
@@ -83,15 +84,15 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
         stop("Error in the assignation of ancestors")
       }
       
-      jj <- sample(c(assign_com[assign_com < unassign_com[j]], unassign_com[1:(j - 1)]), 1)
+      existing_sp <- sample(c(assign_com[assign_com < unassign_com[j]], unassign_com[1:(j - 1)]), 1)
     }
     else {
       jj <- sample(assign_com[assign_com < unassign_com[j]], 1)
     }
     
-    ind_com_lab[unassign_com[j]] <- ind_com_lab[jj]
-    sp_com_lab[unassign_com[j]] <- sp_com_lab[jj]
-    sp_com_trait[unassign_com[j]] <- sp_com_trait[jj]
+    ind_com_lab[unassign_com[j]] <- ind_com_lab[existing_sp]
+    sp_com_lab[unassign_com[j]] <- sp_com_lab[existing_sp]
+    sp_com_trait[unassign_com[j]] <- sp_com_trait[existing_sp]
   }
   
   com <- cbind(ind_com_lab, sp_com_lab, sp_com_trait)
