@@ -34,8 +34,12 @@ If pool = NULL, represents the number of individuals to be simulated in the regi
 Coalescent-based simulation of a community of size J. This generic function can simulate a neutral community (if filt=NULL) or a community undergoing both neutral and niche-based dynamics. In the later case, filt(t) represents the relative ability of immigrants with trait values t in the regional pool to enter the community.
 }
 \value{
-\item{res}{
+\item{com}{
 A matrix of simulated individuals, with the label of ancestor individual in the regional pool on first column (as in first column of pool), species label on second column (as in second column of pool), and species trait (as in third column of pool).
+Not provided if m=1 and filt=NULL: in this case the function provides a sample of the regional pool.
+}
+\item{pool}{
+A matrix of the individuals of the regional source pool, with the label of ancestor individual in the regional pool on first column (as in first column of pool), species label on second column (as in second column of pool), and species trait (as in third column of pool).
 }
 }
 \references{
@@ -55,11 +59,11 @@ François Munoz
 # Simulation of a neutral community including 100 individuals
 J <- 500; theta <- 50; m <- 0.1;
 comm1 <- coalesc(J, theta, m) 
-hist(comm1[, 3])
+hist(comm1$com[, 3])
 
 # Directional habitat filtering toward t = 0
 comm2 <- coalesc(J, theta, m, filt = function(x) 1 - x)
-hist(comm2[, 3])
+hist(comm2$com[, 3])
 
 # Stabilizing habitat filtering around t = 0.1
 comm3a <- coalesc(J, theta, m, filt = function(x) 0.9 - abs(0.1 - x))
@@ -68,20 +72,20 @@ comm3b <- coalesc(J, theta, m, filt = function(x) 0.5 - abs(0.5 - x))
 # Stabilizing habitat filtering around t = 0.9
 comm3c <- coalesc(J, theta, m, filt = function(x) 0.9 - abs(0.9 - x))
 # Mean trait values in communities reflect the influence of habitat filtering
-mean(comm3a[, 3])
-mean(comm3b[, 3])
-mean(comm3c[, 3])
+mean(comm3a$com[, 3])
+mean(comm3b$com[, 3])
+mean(comm3c$com[, 3])
 
 # Disruptive habitat filtering around t = 0.5
 comm4 <- coalesc(J, theta, m, filt = function(x) abs(0.5 - x))
-hist(comm4[, 3])
+hist(comm4$com[, 3])
 
 # Generate a regional pool/metacommunity at speciation-drift equilibrium
 Jpool <- 10000;
 pool <- coalesc(Jpool, theta=50, m=1)
 # Generate a neutral community drawn from the pool
-comm5 <- coalesc(J, theta, m, pool=pool) 
-hist(comm5[, 3])
+comm5 <- coalesc(J, theta, m, pool=pool$pool) 
+hist(comm5$com[, 3])
 }
 
 
