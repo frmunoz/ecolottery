@@ -53,7 +53,7 @@ François Munoz
 
 \examples{
 # Simulation of a neutral community including 100 individuals
-J <- 100; theta <- 50; m <- 0.1;
+J <- 500; theta <- 50; m <- 0.1;
 comm1 <- coalesc(J, theta, m) 
 hist(comm1[, 3])
 
@@ -61,9 +61,16 @@ hist(comm1[, 3])
 comm2 <- coalesc(J, theta, m, filt = function(x) 1 - x)
 hist(comm2[, 3])
 
+# Stabilizing habitat filtering around t = 0.1
+comm3a <- coalesc(J, theta, m, filt = function(x) 0.9 - abs(0.1 - x))
 # Stabilizing habitat filtering around t = 0.5
-comm3 <- coalesc(J, theta, m, filt = function(x) 0.5 - abs(0.5 - x))
-hist(comm3[, 3])
+comm3b <- coalesc(J, theta, m, filt = function(x) 0.5 - abs(0.5 - x))
+# Stabilizing habitat filtering around t = 0.9
+comm3c <- coalesc(J, theta, m, filt = function(x) 0.9 - abs(0.9 - x))
+# Mean trait values in communities reflect the influence of habitat filtering
+mean(comm3a[, 3])
+mean(comm3b[, 3])
+mean(comm3c[, 3])
 
 # Disruptive habitat filtering around t = 0.5
 comm4 <- coalesc(J, theta, m, filt = function(x) abs(0.5 - x))
@@ -72,8 +79,9 @@ hist(comm4[, 3])
 # Generate a regional pool/metacommunity at speciation-drift equilibrium
 Jpool <- 10000;
 pool <- coalesc(Jpool, theta=50, m=1)
-# Generate a community drawn from the pool
+# Generate a neutral community drawn from the pool
 comm5 <- coalesc(J, theta, m, pool=pool) 
+hist(comm5[, 3])
 }
 
 
