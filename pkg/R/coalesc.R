@@ -26,7 +26,7 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
       sp_trait[unassign_pool[j]] <- sp_trait[existing_sp]  # Assign species trait
     }
     pool <- cbind(ind_pool_lab, sp_poo_lab, sp_trait)
-    if(m==1) return(pool=pool)
+    if(m==1) return(list(pool=pool))
   } else if (ncol(pool) < 2) {
     stop("The regional pool is misdefined (at least two columns required)")
   } else if (ncol(pool) == 2) {
@@ -84,7 +84,6 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
       else {
         existing_sp <- sample(assign_com[assign_com < unassign_com[j]], 1)
       }
-      
     ind_com_lab[unassign_com[j]] <- ind_com_lab[existing_sp]
     sp_com_lab[unassign_com[j]] <- sp_com_lab[existing_sp]
     sp_com_trait[unassign_com[j]] <- sp_com_trait[existing_sp]
@@ -93,6 +92,7 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
     
   com <- cbind(ind_com_lab, sp_com_lab, sp_com_trait)
   
-  return(com=com,pool=pool)
+  if(m==1 & is.null(filt)) return(list(pool=com))
+  else return(list(com=com,pool=pool))
 }
 
