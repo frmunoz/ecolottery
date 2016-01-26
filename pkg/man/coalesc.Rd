@@ -48,7 +48,7 @@ Munoz, F., P. Couteron, B. R. Ramesh and R. S. Etienne (2007). "Estimating param
 Munoz, F., B. R. Ramesh and P. Couteron (2014). "How do habitat filtering and niche conservatism affect community composition at different taxonomic resolutions?" Ecology 95(8): 2179-2191. 
 }
 \author{
-François Munoz
+FranÃ§ois Munoz
 }
 
 \examples{
@@ -64,6 +64,10 @@ hist(comm2[, 3])
 # Stabilizing habitat filtering around t = 0.5
 comm3 <- coalesc(J, theta, m, filt = function(x) 0.5 - abs(0.5 - x))
 hist(comm3[, 3])
+
+# Disruptive habitat filtering around t = 0.5
+comm4 <- coalesc(J, theta, m, filt = function(x) abs(0.5 - x))
+hist(comm4[, 3])
 }
 
 
