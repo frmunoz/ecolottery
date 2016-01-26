@@ -5,7 +5,7 @@
 Coalescent-based simulation of ecological communities undergoing both neutral and niche-base dynamics
 }
 \description{
-Simulates the composition of a community based on immigration from a regional pool, habitat filterin depending on local environment and species traits, and local birth-death stochastic dynamics. 
+Simulates the composition of a community based on immigration from a regional pool, habitat filtering depending on local environment and species traits, and local birth-death stochastic dynamics. 
 }
 \usage{
 coalesc(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50 * J)
