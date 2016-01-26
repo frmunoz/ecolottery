@@ -3,7 +3,7 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
   if (is.null(pool)) {
     if(m==1 & is.null(filt)) pool_size <- J # In this case, directly simulates a sample from the pool of size J
     else  pool_size <- Jpool # Total number of individuals in the pool
-    ind_pool_lab <- 1:Jpool  # Labels of individuals
+    ind_pool_lab <- 1:pool_size  # Labels of individuals
     sp_pool_lab <- array(0, c(pool_size, 1))  # Species labels
     sp_trait <- array(0, c(pool_size, 1))  # Trait
     Y <- runif(pool_size)  # Generate a vector to determine species
