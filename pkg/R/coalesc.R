@@ -1,8 +1,8 @@
 coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
   #Create the regional pool if not provided
   if (is.null(pool)) {
-    
-    pool_size <- Jpool # Total number of individuals in the pool
+    if(m==1 & is.null(filt)) pool_size <- J # In this case, directly simulates a sample from the pool of size J
+    else  pool_size <- Jpool # Total number of individuals in the pool
     ind_pool_lab <- 1:Jpool  # Labels of individuals
     sp_pool_lab <- array(0, c(pool_size, 1))  # Species labels
     sp_trait <- array(0, c(pool_size, 1))  # Trait
@@ -24,17 +24,15 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
       existing_sp <- sample.int(unassign_pool[j] - 1, 1) # existing_sp <- sample(assign_pool, 1)
       sp_pool_lab[unassign_pool[j]] <- sp_pool_lab[existing_sp]  # Assign species of previously assigned individual
       sp_trait[unassign_pool[j]] <- sp_trait[existing_sp]  # Assign species trait
-
     }
-    pool <- cbind(ind_pool_lab, sp_pool_lab, sp_trait)
-    
+    pool <- cbind(ind_pool_lab, sp_poo_lab, sp_trait)
+    if(m==1) return(pool=pool)
   } else if (ncol(pool) < 2) {
     stop("The regional pool is misdefined (at least two columns required)")
   } else if (ncol(pool) == 2) {
     warning("No trait information provided in the regional pool")
   }
-  
-  
+
   # Define environmental filter
   if (!is.null(filt)) {
     env_filter <- function(x) filt(x)
@@ -43,7 +41,6 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
   }
   
   # No environmental filter and no trait defined, all traits == 1
-
   if (!is.null(filt) & ncol(pool) == 2) {
     pool[, 3] <- rep(1, nrow(pool)) 
   }
@@ -81,11 +78,7 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
   if (!is.null(unassign_com)) {
     for (j in 1:length(unassign_com)) {
       if (j > 1) {
-        
-        if (ind_com_lab[unassign_com[j]] != 0) {
-          stop("Error in the assignation of ancestors")
-        }
-        
+        if (ind_com_lab[unassign_com[j]] != 0) stop("Error in the assignation of ancestors")
         existing_sp <- sample(c(assign_com[assign_com < unassign_com[j]], unassign_com[1:(j - 1)]), 1)
       }
       else {
@@ -100,6 +93,6 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
     
   com <- cbind(ind_com_lab, sp_com_lab, sp_com_trait)
   
-  return(com)
+  return(com=com,pool=pool)
 }
 
