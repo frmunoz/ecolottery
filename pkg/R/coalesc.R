@@ -25,7 +25,7 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
       sp_pool_lab[unassign_pool[j]] <- sp_pool_lab[existing_sp]  # Assign species of previously assigned individual
       sp_trait[unassign_pool[j]] <- sp_trait[existing_sp]  # Assign species trait
     }
-    pool <- cbind(ind_pool_lab, sp_poo_lab, sp_trait)
+    pool <- cbind(ind_pool_lab, sp_pool_lab, sp_trait)
     if(m==1) return(list(pool=pool))
   } else if (ncol(pool) < 2) {
     stop("The regional pool is misdefined (at least two columns required)")
