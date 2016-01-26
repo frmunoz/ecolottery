@@ -68,6 +68,12 @@ hist(comm3[, 3])
 # Disruptive habitat filtering around t = 0.5
 comm4 <- coalesc(J, theta, m, filt = function(x) abs(0.5 - x))
 hist(comm4[, 3])
+
+# Generate a regional pool/metacommunity at speciation-drift equilibrium
+Jpool <- 10000;
+pool <- coalesc(Jpool, theta=50, m=1)
+# Generate a community drawn from the pool
+comm5 <- coalesc(J, theta, m, pool=pool) 
 }
 
 
