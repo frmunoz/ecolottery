@@ -22,7 +22,6 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
     for (j in 1:length(unassign_pool)) {
       # Select randomly a previously assigned individual
       existing_sp <- sample.int(unassign_pool[j] - 1, 1) # existing_sp <- sample(assign_pool, 1)
-            #ind_pool_lab[unassign_pool[j]] <- ind_pool_lab[existing_sp]  # ??? Replace value in individual list => problem : several times
       sp_pool_lab[unassign_pool[j]] <- sp_pool_lab[existing_sp]  # Assign species of previously assigned individual
       sp_trait[unassign_pool[j]] <- sp_trait[existing_sp]  # Assign species trait
 
