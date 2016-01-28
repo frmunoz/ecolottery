@@ -1,0 +1,23 @@
+---
+title: "Basic Use of `lottery`"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Basic Use of `lottery`}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Aim of `lottery`
+
+# Usage
+
+## Regional Pool Generation
+
+## Community From a Given Pool
+
+## Use of Environmental Filters
+
+
+# Community visualizations
