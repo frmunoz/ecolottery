@@ -12,7 +12,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
   }
   
   if (!limit.sim & is.null(filt)) {
-    print("Simulation of a neutral community")
+    cat("Simulation of a neutral community\n")
   }
   
   # "pool" will be a three - column matrix of individuals in the regional pool, with individual id in first column, species name in second column, and additional trait information for niche - based dynamics in third column
@@ -20,9 +20,9 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
     pool <- data.frame(id = 1:length(pool), sp = pool, trait = rep(NA, length(pool)), stringsAsFactors = F)
   
     if (limit.sim | !is.null(filt)) {
-      print("No trait information provided in the regional pool")
+      cat("No trait information provided in the regional pool\n")
       pool[, 3] <- runif(nrow(pool))
-      print("Random trait values attributed to individuals of the regional pool")
+      cat("Random trait values attributed to individuals of the regional pool\n")
       colnames(pool) <- c("id", "sp", "trait")
     }
   }
@@ -31,11 +31,11 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
     if (ncol(pool)<2) {
       stop("The regional pool is misdefined (at least two columns required when a matrix or data frame is provided)")
     } else if (ncol(pool) == 2) {
-      print("No trait information provided in the regional pool")
+      cat("No trait information provided in the regional pool\n")
     }
     if (!limit.sim | !is.null(filt)) {
       pool[, 3] <- runif(nrow(pool))
-      print("Random trait values attributed to individuals of the regional pool")
+      cat("Random trait values attributed to individuals of the regional pool\n")
       colnames(pool) <- c("id", "sp", "trait")
     }
   }
@@ -47,7 +47,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
   a <- data.frame(id = paste("init", 1:J, sep = ""), sp = initial, trait = rep(NA, J), stringsAsFactors = F) 
   } else {
     if (ncol(initial) < 3) {
-      print("Two - column initial community: assumed to represent species and trait information; individual ids will be generated")
+      cat("Two - column initial community: assumed to represent species and trait information; individual ids will be generated")
     }
   	J <- nrow(initial)
     a <- data.frame(id = paste("init", 1:J, sep = ""), sp = initial[, 1], trait = initial[, 2], stringsAsFactors = F)
