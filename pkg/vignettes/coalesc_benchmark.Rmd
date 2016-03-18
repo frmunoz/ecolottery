@@ -1,0 +1,78 @@
+---
+title: "Benchmarking coalescent vs. forward simulations"
+author: "Matthias Grenié"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+The use of coalescent theory for community ecology make computation much quicker than using forward simulations. The aim of this vignette is to benchmark between the two methods.
+
+# Parameters range
+
+```{r Parameters}
+# Community Size
+J = c(50, 100, 250, 500, 1000, 2500, 5000, 10^4)
+
+# Pool size (* Community Size)
+Jpool = c(50, 100, 1000)
+
+# Number of death per timestep
+D = 1
+
+# Fundamental Biodiversity Number
+theta = c(10, 20, 50, 100, 200, 500)
+
+# Immigration rate
+m = unique(as.vector(outer(c(10^-(1:3)), c(1, 2, 5, 10))))
+
+# Number of Generations in Forward Simulations
+gens = 10^(4:5)
+```
+
+```{r ParamTable}
+# Make a data frame out of parameters
+
+## Coalesc
+coalesc_param = expand.grid(theta = theta, m = m, J = J, Jpool = Jpool)
+
+coalesc_param$Jpool = coalesc_param$Jpool * coalesc_param$J
+
+coalesc_param = coalesc_param[order(coalesc_param$Jpool),]
+
+forward_param = expand.grid(theta = theta, m = m, J = J, Jpool = Jpool,
+                           generations = gens)
+
+forward_param$Jpool = forward_param$Jpool * forward_param$J
+
+forward_param = forward_param[order(forward_param$Jpool),]
+```
+
+
+
+# Timing of `coalesc()`
+
+```{r splitPools}
+# Split parameters based on pool size
+coalesc_pool = split(coalesc_param, coalesc_param$Jpool)
+
+coalesc_pool = lapply(coalesc_pool, function(x) split(x, x$theta))
+```
+
+```{r firstPool}
+pool_params = coalesc_pool[[1]][[1]]
+
+first_pool_size = pool_params[1, "Jpool"]
+
+first_pool_theta = pool_params[1, "theta"]
+
+first_pool = coalesc(first_pool_size, first_pool_theta, m = 1, Jpool = first_pool_size)$pool
+```
+
+```{r compareFirstParams}
+
+```
+
