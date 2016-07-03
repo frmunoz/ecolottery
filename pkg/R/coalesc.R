@@ -1,8 +1,6 @@
 coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = NULL, Jpool = 50*J) {
   
-  if (is.null(traits)) {
-    warning("No trait information provided in the regional pool")
-  }
+  if (is.null(traits)) warning("No trait information provided in the regional pool")
   
   #Create the regional pool if not provided
   if (is.null(pool)) {
@@ -32,9 +30,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
       sp_traits[unassign_pool[j],] <- sp_traits[existing_sp,]  # Assign species trait
     }
     if(m==1 & is.null(filt)) return(list(pool=pool))
-  } else if (ncol(pool) < 2) {
-    stop("The regional pool is misdefined (at least two columns required)")
-  } else 
+  } 
+  else 
   { 
     if (ncol(pool) < 2) stop("The regional pool is misdefined (two columns required)")
     ind_pool_lab <- pool[,1]; sp_pool_lab <- pool[,2]
@@ -55,7 +52,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   # Community Array
   ind_com_lab <- array(0, c(J, 1))
   sp_com_lab <- array(0, c(J, 1))
-  sp_com_trait <- array(0, c(J, 1))
+  sp_com_trait <- array(0, c(J, ncol(traits)))
 
   # If migration rate < 1
   if (m < 1) {
