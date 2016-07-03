@@ -8,23 +8,26 @@ Coalescent-based simulation of ecological communities undergoing both neutral an
 Simulates the composition of a community based on immigration from a regional pool, habitat filtering depending on local environment and species traits, and local birth-death stochastic dynamics. 
 }
 \usage{
-coalesc(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50 * J)
+coalesc(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = NULL, Jpool = 50 * J)
 }
 \arguments{
  \item{J}{
 Number of individuals in the local community.
 }
- \item{theta}{
-Parameter of neutral dynamics in the regional pool (used only if pool=NULL).
-}
  \item{m}{
 Migration rate (if m=1 the community is a subsample of the regional pool).
+}
+ \item{theta}{
+Parameter of neutral dynamics in the regional pool (used only if pool=NULL).
 }
  \item{filt}{
 A function representing the effect of local habitat filtering. For a given trait value, t, filt(t) represents the probability that an individual with trait t enters the local community. If filt=NULL, the lottery function provides a neutral community.
 }
  \item{pool}{
-The regional pool of species providing immigrants to the local community. If NULL, the pool is simulated as a metacommunity at speciation-drift equilibrium, based on parameter theta. In this case, a random trait value is given to individuals of the regional pool, from a uniform distribution between 0 and 1. Otherwise, input value of pool must include the label of individual on first column, of its species on second column, and a trait attribute on the third column.
+The regional pool of species providing immigrants to the local community. It should include the label of individual on first column, and of its species on second column. If NULL, the pool is simulated as a metacommunity at speciation-drift equilibrium, based on parameter theta.
+}
+ \item{traits}{
+A matrix or data.frame including one or several traits on columns. In the present version of the function, a unique trait value is assigned to each species un the regional pool. If NULL, a random trait value is given to species of the regional pool, from a uniform distribution between 0 and 1.
 }
  \item{Jpool}{
 If pool = NULL, represents the number of individuals to be simulated in the regional pool.
@@ -58,36 +61,35 @@ François Munoz
 \examples{
 # Simulation of a neutral community including 100 individuals
 J <- 500; theta <- 50; m <- 0.1;
-comm1 <- coalesc(J, theta, m) 
+comm1 <- coalesc(J, m, theta) 
 hist(comm1$com[, 3])
 
 # Directional habitat filtering toward t = 0
-comm2 <- coalesc(J, theta, m, filt = function(x) 1 - x)
+comm2 <- coalesc(J, m, theta, filt = function(x) 1 - x)
 hist(comm2$com[, 3])
 
 # Stabilizing habitat filtering around t = 0.1
-comm3a <- coalesc(J, theta, m, filt = function(x) 0.9 - abs(0.1 - x))
+comm3a <- coalesc(J, m, theta, filt = function(x) 0.9 - abs(0.1 - x))
 # Stabilizing habitat filtering around t = 0.5
-comm3b <- coalesc(J, theta, m, filt = function(x) 0.5 - abs(0.5 - x))
+comm3b <- coalesc(J, m, theta, filt = function(x) 0.5 - abs(0.5 - x))
 # Stabilizing habitat filtering around t = 0.9
-comm3c <- coalesc(J, theta, m, filt = function(x) 0.9 - abs(0.9 - x))
+comm3c <- coalesc(J, m, theta, filt = function(x) 0.9 - abs(0.9 - x))
 # Mean trait values in communities reflect the influence of habitat filtering
 mean(comm3a$com[, 3])
 mean(comm3b$com[, 3])
 mean(comm3c$com[, 3])
 
 # Disruptive habitat filtering around t = 0.5
-comm4 <- coalesc(J, theta, m, filt = function(x) abs(0.5 - x))
+comm4 <- coalesc(J, m, theta, filt = function(x) abs(0.5 - x))
 hist(comm4$com[, 3])
 
 # Generate a regional pool/metacommunity at speciation-drift equilibrium
 Jpool <- 10000;
-pool <- coalesc(Jpool, theta=50, m=1)
+pool <- coalesc(Jpool, m=1, theta=50)
 # Generate a neutral community drawn from the pool
-comm5 <- coalesc(J, theta, m, pool=pool$pool) 
+comm5 <- coalesc(J, m, theta, pool=pool$pool) 
 hist(comm5$com[, 3])
 }
-
 
 \keyword{coalescent}
 \keyword{neutral dynamics}
