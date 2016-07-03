@@ -29,7 +29,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
       # Select randomly a previously assigned individual
       existing_sp <- sample.int(unassign_pool[j] - 1, 1) # existing_sp <- sample(assign_pool, 1)
       sp_pool_lab[unassign_pool[j]] <- sp_pool_lab[existing_sp]  # Assign species of previously assigned individual
-      sp_trait[unassign_pool[j],] <- sp_trait[existing_sp,]  # Assign species trait
+      sp_traits[unassign_pool[j],] <- sp_traits[existing_sp,]  # Assign species trait
     }
     if(m==1 & is.null(filt)) return(list(pool=pool))
   } else if (ncol(pool) < 2) {
@@ -43,7 +43,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
     sp_traits <- array(1, c(nrow(pool), 1))
     sp_traits <- sapply(1:ncol(traits),function(y) sapply(sp_pool_lab,function(x) traits[x,y]))
   }
-  pool <- cbind(ind_pool_lab, sp_pool_lab, sp_trait)
+  pool <- cbind(ind_pool_lab, sp_pool_lab, sp_traits)
   
   # Define environmental filter
   if (!is.null(filt)) {
