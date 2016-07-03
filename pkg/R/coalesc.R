@@ -1,4 +1,4 @@
-coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, Jpool = 50*J) {
+coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = NULL, Jpool = 50*J) {
   
   if (is.null(traits)) {
     warning("No trait information provided in the regional pool")
