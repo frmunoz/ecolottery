@@ -22,8 +22,7 @@ Index of the trait to be plotted (if multiple traits used in simulation).
 This generic function should be improved in the future for additional options of graphical display.
 }
 \value{
-}
-\references{
+Return two stacked density plots.
 }
 \author{
 François Munoz
