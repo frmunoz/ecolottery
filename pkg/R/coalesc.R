@@ -37,10 +37,11 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   } else 
   { 
     if (ncol(pool) < 2) stop("The regional pool is misdefined (two columns required)")
+    ind_pool_lab <- pool[,1]; sp_pool_lab <- pool[,2]
     
     if (is.null(traits))  traits <- runif(nrow(pool))
     sp_traits <- array(1, c(nrow(pool), 1))
-    sp_traits <- sapply(1:ncol(traits),function(y) sapply(pool[,2],function(x) traits[x,y]))
+    sp_traits <- sapply(1:ncol(traits),function(y) sapply(sp_pool_lab,function(x) traits[x,y]))
   }
   pool <- cbind(ind_pool_lab, sp_pool_lab, sp_trait)
   
