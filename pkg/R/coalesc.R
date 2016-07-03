@@ -31,7 +31,6 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
       sp_pool_lab[unassign_pool[j]] <- sp_pool_lab[existing_sp]  # Assign species of previously assigned individual
       sp_trait[unassign_pool[j],] <- sp_trait[existing_sp,]  # Assign species trait
     }
-    pool <- cbind(ind_pool_lab, sp_pool_lab, sp_trait)
     if(m==1 & is.null(filt)) return(list(pool=pool))
   } else if (ncol(pool) < 2) {
     stop("The regional pool is misdefined (at least two columns required)")
@@ -43,7 +42,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
     sp_traits <- array(1, c(nrow(pool), 1))
     sp_traits <- sapply(1:ncol(traits),function(y) sapply(pool[,2],function(x) traits[x,y]))
   }
-
+  pool <- cbind(ind_pool_lab, sp_pool_lab, sp_trait)
+  
   # Define environmental filter
   if (!is.null(filt)) {
     env_filter <- function(x) filt(x)
