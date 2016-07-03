@@ -1,11 +1,16 @@
-coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
+coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, Jpool = 50*J) {
+  
+  if (is.null(traits)) {
+    warning("No trait information provided in the regional pool")
+  }
+  
   #Create the regional pool if not provided
   if (is.null(pool)) {
     if(m == 1 & is.null(filt)) pool_size <- J # In this case, directly simulates a sample from the pool of size J
     else  pool_size <- Jpool # Total number of individuals in the pool
     ind_pool_lab <- 1:pool_size  # Labels of individuals
     sp_pool_lab <- array(0, c(pool_size, 1))  # Species labels
-    sp_trait <- array(0, c(pool_size, 1))  # Trait
+    if(is.null(traits)) sp_traits <- array(1, c(pool_size, 1)) else sp_traits <- array(1, c(pool_size, ncol(traits)))
     Y <- runif(pool_size)  # Generate a vector to determine species
     
     # Vector to determine species
@@ -16,21 +21,27 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
     unassign_pool <- which(Y > R_pool)
     
     sp_pool_lab[assign_pool] <- 1:length(assign_pool)  # Set species number
-    sp_trait[assign_pool] <- runif(length(assign_pool))  # Compute Trait
+    if(is.null(traits)) sp_traits[assign_pool,1] <- runif(length(assign_pool))  # Compute Trait
+    else sp_traits[assign_pool,] <- traits[1:length(assign_pool),]
 
     # For all individuals without an assigned species
     for (j in 1:length(unassign_pool)) {
       # Select randomly a previously assigned individual
       existing_sp <- sample.int(unassign_pool[j] - 1, 1) # existing_sp <- sample(assign_pool, 1)
       sp_pool_lab[unassign_pool[j]] <- sp_pool_lab[existing_sp]  # Assign species of previously assigned individual
-      sp_trait[unassign_pool[j]] <- sp_trait[existing_sp]  # Assign species trait
+      sp_trait[unassign_pool[j],] <- sp_trait[existing_sp,]  # Assign species trait
     }
     pool <- cbind(ind_pool_lab, sp_pool_lab, sp_trait)
     if(m==1 & is.null(filt)) return(list(pool=pool))
   } else if (ncol(pool) < 2) {
     stop("The regional pool is misdefined (at least two columns required)")
-  } else if (ncol(pool) == 2) {
-    warning("No trait information provided in the regional pool")
+  } else 
+  { 
+    if (ncol(pool) < 2) stop("The regional pool is misdefined (two columns required)")
+    
+    if (is.null(traits))  traits <- runif(nrow(pool))
+    sp_traits <- array(1, c(nrow(pool), 1))
+    sp_traits <- sapply(1:ncol(traits),function(y) sapply(pool[,2],function(x) traits[x,y]))
   }
 
   # Define environmental filter
@@ -39,12 +50,7 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
   } else {
     env_filter <- function(x) sapply(x, function(x) 1)
   }
-  
-  # No environmental filter and no trait defined, all traits == 1
-  if (!is.null(filt) & ncol(pool) == 2) {
-    pool[, 3] <- rep(1, nrow(pool)) 
-  }
-  
+
   # Community Array
   ind_com_lab <- array(0, c(J, 1))
   sp_com_lab <- array(0, c(J, 1))
@@ -67,13 +73,13 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
   
   com_species <- length(assign_com) # Number of individuals taken from the regional pool
   
-  migrants <- sample(1:nrow(pool), com_species, prob = env_filter(pool[, 3]))
+  migrants <- sample(1:nrow(pool), com_species, prob = env_filter(sp_traits))
   
   ind_com_lab[assign_com] <- pool[migrants, 1] # Assign individuals
   
   sp_com_lab[assign_com] <- pool[migrants, 2] # Assign species
   
-  sp_com_trait[assign_com] <- pool[migrants, 3] # Assign traits
+  sp_com_trait[assign_com,] <- sp_traits[migrants, ] # Assign traits
   
   if (!is.null(unassign_com)) {
     for (j in 1:length(unassign_com)) {
@@ -86,7 +92,7 @@ coalesc <- function(J, theta, m = 1, filt = NULL, pool = NULL, Jpool = 50*J) {
       }
     ind_com_lab[unassign_com[j]] <- ind_com_lab[existing_sp]
     sp_com_lab[unassign_com[j]] <- sp_com_lab[existing_sp]
-    sp_com_trait[unassign_com[j]] <- sp_com_trait[existing_sp]
+    sp_com_trait[unassign_com[j],] <- sp_com_trait[existing_sp,]
     }
   }
     
