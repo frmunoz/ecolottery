@@ -36,9 +36,14 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
     if (ncol(pool) < 2) stop("The regional pool is misdefined (two columns required)")
     ind_pool_lab <- pool[,1]; sp_pool_lab <- pool[,2]
     
-    if (is.null(traits))  traits <- runif(nrow(pool))
-    sp_traits <- array(1, c(nrow(pool), 1))
-    sp_traits <- sapply(1:ncol(traits),function(y) sapply(sp_pool_lab,function(x) traits[x,y]))
+    if (ncol(pool) >= 3)  sp_traits <- data.frame(pool[,-(1:2)]) 
+    else  
+    {
+      if (is.null(traits)) traits <- data.frame(runif(max(pool[,2])))
+      sp_traits <- array(1, c(nrow(pool), 1))
+      sp_traits <- sapply(1:ncol(traits), function(y) sapply(sp_pool_lab, function(x) traits[x, y]))
+      pool <- cbind(ind_pool_lab, sp_pool_lab, sp_traits)
+    }
   }
   pool <- cbind(ind_pool_lab, sp_pool_lab, sp_traits)
   
@@ -52,7 +57,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   # Community Array
   ind_com_lab <- array(0, c(J, 1))
   sp_com_lab <- array(0, c(J, 1))
-  sp_com_trait <- array(0, c(J, ncol(traits)))
+  sp_com_trait <- array(0, c(J, ncol(sp_traits)))
 
   # If migration rate < 1
   if (m < 1) {
