@@ -1,5 +1,5 @@
-\name{trait.corr}
-\alias{trait.corr}
+\name{tcor}
+\alias{tcor}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Trait correlation
@@ -8,7 +8,7 @@ Trait correlation
 Create two random vectors of traits correlated between each other or a vector of traits correlated to an existing one. The strength of the correlation is defined by a parameter rho.
 }
 \usage{
-trait.corr(n, rho = 0.5, x = NULL)
+tcor(n, rho = 0.5, x = NULL)
 }
 \arguments{
  \item{n}{
