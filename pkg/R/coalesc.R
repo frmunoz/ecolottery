@@ -101,6 +101,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
     
   com <- cbind(ind_com_lab, sp_com_lab, sp_com_trait)
   
+  colnames(com) <- c("ind", "sp", "tra")
+  
   if(m==1 & is.null(filt)) return(list(pool=com))
   else return(list(com=com,pool=pool))
 }
