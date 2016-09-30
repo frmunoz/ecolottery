@@ -2,6 +2,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   
   if (is.null(traits) & (is.null(pool) | NCOL(pool) < 3)) warning("No trait information provided in the regional pool")
   
+  if (!is.null(traits) & is.null(colnames(traits))) colnames(traits) <- paste("tra",1:ncol(traits),sep="")
+
   #Create the regional pool if not provided
   if (is.null(pool)) {
     if(m == 1 & is.null(filt)) pool_size <- J # In this case, directly simulates a sample from the pool of size J
@@ -29,6 +31,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
       sp_pool_lab[unassign_pool[j]] <- sp_pool_lab[existing_sp]  # Assign species of previously assigned individual
       sp_traits[unassign_pool[j],] <- sp_traits[existing_sp,]  # Assign species trait
     }
+    if(!is.null(traits)) colnames(sp_traits) <- colnames(traits) else colnames(sp_traits) <- paste("tra",1:ncol(sp_traits),sep="")
     if(m==1 & is.null(filt)) return(list(pool = cbind(ind_pool_lab, sp_pool_lab, sp_traits)))
   } 
   else 
@@ -39,9 +42,10 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
     if (ncol(pool) >= 3)  sp_traits <- data.frame(pool[,-(1:2)]) 
     else  
     {
+      # Generation of trait values if not provided by the user
       if (is.null(traits)) traits <- data.frame(runif(max(pool[,2])))
-      sp_traits <- array(1, c(nrow(pool), 1))
-      sp_traits <- sapply(1:ncol(traits), function(y) sapply(sp_pool_lab, function(x) traits[x, y]))
+      sp_traits <- traits[sp_pool_lab,1:ncol(traits)]
+      if (!is.null(traits)) colnames(sp_traits) <- colnames(traits) else colnames(sp_traits) <- paste("tra",1:ncol(sp_traits),sep="")
       pool <- cbind(ind_pool_lab, sp_pool_lab, sp_traits)
     }
   }
@@ -49,9 +53,9 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   
   # Define environmental filter
   if (!is.null(filt)) {
-    env_filter <- function(x) sapply(x, function(x) filt(x))
+    env_filter <- function(x) t(apply(x,1,function(y) filt(y)))
   } else {
-    env_filter <- function(x) sapply(x, function(x) 1)
+    env_filter <- function(x) t(apply(x,1,function(y) 1))
   }
 
   # Community Array
