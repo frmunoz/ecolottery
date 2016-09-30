@@ -95,7 +95,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
       new.index <- a$new.index
       a <- a$a
     } 
-    return(list(aa = aa, limit.sim.t = limit.sim.t, pool = pool))
+    return(list(com_t = aa, limit.sim.t = limit.sim.t, pool = pool))
   } else {
     for (i in 1:gens) {
       a <- pick(a, D = D, prob = prob, pool = pool, prob.death = prob.death,
@@ -104,7 +104,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
       new.index <- a$new.index
       a <- a$a
     }
-    return(list(a = a, pool = pool))
+    return(list(com = a, pool = pool))
   }
 }
   
