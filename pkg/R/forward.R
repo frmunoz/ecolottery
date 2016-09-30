@@ -149,7 +149,7 @@ pick.mutate <- function(a, D = 1, prob.of.mutate = 0, new.index = 0) {
     a[died[mutated], 3] <- rep(NA, J1)
     new.index <- new.index + J1
   }
-  return(list(a = a, new.index = new.index))
+  return(list(com = a, new.index = new.index))
 }
 
 # Return "immigrate" individuals
