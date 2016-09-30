@@ -16,7 +16,7 @@ plot.comm <- function(x, seltrait=1,main=NULL)
   ggplot(data, aes(trait),main=main) +
     geom_density(aes(group = level, fill = level), alpha = 0.5) +
     scale_fill_manual(values = c(metaCol, localCol)) +
-    ggtitle(main)
+    ggtitle(main) + 
     theme_classic()
 }
  
