@@ -1,6 +1,6 @@
 # Plotting of regional and local trait distributions
 
-plot.comm <- function(x, seltrait=1) 
+plot.comm <- function(x, seltrait=1,main=NULL) 
 # x should be the output of coalesc or forward
 # seltrait is the index of the trait to be plotted (in case of multiple traits)
 {
@@ -13,9 +13,10 @@ plot.comm <- function(x, seltrait=1)
                      trait=c(x$pool[, seltrait+2],x$com[, seltrait+2]))
   
   # Plot
-  ggplot(data, aes(trait)) +
+  ggplot(data, aes(trait),main=main) +
     geom_density(aes(group = level, fill = level), alpha = 0.5) +
     scale_fill_manual(values = c(metaCol, localCol)) +
+    ggtitle(main)
     theme_classic()
 }
  
