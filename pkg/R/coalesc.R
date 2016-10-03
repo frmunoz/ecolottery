@@ -5,7 +5,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   if (!is.null(traits) & is.null(colnames(traits))) colnames(traits) <- paste("tra",1:ncol(traits),sep="")
   if (!is.null(pool) & is.null(colnames(pool))) colnames(pool) <- c("ind","sp",paste(tra,1:(ncol(pool)-2),sep=""))
     
-  #Create the regional pool if not provided
+  ## Create the regional pool if not provided
+  
   if (is.null(pool)) {
     if(m == 1 & is.null(filt)) pool_size <- J # In this case, directly simulates a sample from the pool of size J
     else  pool_size <- Jpool # Total number of individuals in the pool
@@ -51,18 +52,16 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   }
   pool <- data.frame(ind=ind_pool_lab, sp=ind_pool_sp, ind_pool_traits)
   
-  # Define environmental filter
+  ## Define environmental filter
+        
   if (!is.null(filt)) {
     env_filter <- function(x) t(apply(x,1,function(y) filt(y)))
   } else {
     env_filter <- function(x) t(apply(x,1,function(y) 1))
   }
 
-  # Community Array
-  ind_com_lab <- array(NA, c(J, 1))
-  ind_com_sp <- array(NA, c(J, 1))
-  ind_com_traits <- data.frame(array(NA, c(J, ncol(ind_pool_traits))))
-
+  ## Community generation
+                                      
   # If migration rate < 1
   if (m < 1) {
     I <- m * (J - 1) / (1 - m) # Number of available immigrants
@@ -82,12 +81,13 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   
   migrants <- sample(1:nrow(pool), com_species, prob = env_filter(ind_pool_traits))
   
-  ind_com_lab[assign_com] <- pool[migrants, 1] # Assign individuals
+  ind_com_lab <- sapply(1:J,function(x) ifelse(x%in%assign_com,pool[migrants[which(assign_com==x)], 1],NA)) # Assign individuals
   
-  ind_com_sp[assign_com] <- pool[migrants, 2] # Assign species
+  ind_com_sp <- sapply(1:J,function(x) ifelse(x%in%assign_com,pool[migrants[which(assign_com==x)], 2],NA)) # Assign species
   
-  ind_com_traits[assign_com,] <- ind_pool_traits[migrants, ] # Assign traits
-  
+  ind_com_traits <- data.frame(sapply(1:J,function(x) ifelse(x%in%assign_com,ind_pool_traits[migrants[which(assign_com==x)], ],NA))) # Assign traits
+  colnames(ind_com_traits) <- colnames(ind_pool_traits)
+ 
   if (!is.null(unassign_com)) {
     for (j in 1:length(unassign_com)) {
       if (j > 1) {
@@ -103,9 +103,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
     }
   }
     
-  com <- cbind(ind_com_lab, ind_com_sp, ind_com_traits)
-  
-  colnames(com) <- c("ind", "sp", "tra")
+  com <- data.frame(ind=ind_com_lab, sp=ind_com_sp, ind_com_traits)
   
   if(m==1 & is.null(filt)) return(list(pool=com))
   else return(list(com=com,pool=pool))
