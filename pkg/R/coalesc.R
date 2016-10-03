@@ -3,7 +3,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   if (is.null(traits) & (is.null(pool) | NCOL(pool) < 3)) warning("No trait information provided in the regional pool")
   
   if (!is.null(traits) & is.null(colnames(traits))) colnames(traits) <- paste("tra",1:ncol(traits),sep="")
-  if (!is.null(pool) & is.null(colnames(pool))) colnames(pool) <- c("ind","sp",paste(tra,1:(ncol(pool)-2),sep=""))
+  if (!is.null(pool) & is.null(colnames(pool))) colnames(pool) <- c("ind","sp",paste("tra",1:(ncol(pool)-2),sep=""))
     
   ## Create the regional pool if not provided
   
