@@ -40,7 +40,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
     if (ncol(pool) < 2) stop("The regional pool is misdefined (two columns required)")
     ind_pool_lab <- pool[,1]; ind_pool_sp <- pool[,2]
     
-    if (ncol(pool) >= 3)  ind_pool_traits <- data.frame(pool[,-(1:2)]) 
+    if (ncol(pool) >= 3)  {ind_pool_traits <- data.frame(pool[,-(1:2)]); colnames(ind_pool_traits) <- colnames(pool)[-(1:2)];}
     else  
     {
       # Generation of trait values if not provided by the user
