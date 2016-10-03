@@ -3,7 +3,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   if (is.null(traits) & (is.null(pool) | NCOL(pool) < 3)) warning("No trait information provided in the regional pool")
   
   if (!is.null(traits) & is.null(colnames(traits))) colnames(traits) <- paste("tra",1:ncol(traits),sep="")
-
+  if (!is.null(pool) & is.null(colnames(pool))) colnames(pool) <- c("ind","sp",paste(tra,1:(ncol(pool)-2),sep=""))
+    
   #Create the regional pool if not provided
   if (is.null(pool)) {
     if(m == 1 & is.null(filt)) pool_size <- J # In this case, directly simulates a sample from the pool of size J
@@ -32,7 +33,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
       ind_pool_traits[unassign_pool[j],] <- ind_pool_traits[existing_sp,]  # Assign species trait
     }
     if(!is.null(traits)) colnames(ind_pool_traits) <- colnames(traits) else colnames(ind_pool_traits) <- paste("tra",1:ncol(ind_pool_traits),sep="")
-    if(m==1 & is.null(filt)) return(list(pool = cbind(ind_pool_lab, ind_pool_sp, ind_pool_traits)))
+    if(m==1 & is.null(filt)) return(list(pool = data.frame(ind=ind_pool_lab, sp=ind_pool_sp, ind_pool_traits)))
   } 
   else 
   { 
@@ -48,7 +49,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
       if (!is.null(traits)) colnames(ind_pool_traits) <- colnames(traits) else colnames(ind_pool_traits) <- paste("tra",1:ncol(ind_pool_traits),sep="")
     }
   }
-  pool <- cbind(ind_pool_lab, ind_pool_sp, ind_pool_traits)
+  pool <- data.frame(ind=ind_pool_lab, sp=ind_pool_sp, ind_pool_traits)
   
   # Define environmental filter
   if (!is.null(filt)) {
