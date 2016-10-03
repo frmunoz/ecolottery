@@ -85,7 +85,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   
   ind_com_sp <- sapply(1:J,function(x) ifelse(x%in%assign_com,pool[migrants[which(assign_com==x)], 2],NA)) # Assign species
   
-  ind_com_traits <- data.frame(sapply(1:J,function(x) ifelse(x%in%assign_com,ind_pool_traits[migrants[which(assign_com==x)], ],NA))) # Assign traits
+  ind_com_traits <- data.frame(apply(ind_pool_traits,2,function(y) sapply(1:J,function(x) ifelse(x%in%assign_com,y[migrants[which(assign_com==x)]],NA)))) # Assign traits
   colnames(ind_com_traits) <- colnames(ind_pool_traits)
  
   if (!is.null(unassign_com)) {
