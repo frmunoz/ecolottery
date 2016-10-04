@@ -51,7 +51,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
     }
   }
   pool <- data.frame(ind=ind_pool_lab, sp=ind_pool_sp, ind_pool_traits)
-  
+  for(i in which(unlist(lapply(pool,is.factor)))) pool[,i] <- as.character(pool[,i])
+
   ## Define environmental filter
         
   if (!is.null(filt)) {
