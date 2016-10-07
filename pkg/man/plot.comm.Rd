@@ -2,20 +2,29 @@
 \alias{plot.comm}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Plotting regional and local trait distributions
+Plotting regional and local trait distributions, or the relationship between local and regional abundances
 }
 \description{
-Density plots of the trait distributions in the regional pool and in a local community. To be used on the output of coalesc or forward functions 
+If type = "trait", the function provides density plots of the trait or abundance distributions in the regional pool and in a local community.
+If type = "abund", the function displays the relationship between regional and local species abundances.
+Default type is "trait".
+To be used on the output of coalesc or forward functions.
 }
 \usage{
-plot.comm(x, seltrait=1)
+plot.comm(x, type="trait", seltrait=1, main=NULL)
 }
 \arguments{
  \item{x}{
 A list including the species pool composition ($pool) and the local community composition ($com)
 }
+ \item{type}{
+If "trait", the function displays density plots of trait distributions. If "abund", it displays the relationship between local and regional abundances.
+}
  \item{seltrait}{
 Index of the trait to be plotted (if multiple traits used in simulation).
+}
+ \item{main}{
+A title to add on the plot.
 }
 }
 \details{
@@ -40,5 +49,6 @@ plot.comm(comm2)
 }
 
 \keyword{trait distribution}
+\keyword{species abundances}
 \keyword{regional pool}
 \keyword{local community}
