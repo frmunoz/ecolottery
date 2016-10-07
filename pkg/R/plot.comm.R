@@ -1,29 +1,54 @@
-# Plotting of regional and local trait or abundance distributions
-
-plot.comm <- function(x, type="trait", seltrait=1,main=NULL) 
-# x should be the output of coalesc or forward
-# seltrait is the index of the trait to be plotted (in case of multiple traits)
-{
-  switch(type,
-    "trait"=
-     {
-       require(ggplot2)
-       # Color vectors
-       metaCol <- rgb(1,0,0,0.2); localCol <- rgb(0,0,1,0.2)
-       # Dataframe of trait pool and local values
-       data <- data.frame(level=c(rep("pool", nrow(x$pool)),rep("comm", nrow(x$com))),
-                     trait=c(x$pool[, seltrait+2],x$com[, seltrait+2]))
-       # Plot
-       ggplot(data, aes(trait),main=main) + geom_density(aes(group = level, fill = level), alpha = 0.5) +
-        scale_fill_manual(values = c(metaCol, localCol)) +
-        ggtitle(main) + 
-        theme_classic()
-     },
-    "abund"=
-     {
-      ab <- abund(x) 
-      plot(ab$reg[names(ab$loc)]/sum(ab$reg),ab$loc/sum(ab$loc),main=main,xlab="Regional abundance", ylab="Local abundance",log="xy"); abline(0,1)
-     },
-    warning("Need to choose a type of plot to display (trait or abund)"))
+\name{plot.comm}
+\alias{plot.comm}
+%- Also NEED an '\alias' for EACH other topic documented here.
+\title{
+Plotting regional and local trait distributions, or the relationship between local and regional abundances
 }
- 
+\description{
+If type = "trait", the function provides density plots of the trait or abundance distributions in the regional pool and in a local community.
+If type = "abund", the function displays the relationship between regional and local species abundances.
+Default type is "trait".
+To be used on the output of coalesc or forward functions.
+}
+\usage{
+plot.comm(x, type="trait", seltrait=1, main=NULL)
+}
+\arguments{
+ \item{x}{
+A list including the species pool composition ($pool) and the local community composition ($com)
+}
+ \item{type}{
+If "trait", the function displays density plots of trait distributions. If "abund", it displays the relationship between local and regional abundances.
+}
+ \item{seltrait}{
+Index of the trait to be plotted (if multiple traits used in simulation).
+}
+ \item{main}{
+A title to add on the plot.
+}
+}
+\details{
+This generic function should be improved in the future for additional options of graphical display.
+}
+\value{
+Return two stacked density plots.
+}
+\author{
+François Munoz
+}
+
+\examples{
+# Simulation of a neutral community including 100 individuals
+J <- 500; theta <- 50; m <- 0.1;
+comm1 <- coalesc(J, m, theta) 
+plot.comm(comm1)
+
+# Stabilizing habitat filtering around t = 0.5
+comm2 <- coalesc(J, m, theta, filt = function(x) 0.5 - abs(0.5 - x))
+plot.comm(comm2)
+}
+
+\keyword{trait distribution}
+\keyword{species abundances}
+\keyword{regional pool}
+\keyword{local community}
