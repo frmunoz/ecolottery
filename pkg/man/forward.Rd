@@ -7,7 +7,9 @@
 Simulation of neutral and niche-based community dynamics forward in time
 }
 \description{
-Simulates niche-based (habitat filtering and/or limiting similarity) and neutral community dynamics from a given initial composition, over a given number of generations. 
+Simulates niche-based (habitat filtering and/or limiting similarity) and neutral
+community dynamics from a given initial composition, over a given number of
+generations. 
 }
 
 \usage{
@@ -37,13 +39,21 @@ Number of individuals that die in each time-step.
 Number of generations to simulate.
 }
  \item{keep}{
-Boolean with default FALSE meaning to return community composition at the end of the simulation, and TRUE meaning to return a list including community composition at successive time steps (see Value section).
+Boolean with default \code{FALSE} meaning to return community composition at the
+end of the simulation, and \code{TRUE} meaning to return a list including
+community composition at successive time steps (see Value section).
 }
  \item{pool}{
-The regional pool of species providing immigrants to the local community. It is in principle a three-column matrix or data frame including individual ID, species names and trait values. If trait information is missing, a random trait value is given to individuals, from a uniform distribution between 0 and 1. If NULL, the pool is simulated as a metacommunity at speciation-drift equilibrium, based on prob for speciation rate.
+The regional pool of species providing immigrants to the local community. It is
+in principle a three-column matrix or data frame including individual ID,
+species names and trait values. If trait information is missing, a random trait
+value is given to individuals, from a uniform distribution between 0 and 1.
+If \code{NULL}, the pool is simulated as a metacommunity at speciation-drift
+equilibrium, based on prob for speciation rate.
 }
  \item{limit.sim}{
-If T, limiting similarity will be simulated, based on species trait distances (computed with method given in method.dist). 
+If T, limiting similarity will be simulated, based on species trait distances
+(computed with method given in method.dist). 
 }
  \item{coeff.lim.sim}{
 Adjust the intensity of limiting similarity. 
@@ -52,13 +62,18 @@ Adjust the intensity of limiting similarity.
 Adjust the variance of the overlap function used to calculate limiting similarity.
 }
  \item{filt}{
-The function used to represent habitat filtering. For a given trait value, t, filt(t) represents the probability that an individual with trait t enters the local community.
+The function used to represent habitat filtering. For a given trait value, t,
+\code{filt(t)} represents the probability that an individual with trait t enters
+the local community.
 }
  \item{prob.death}{
-Provides a baseline probability of death that is homogeneous across species. It is used in niche-based dynamics to represent the balance of baseline and niche-dependent mortality.
+Provides a baseline probability of death that is homogeneous across species. It
+is used in niche-based dynamics to represent the balance of baseline and
+niche-dependent mortality.
 }
  \item{method.dist}{
-Provide the method to compute trait distances between individuals (syntax of function dist).
+Provide the method to compute trait distances between individuals (syntax of
+function \code{\link[stats]{dist}}).
 }
  \item{new.index}{
 Used to give a new species name when speciation occurs.
@@ -69,7 +84,9 @@ When niche-based dynamics are simulated, the niche-based constraints influence b
 
 It is a zero-sum game, so that the number of individuals of the community is fixed to the number of individuals in initial community.
 
-Functions pick.immigrate() and pick.mutate() are used to simulate immigration and speciation events within a time step. They are embedded in forward and are not really intended for the end user. 
+Functions \code{pick.immigrate()} and \code{pick.mutate()} are used to simulate
+immigration and speciation events within a time step. They are embedded in
+forward and are not really intended for the end user. 
 }
 \value{
 \item{a}{
@@ -79,20 +96,23 @@ A matrix of individual in the final community, with individual ID in first colum
 The regional pool of species used in simulation. Includes label of individual on first column, its species on second column, and a trait attribute on the third column.
 }
 \item{aa}{
-If keep = T, a list of community composition for each time step (a matrix as in a).
+If \code{keep = T}, a list of community composition for each time step (a matrix
+as in a).
 }
 \item{limit.sim.t}{
-If limit.sim = T, the average value of the limiting similarity function over time.
+If \code{limit.sim = T}, the average value of the limiting similarity function
+over time.
 }
 \item{new.index}{
-For pick.mutate(), return the new index to be used for species name at a next speciation event.
+For \code{pick.mutate()}, return the new index to be used for species name at a
+next speciation event.
 }
 }
 \references{
 For neutral dynamics, S. P. Hubbell 2001. "The Unified Neutral Theory of Biodiversity". Princeton University Press. 
 }
 \author{
-François Munoz, derived from the untb function of Robin K. S. Hankin
+FranÃ§ois Munoz, derived from the untb function of Robin K. S. Hankin
 }
 
 
