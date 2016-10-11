@@ -1,23 +1,40 @@
+# Function to compute forward simulation of community dynamics with (eventually)
+# environmental filtering
 forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
                     pool = NULL, limit.sim = F, coeff.lim.sim = 2, sigma = 0.1,
                     filt = NULL, prob.death = NULL, method.dist = "euclidean") {
-  # The function will stop if niche - based dynamics is requested, but trait information is missing in the local community
-  # For strictly neutral communities, a vector of species names is enough for the initial community
+  # The function will stop if niche - based dynamics is requested, but trait
+  # information is missing in the local community
+  # For strictly neutral communities, a vector of species names is enough for
+  # the initial community
+  
+  # Stops if only a vector of species name is given as initial community with
+  # environmental filtering or limiting similarity
   if ((is.character(initial) | is.vector(initial)) & (limit.sim | !is.null(filt))) {
-    stop("Trait information must be provided along with species identity in the initial community for niche - based dynamics")
+    stop(paste0("Trait information must be provided along with species",
+                " identity in the initial community for niche - based dynamics"))
   }
   
+  # If environmental filtering or limiting similarity, the initial community
+  # needs to be a matrix or a data.frame
   if (!is.matrix(initial) & !is.data.frame(initial) & (limit.sim | !is.null(filt))) {
     stop("Misdefined initial community")
   }
   
+  # If no limiting similarity nor environmental filter -> community dynamics are
+  # considered neutral
   if (!limit.sim & is.null(filt)) {
     cat("Simulation of a neutral community\n")
   }
   
-  # "pool" will be a three - column matrix of individuals in the regional pool, with individual id in first column, species name in second column, and additional trait information for niche - based dynamics in third column
+  # "pool" will be a three - column matrix of individuals in the regional pool,
+  # with individual id in first column, species name in second column, and
+  # additional trait information for niche - based dynamics in third column
   if (is.character(pool)) {
-    pool <- data.frame(id = 1:length(pool), sp = pool, trait = rep(NA, length(pool)), stringsAsFactors = F)
+    pool <- data.frame(id = 1:length(pool),
+                       sp = pool,
+                       trait = rep(NA, length(pool)),
+                       stringsAsFactors = F)
   
     if (limit.sim | !is.null(filt)) {
       cat("No trait information provided in the regional pool\n")
@@ -27,54 +44,73 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
     }
   }
   
+  # If species pool is specified by user
   if (!is.null(pool)) {
     if (ncol(pool)<2) {
-      stop("The regional pool is misdefined (at least two columns required when a matrix or data frame is provided)")
+      stop(paste0("The regional pool is misdefined (at least two columns ",
+                  "required when a matrix or data frame is provided)"))
     } else if (ncol(pool) == 2) {
       cat("No trait information provided in the regional pool\n")
     }
     if (!limit.sim | !is.null(filt)) {
       pool[, 3] <- runif(nrow(pool))
-      cat("Random trait values attributed to individuals of the regional pool\n")
+      
+      cat(paste0("Random (uniform) trait values attributed to individuals of ",
+                 "the regional pool\n"))
+      
       colnames(pool) <- c("id", "sp", "trait")
     }
   }
   
-  # "a" will be a three - column matrix of individuals in the initial community, with individual id in first column, species name in second column, and additional trait information for niche - based dynamics in third column
-  if (is.character(initial)) {
+  # "init_comm" is a 3 columns matrix of individuals in the initial community,
+  # with individual id in first column, species name in second column, and
+  # additional trait information for niche-based dynamics in the third column
+  if (is.character(initial)) {  # If only list of species names provided
     J <- length(initial)
     # The ids of individuals present in the initial community begi with "init"
-  a <- data.frame(id = paste("init", 1:J, sep = ""), sp = initial, trait = rep(NA, J), stringsAsFactors = F) 
+  init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
+                          sp = initial,
+                          trait = rep(NA, J),
+                          stringsAsFactors = F) 
   } else {
+    
     if (ncol(initial) < 3) {
-      cat("Two - column initial community: assumed to represent species and trait information; individual ids will be generated")
+      cat(paste0("Two-column initial community: assumed to represent species ",
+                 "and trait information; individual ids will be generated"))
     }
-  	J <- nrow(initial)
-    a <- data.frame(id = paste("init", 1:J, sep = ""), sp = initial[, 1], trait = initial[, 2], stringsAsFactors = F)
+  	
+    J <- nrow(initial)
+    init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
+                            sp = initial[, 1],
+                            trait = initial[, 2],
+                            stringsAsFactors = F)
   }
   
-  if ((limit.sim | !is.null(filt)) & any(is.na(a[, 3]))) {
-    stop("Trait information must be provided in initial community composition for niche - based dynamics")
+  if ((limit.sim | !is.null(filt)) & any(is.na(init_comm[, 3]))) {
+    stop(paste0("Trait information must be provided in initial community",
+                "composition for niche-based dynamics"))
   }
-  colnames(a) <- c("id", "sp", "trait")
   
-  #if(limit.sim | !is.null(filt)) 
-  # {
-  # sp.pool.tmean <- tapply(pool[, 3], pool[, 2], mean)
-  # sp.init.tmean <- tapply(a[, 3], a[, 2], mean)
-  # if(any(sp.pool.tmean[rownames(sp.init.tmean)]!= sp.init.tmean) | any(sp.init.tmean[rownames(sp.pool.tmean)]!= sp.pool.tmean)) warning("Mismatch of mean trait values per species in initial community and in regional pool")
-  # }
+  colnames(init_comm) <- c("id", "sp", "trait")
   
-  # Limiting similarity will be based on trait distances in the metacommunity plus the initial community
+  
+  # Limiting similarity is based on trait distances in the metacommunity plus
+  # the initial community
+  # Compute trait distance matrices in the inital community and the species
+  # pool
   if (limit.sim) {
     if (!is.null(pool)) {
-      limit.sim <- as.matrix(dist(c(a[, 3], pool[, 3]), method = method.dist))
-      colnames(limit.sim) <- c(a[, 1], pool[, 1])
-      rownames(limit.sim) <- c(a[, 1], pool[, 1])
+      limit.sim <- as.matrix(dist(c(init_comm[, 3], pool[, 3]),
+                                  method = method.dist))
+      
+      colnames(limit.sim) <- c(init_comm[, 1], pool[, 1])
+      rownames(limit.sim) <- c(init_comm[, 1], pool[, 1])
+    
     } else {
-      limit.sim <- as.matrix(dist(a[, 3], method = method.dist))
-      colnames(limit.sim) <- a[, 1]
-      rownames(limit.sim) <- a[, 1]
+      limit.sim <- as.matrix(dist(init_comm[, 3], method = method.dist))
+      
+      colnames(limit.sim) <- init_comm[, 1]
+      rownames(limit.sim) <- init_comm[, 1]
     }
     diag(limit.sim) <- 0
   } else {
@@ -83,28 +119,50 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
   
   new.index <- 0
   
-  if (keep) {
-    aa <- c()
+  
+  ## Forward simulation with community
+  
+  # Begins with the initial community
+  next_comm <- init_comm
+  
+  if (keep) {  # If the user asked to keep all the communities at each timestep
+    comm_through_time <- c()
     limit.sim.t <- c()
+    
+    # Simulate the community for the given number of generations
     for (i in 1:gens) {
-      aa[[i]] <- a
-      a <- pick(a, D = D, prob = prob, pool = pool, prob.death = prob.death, limit.sim = limit.sim, coeff.lim.sim = coeff.lim.sim, sigma = sigma, filt = filt, new.index = new.index)
+      comm_through_time[[i]] <- next_comm  # Store the community at time i
+      
+      # Simulate community dynamics
+      next_comm <- pick(next_comm, D = D, prob = prob, pool = pool,
+                        prob.death = prob.death, limit.sim = limit.sim,
+                        coeff.lim.sim = coeff.lim.sim, sigma = sigma,
+                        filt = filt, new.index = new.index)
+      
+      # Store limiting similarity matrix if simulated
       if (!is.null(limit.sim)) {
-        limit.sim.t <- c(limit.sim.t, a$limit.sim.t)
+        limit.sim.t <- c(limit.sim.t, next_comm$limit.sim.t)
       }
-      new.index <- a$new.index
-      a <- a$a
+      new.index <- next_comm$new.index
+      next_comm <- next_comm$a
     } 
-    return(list(com_t = aa, limit.sim.t = limit.sim.t, pool = pool))
-  } else {
+    
+    return(list(com_t = comm_through_time,
+                limit.sim.t = limit.sim.t,
+                pool = pool))
+  
+  } else {  # Keep only the last community
     for (i in 1:gens) {
-      a <- pick(a, D = D, prob = prob, pool = pool, prob.death = prob.death,
-                limit.sim = limit.sim, coeff.lim.sim = coeff.lim.sim,
-                sigma = sigma, filt = filt, new.index = new.index)
-      new.index <- a$new.index
-      a <- a$a
+      # Simulate community dynamics for a timestep
+      next_comm <- pick(next_comm, D = D, prob = prob, pool = pool,
+                        prob.death = prob.death, limit.sim = limit.sim,
+                        coeff.lim.sim = coeff.lim.sim, sigma = sigma,
+                        filt = filt, new.index = new.index)
+      
+      new.index <- next_comm$new.index
+      next_comm <- next_comm$a
     }
-    return(list(com = a, pool = pool))
+    return(list(com = next_comm, pool = pool))
   }
 }
   
