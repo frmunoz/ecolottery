@@ -2,36 +2,36 @@
 \alias{plot.comm}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Plotting regional and local trait distributions, or the relationship between local and regional abundances
+  Regional vs. Local trait distrbutions of Regional vs. Local Abundances
 }
 \description{
-If type = "trait", the function provides density plots of the trait or abundance distributions in the regional pool and in a local community.
-If type = "abund", the function displays the relationship between regional and local species abundances.
-Default type is "trait".
-To be used on the output of coalesc or forward functions.
+  If type = "trait", the function provides density plots of the trait or abundance distributions in the regional pool and in a local community.
+  If type = "abund", the function displays the relationship between regional and local species abundances.
+  Default type is "trait".
+  To be used on the output of \code{coalesc()} or \code{forward()} functions.
 }
 \usage{
-plot.comm(x, type="trait", seltrait=1, main=NULL)
+plot.comm(x, type = "trait", seltrait = 1, main = NULL)
 }
 \arguments{
  \item{x}{
-A list including the species pool composition ($pool) and the local community composition ($com)
+A list including the species pool composition (\code{x$pool}) and the local community composition (\code{x$com})
 }
  \item{type}{
-If "trait", the function displays density plots of trait distributions. If "abund", it displays the relationship between local and regional abundances.
+If \code{"trait"}, the function displays density plots of trait distributions. If \code{"abund"}, it displays the relationship between local and regional abundances
 }
  \item{seltrait}{
-Index of the trait to be plotted (if multiple traits used in simulation).
+Index of the trait to be plotted (if multiple traits used in simulation)
 }
  \item{main}{
-A title to add on the plot.
+A title to add on the plot
 }
 }
 \details{
-This generic function should be improved in the future for additional options of graphical display.
+This generic function should be improved in the future for additional options of graphical display
 }
 \value{
-Return two stacked density plots.
+Return two stacked density plots
 }
 \author{
 François Munoz
