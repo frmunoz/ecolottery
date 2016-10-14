@@ -35,6 +35,7 @@ J <- 500; theta <- 50; m <- 0.05;
 comm1a <- coalesc(J, m, theta) 
 abund1a <- abund(comm1a) 
 # Log-series distribution of regional abundances
+require(vegan)
 plot(fisherfit(abund1a$reg))
 
 # Relationship between local and regional abundances
