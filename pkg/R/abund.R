@@ -2,20 +2,23 @@
 # abundances per species
 abund <- function(x)
 {
-  # Abundances of species in local community
-  loc_t <- as.data.frame(table(x$com[,2]))
-  loc <- loc_t[,2]  # Get a flat vector of abundances
-  names(loc) <- loc_t[,1]
+  if(!is.null(x$com)) {
+    # If there is a local pool computes regional level abundances
+    loc <- as.data.frame(table(x$com[, "sp"]))
+    colnames(loc) <- c("sp", "ab")
+    loc$abrel <- loc$ab / length(x$com$ind)
+  } else {
+    stop("No local community provided, generate it with coalesc function")
+  }
   
-  if (!is.null(x$pool))
-  {
-    # If the is a local pool computes regional level abundances
-    reg_t <- as.data.frame(table(x$pool[,2]))
-    reg <- reg_t[,2]
-    names(reg) <- reg_t[,1]
+  if(!is.null(x$pool)) {
+    reg <- as.data.frame(table(x$pool[, "sp"]))
+    colnames(reg) <- c("sp", "ab")
+    reg$abrel <- reg$ab / length(x$pool$ind)
+    # If there is only a local community
     return(list(com = loc, pool = reg))
   } else {
-    # If there is only a local community
+    warning("No regional pool provided")
     return(list(com = loc))
   }
 }
