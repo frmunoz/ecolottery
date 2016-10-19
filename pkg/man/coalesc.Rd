@@ -65,33 +65,46 @@ François Munoz
 # Simulation of a neutral community including 100 individuals
 J <- 500; theta <- 50; m <- 0.1;
 comm1 <- coalesc(J, m, theta) 
-hist(comm1$com[, 3])
+# Regional and local trait distributions
+plot_comm(comm1)
+ 
+# Define a regional pool of species with equal abundances
+pool <- cbind(1:10000, rep(1:500,20), rep(NA,10000))
+# Uniform distribution of trait values
+t.sp <- runif(500)
+# No intraspecific variation
+pool[,3] <- t.sp[pool[,2]]
+# Generate a neutral community drawn from the pool
+comm2<- coalesc(J, m, pool = pool) 
+plot_comm(comm2)
 
 # Directional habitat filtering toward t = 0
-comm2 <- coalesc(J, m, theta, filt = function(x) 1 - x)
-hist(comm2$com[, 3])
+comm3 <- coalesc(J, m, filt = function(x) 1 - x, pool = pool)
+# Regional and local trait distributions
+plot_comm(comm2)
+
+# Function for environmental filtering
+sigma <- 0.1;
+filt_gaussian <- function(t,x) exp(-(x-t)^2/(2*sigma^2))
 
 # Stabilizing habitat filtering around t = 0.1
-comm3a <- coalesc(J, m, theta, filt = function(x) 0.9 - abs(0.1 - x))
+comm4a <- coalesc(J, m, filt = function(x) filt_gaussian(0.1,x), pool = pool)
+plot_comm(comm4a)
 # Stabilizing habitat filtering around t = 0.5
-comm3b <- coalesc(J, m, theta, filt = function(x) 0.5 - abs(0.5 - x))
+comm4b <- coalesc(J, m, theta, filt = function(x) filt_gaussian(0.5,x), pool = pool)
+plot_comm(comm4b)
 # Stabilizing habitat filtering around t = 0.9
-comm3c <- coalesc(J, m, theta, filt = function(x) 0.9 - abs(0.9 - x))
+comm4c <- coalesc(J, m, theta, filt = function(x) filt_gaussian(0.9,x), pool = pool)
+plot_comm(comm4c)
 # Mean trait values in communities reflect the influence of habitat filtering
-mean(comm3a$com[, 3])
-mean(comm3b$com[, 3])
-mean(comm3c$com[, 3])
+mean(comm4a$com[, 3])
+mean(comm4b$com[, 3])
+mean(comm4c$com[, 3])
 
 # Disruptive habitat filtering around t = 0.5
-comm4 <- coalesc(J, m, theta, filt = function(x) abs(0.5 - x))
-hist(comm4$com[, 3])
+comm5 <- coalesc(J, m, filt = function(x) abs(0.5 - x), pool = pool)
+plot_comm(comm5)
 
-# Generate a regional pool/metacommunity at speciation-drift equilibrium
-Jpool <- 10000;
-pool <- coalesc(Jpool, m=1, theta=50)
-# Generate a neutral community drawn from the pool
-comm5 <- coalesc(J, m, theta, pool=pool$pool) 
-hist(comm5$com[, 3])
 }
 
 \keyword{coalescent}
