@@ -16,17 +16,17 @@ generations.
 forward(initial, prob = 0, D = 1, gens = 150, keep = FALSE, pool = NULL,
         limit.sim = F, coeff.lim.sim = 2, sigma = 0.1, filt = NULL, 
         prob.death = NULL, method.dist = "euclidean")
-pick(a, D = 1, prob = 0, pool = NULL, prob.death = prob.death, 
-       limit.sim = NULL, coeff.lim.sim = 2, sigma = 0.1, filt = NULL, 
-      new.index = new.index)
-pick.mutate(a, D = 1, prob.of.mutate = 0, new.index = 0)
-pick.immigrate(a, D = 1, prob.of.immigrate = 0, pool, 
+pick(com, D = 1, prob = 0, pool = NULL, prob.death = prob.death,
+     limit.sim = NULL, coeff.lim.sim = 2, sigma = 0.1, filt = NULL, 
+     new.index = new.index)
+pick.mutate(com, D = 1, prob.of.mutate = 0, new.index = 0)
+pick.immigrate(com, D = 1, prob.of.immigrate = 0, pool, 
                  prob.death = NULL, limit.sim = NULL, coeff.lim.sim = 2,
                  sigma = 0.1, filt = NULL)
 }
 
 \arguments{
- \item{a, initial}{
+ \item{com, initial}{
 Starting community. It is in principle a three-column matrix or data frame including individual ID, species names and trait values. For strictly neutral dynamics, can be a vector of individual species names.
 }
  \item{prob, prob.of.immigrate, prob.of.mutate}{

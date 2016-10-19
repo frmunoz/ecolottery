@@ -1,5 +1,6 @@
 \name{coalesc}
 \alias{coalesc}
+\alias{.coalesc}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Coalescent-based simulation of ecological communities undergoing both neutral and niche-base dynamics
