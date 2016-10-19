@@ -5,7 +5,7 @@ exportPattern("^[^\\.]")
 importFrom("grDevices", "rgb")
 importFrom("graphics", "abline", "plot")
 importFrom("stats", "dist", "rmultinom", "rnorm", "runif")
-importFrom("ggplot2", "aes", "geom_density", "ggplot", "ggtitle",
+importFrom("ggplot2", "aes_string", "geom_density", "ggplot", "ggtitle",
            "scale_fill_manual")
 # Registered S3 methods
 #S3method(barplot, Tstats)
