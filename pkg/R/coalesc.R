@@ -10,8 +10,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   ## Create the regional pool if not provided
   
   if (is.null(pool)) {
-    if(m == 1 & is.null(filt)) pool_size <- J # In this case, directly simulates a sample from the pool of size J
-    else  pool_size <- Jpool # Total number of individuals in the pool
+    # If m = 1 and no environmental filtering, directly simulates a sample from the pool of size J
+    if(m == 1 & is.null(filt)) pool_size <- J else  pool_size <- Jpool
     ind_pool_lab <- 1:pool_size  # Labels of individuals
     ind_pool_sp <- array(NA, c(pool_size, 1))  # Species labels
     if(is.null(traits)) ind_pool_traits <- array(NA, c(pool_size, 1)) else ind_pool_traits <- array(NA, c(pool_size, ncol(traits)))
@@ -25,20 +25,20 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
     unassign_pool <- which(Y > R_pool)
     
     ind_pool_sp[assign_pool] <- 1:length(assign_pool)  # Set species number
-    if(is.null(traits)) ind_pool_traits[assign_pool,1] <- runif(length(assign_pool))  # Compute Trait
-    else ind_pool_traits[assign_pool,] <- traits[1:length(assign_pool),]
+    if(is.null(traits)) {
+      ind_pool_traits[assign_pool,1] <- runif(length(assign_pool))  # Compute Trait
+    } else ind_pool_traits[assign_pool,] <- traits[1:length(assign_pool),]
 
     # For all individuals without an assigned species
     for (j in 1:length(unassign_pool)) {
       # Select randomly a previously assigned individual
-      existing_sp <- sample.int(unassign_pool[j] - 1, 1) # existing_sp <- sample(assign_pool, 1)
+      existing_sp <- sample.int(unassign_pool[j] - 1, 1)
       ind_pool_sp[unassign_pool[j]] <- ind_pool_sp[existing_sp]  # Assign species of previously assigned individual
       ind_pool_traits[unassign_pool[j],] <- ind_pool_traits[existing_sp,]  # Assign species trait
     }
     if(!is.null(traits)) colnames(ind_pool_traits) <- colnames(traits) else colnames(ind_pool_traits) <- paste("tra",1:ncol(ind_pool_traits),sep="")
     if(m==1 & is.null(filt)) return(list(pool = data.frame(ind=ind_pool_lab, sp=ind_pool_sp, ind_pool_traits)))
-  } 
-  else 
+  } else 
   { 
     if (ncol(pool) < 2) stop("The regional pool is misdefined (two columns required)")
     ind_pool_lab <- pool[,1]; ind_pool_sp <- pool[,2]
@@ -90,24 +90,19 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   ind_com_sp <- array(NA, J)
   ind_com_sp[assign_com] <- pool[migrants[1:com_species], 2] # Assign species
   
-  ind_com_traits <- matrix(NA,c(J,ncol(ind_pool_traits)))
+  ind_com_traits <- matrix(NA,nrow=J,ncol=ncol(ind_pool_traits))
   ind_com_traits[assign_com,] <- apply(ind_pool_traits,2,function(y) y[migrants[1:com_species]]) # Assign traits
   colnames(ind_com_traits) <- colnames(ind_pool_traits)
  
   if (!is.null(unassign_com)) {
     for (j in 1:length(unassign_com)) {
-      if (j > 1) {
-        if (!is.na(ind_com_lab[unassign_com[j]])) stop("Error in the assignation of ancestors")
-        existing_sp <- sample(c(assign_com[assign_com < unassign_com[j]], unassign_com[1:(j - 1)]), 1)
-      }
-      else {
-        existing_sp <- sample(assign_com[assign_com < unassign_com[j]], 1)
-      }
+    existing_sp <- sample.int(unassign_com[j] - 1, 1)
     ind_com_lab[unassign_com[j]] <- ind_com_lab[existing_sp]
     ind_com_sp[unassign_com[j]] <- ind_com_sp[existing_sp]
     ind_com_traits[unassign_com[j],] <- ind_com_traits[existing_sp,]
     }
   }
+  if(any(is.na(ind_com_lab))) stop("NA in simulated community") # For debug only
     
   com <- data.frame(ind=ind_com_lab, sp=ind_com_sp, ind_com_traits)
   
@@ -135,15 +130,11 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   ind_com_lab[assign_com] <- pool[migrants[1:com_species], 1] # Assign individuals
   ind_com_sp <- array(NA, J)
   ind_com_sp[assign_com] <- pool[migrants[1:com_species], 2] # Assign species
-  ind_com_traits <- matrix(NA,c(J,ncol(data.frame(pool[,-(1:2)]))))
+  ind_com_traits <- matrix(NA,nrow=J,ncol=ncol(data.frame(pool[,-(1:2)])))
   ind_com_traits[assign_com,] <- apply(data.frame(pool[,-(1:2)]),2,function(y) y[migrants[1:com_species]]) # Assign traits
   if (!is.null(unassign_com)) {
     for (j in 1:length(unassign_com)) {
-        if (j > 1) {
-          if (!is.na(ind_com_lab[unassign_com[j]])) stop("Error in the assignation of ancestors")
-          existing_sp <- sample(c(assign_com[assign_com < unassign_com[j]], unassign_com[1:(j - 1)]), 1)
-        }
-        else existing_sp <- sample(assign_com[assign_com < unassign_com[j]], 1)
+        existing_sp <- sample.int(unassign_com[j] - 1, 1)
         ind_com_lab[unassign_com[j]] <- ind_com_lab[existing_sp]
         ind_com_sp[unassign_com[j]] <- ind_com_sp[existing_sp]
         ind_com_traits[unassign_com[j], ] <- ind_com_traits[existing_sp, ]
