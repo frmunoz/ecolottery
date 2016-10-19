@@ -2,6 +2,11 @@ exportPattern("^[^\\.]")
 
 ## Import all packages listed as Imports or Depends
 
+importFrom("grDevices", "rgb")
+importFrom("graphics", "abline", "plot")
+importFrom("stats", "dist", "rmultinom", "rnorm", "runif")
+importFrom("ggplot2", "aes", "geom_density", "ggplot", "ggtitle",
+           "scale_fill_manual")
 # Registered S3 methods
 #S3method(barplot, Tstats)
 #S3method(summary, Tstats)

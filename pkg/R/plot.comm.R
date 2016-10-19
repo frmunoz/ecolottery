@@ -8,7 +8,6 @@ plot.comm <- function(x, type = "trait", seltrait = 1, main = NULL)
   switch(type,
     "trait" =
      {
-       require(ggplot2)
        # Color vectors
        metaCol <- rgb(1,0,0,0.2)
        localCol <- rgb(0,0,1,0.2)

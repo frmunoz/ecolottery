@@ -8,6 +8,10 @@ Maintainer: <francois.munoz@cirad.fr>
 Depends:
     R (>= 3.0.2),
 Imports:
+    stats,
+    graphics,
+    ggplot2,
+    grDevices
 Suggests:
     vegan,
     knitr,
