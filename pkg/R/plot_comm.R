@@ -26,13 +26,9 @@ plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL)
        # Compute community and regional pool abundances by species
        ab <- abund(x) 
        
-       # Compute relative abundances
-       regional_rel_abund = ab$pool[names(ab$com)]/sum(ab$pool)
-       local_rel_abund    = ab$com/sum(ab$com)
-       
        # Plot graphics
-       plot(regional_rel_abund,
-            local_rel_abund,
+       plot(ab$pool[rownames(ab$com),"relab"],
+            ab$com$relab,
             main = main,
             xlab = "Regional abundance",
             ylab = "Local abundance",
