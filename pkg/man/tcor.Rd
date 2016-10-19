@@ -8,7 +8,7 @@
 Create two random vectors of traits correlated between each other or a vector of traits correlated to an existing one. The strength of the correlation is defined by the parameter \code{rho}
 }
 \usage{
-tcor(n, rho = 0.5, x = NULL, mar.fun = rnorm, ...)
+tcor(n, rho = 0.5, mar.fun = rnorm, x = NULL, ...)
 }
 \arguments{
  \item{n}{
@@ -24,6 +24,9 @@ tcor(n, rho = 0.5, x = NULL, mar.fun = rnorm, ...)
  \item{mar.fun}{
  a function giving the random generation of the trait distribution, uses \code{rnorm}
  by default
+ }
+ \item{...}{
+  other arguments needed by \code{mar.fun} function
  }
 }
 \details{
