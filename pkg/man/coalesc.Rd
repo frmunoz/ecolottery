@@ -1,6 +1,6 @@
 \name{coalesc}
 \alias{coalesc}
-\alias{.coalesc}
+\alias{coalesc_simp}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Coalescent-based simulation of ecological communities undergoing both neutral and niche-base dynamics
@@ -10,7 +10,7 @@ Simulates the composition of a community based on immigration from a regional po
 }
 \usage{
 coalesc(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = NULL, Jpool = 50 * J)
-.coalesc(J, m = 1)
+coalesc_simp(J, m = 1)
 }
 \arguments{
  \item{J}{
