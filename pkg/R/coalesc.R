@@ -4,6 +4,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   
   if (!is.null(traits) & is.null(colnames(traits))) colnames(traits) <- paste("tra",1:ncol(traits),sep="")
   if (!is.null(pool) & is.null(colnames(pool))) if (ncol(pool)>2) colnames(pool) <- c("ind","sp",paste("tra",1:(ncol(pool)-2),sep=""))
+  
+  if (is.null(theta) & is.null(pool)) stop("You must either provide regional pool composition or theta value")
     
   ## Create the regional pool if not provided
   
