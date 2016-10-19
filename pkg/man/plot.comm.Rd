@@ -1,5 +1,5 @@
-\name{plot.comm}
-\alias{plot.comm}
+\name{plot_comm}
+\alias{plot_comm}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
   Regional vs. Local trait distrbutions of Regional vs. Local Abundances
@@ -11,7 +11,7 @@
   To be used on the output of \code{coalesc()} or \code{forward()} functions.
 }
 \usage{
-plot.comm(x, type = "trait", seltrait = 1, main = NULL)
+plot_comm(x, type = "trait", seltrait = 1, main = NULL)
 }
 \arguments{
  \item{x}{
@@ -41,11 +41,11 @@ François Munoz
 # Simulation of a neutral community including 100 individuals
 J <- 500; theta <- 50; m <- 0.1;
 comm1 <- coalesc(J, m, theta) 
-plot.comm(comm1)
+plot_comm(comm1)
 
 # Stabilizing habitat filtering around t = 0.5
 comm2 <- coalesc(J, m, theta, filt = function(x) 0.5 - abs(0.5 - x))
-plot.comm(comm2)
+plot_comm(comm2)
 }
 
 \keyword{trait distribution}

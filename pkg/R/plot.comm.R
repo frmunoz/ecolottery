@@ -1,7 +1,7 @@
 # Function to show the distribution of trait in the community vs. distribution
 # of trait in the regional pool, or the abundances in the local community vs.
 # in the regional pool.
-plot.comm <- function(x, type = "trait", seltrait = 1, main = NULL) 
+plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL) 
 # x should be the output of coalesc or forward
 # seltrait is the index of the trait to be plotted (in case of multiple traits)
 {
@@ -16,8 +16,8 @@ plot.comm <- function(x, type = "trait", seltrait = 1, main = NULL)
          level = c(rep("pool", nrow(x$pool)), rep("comm", nrow(x$com))),
          trait = c(x$pool[, seltrait + 2], x$com[, seltrait + 2]))
        # Plot
-       ggplot(data, aes(trait), main = main) +
-         geom_density(aes(group = level, fill = level), alpha = 0.5) +
+       ggplot(data, aes_string(x = "trait"), main = main) +
+         geom_density(aes_string(group = "level", fill = "level"), alpha = 0.5) +
          scale_fill_manual(values = c("pool" = metaCol, "comm" = localCol)) +
          ggtitle(main)
      },
