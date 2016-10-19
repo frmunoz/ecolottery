@@ -6,7 +6,7 @@
 }
 \description{
   If type = "trait", the function provides density plots of the trait or abundance distributions in the regional pool and in a local community.
-  If type = "abund", the function displays the relationship between regional and local species abundances.
+  If type = "abund", the function displays the relationship between regional and local species relative abundances.
   Default type is "trait".
   To be used on the output of \code{coalesc()} or \code{forward()} functions.
 }
@@ -31,7 +31,7 @@ A title to add on the plot
 This generic function should be improved in the future for additional options of graphical display
 }
 \value{
-Return two stacked density plots
+Return two stacked density plots if type = "trait" and a biplot if type = "abund".
 }
 \author{
 François Munoz
