@@ -38,7 +38,6 @@ J <- 500; theta <- 50; m <- 0.05;
 comm1a <- coalesc(J, m, theta) 
 abund1a <- abund(comm1a) 
 # Log-series distribution of regional abundances
-<<<<<<< HEAD
 plot(fisherfit(abund1a$pool))
 
 # Relationship between local and regional abundances
@@ -54,7 +53,8 @@ plot(abund1a$pool[names(abund1a$com)]/(50*J),
 abline(0,1)
 
 # With higher immigration rate
-m <- 0.95; comm1b <- coalesc(J, m, theta) 
+m <- 0.95
+comm1b <- coalesc(J, m, theta) 
 abund1b <- abund(comm1b) 
 
 plot(abund1b$pool[names(abund1b$com)]/(50*J),
@@ -65,18 +65,6 @@ plot(abund1b$pool[names(abund1b$com)]/(50*J),
   log="xy")
 
 abline(0,1)
-=======
-require(vegan)
-plot(fisherfit(abund1a$reg$ab))
-
-# Relationship between local and regional abundances
-par(mfrow=c(1,2))
-plot(abund1a$reg$abrel[abund1a$loc$sp],abund1a$loc$abrel,main="m = 0.1",xlab="Regional abundance", ylab="Local abundance",log="xy"); abline(0,1)
-# With higher immigration rate
-m <- 0.95; comm1b <- coalesc(J, m, theta) 
-abund1b <- abund(comm1b) 
-plot(abund1b$reg$abrel[abund1b$loc$sp],abund1b$loc$abrel,main="m = 0.1",xlab="Regional abundance", ylab="Local abundance",log="xy"); abline(0,1)
->>>>>>> master
 }
 
 \keyword{species abundance distribution}
