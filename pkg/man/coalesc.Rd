@@ -9,6 +9,7 @@ Simulates the composition of a community based on immigration from a regional po
 }
 \usage{
 coalesc(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = NULL, Jpool = 50 * J)
+.coalesc(J, m = 1)
 }
 \arguments{
  \item{J}{
@@ -35,6 +36,7 @@ If pool = NULL, represents the number of individuals to be simulated in the regi
 }
 \details{
 Coalescent-based simulation of a community of size J. This generic function can simulate a neutral community (if filt=NULL) or a community undergoing both neutral and niche-based dynamics. In the later case, filt(t) represents the relative ability of immigrants with trait values t in the regional pool to enter the community.
+.coalesc is a simplified version of coalesc to increase speed in intensive calculations.
 }
 \value{
 \item{com}{
