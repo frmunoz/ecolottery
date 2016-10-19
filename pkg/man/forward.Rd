@@ -112,7 +112,7 @@ next speciation event.
 For neutral dynamics, S. P. Hubbell 2001. "The Unified Neutral Theory of Biodiversity". Princeton University Press. 
 }
 \author{
-Fran\c{c}ois Munoz, derived from the untb function of Robin K. S. Hankin
+F. Munoz, derived from the untb function of R. Hankin
 }
 
 
