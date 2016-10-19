@@ -16,10 +16,21 @@ plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL)
          level = c(rep("pool", nrow(x$pool)), rep("comm", nrow(x$com))),
          trait = c(x$pool[, seltrait + 2], x$com[, seltrait + 2]))
        # Plot
-       ggplot(data, aes_string(x = "trait"), main = main) +
+       if (requireNamespace("ggplot2", quietly = TRUE)) {
+         ggplot2::ggplot(data, aes_string(x = "trait"), main = main) +
          geom_density(aes_string(group = "level", fill = "level"), alpha = 0.5) +
          scale_fill_manual(values = c("pool" = metaCol, "comm" = localCol)) +
          ggtitle(main)
+       } else {
+         tmin <- min(c(x$pool[, seltrait + 2],x$com[, seltrait + 2]))
+         tmax <- max(c(x$pool[, seltrait + 2],x$com[, seltrait + 2]))
+         h1 <- hist(x$pool[, seltrait + 2], plot=F, breaks = 10)
+         h1$density=h1$counts/sum(h1$counts)*100
+         h2 <- hist(x$com[, seltrait + 2], plot=F, breaks = 10)
+         h2$density=h2$counts/sum(h2$counts)*100
+         plot(h1, xlim=c(0.9*tmin,1.1*tmax), ylim=c(0,max(c(h1$density, h2$density))), main=main, xlab="trait", col=metaCol, freq=F)
+         plot(h2, col=localCol, add=T, freq=F)
+      }
      },
     "abund" =
      {
