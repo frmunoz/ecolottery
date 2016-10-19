@@ -34,7 +34,7 @@ This generic function should be improved in the future for additional options of
 Return two stacked density plots if type = "trait" and a biplot if type = "abund".
 }
 \author{
-François Munoz
+Fran\c{c}ois Munoz
 }
 
 \examples{
