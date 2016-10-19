@@ -30,7 +30,7 @@ Species abundances and relative abundances in the local community
 }
 }
 \author{
-François Munoz
+Fran\c{c}ois Munoz
 }
 
 \examples{
