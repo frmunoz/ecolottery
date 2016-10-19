@@ -84,11 +84,14 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   
   migrants <- sample(1:nrow(pool), com_species, prob = env_filter(ind_pool_traits))
   
-  ind_com_lab <- pool[migrants[1:J], 1] # Assign individuals
+  ind_com_lab <- array(NA, J)
+  ind_com_lab[assign_com] <- pool[migrants[1:com_species], 1] # Assign individuals
   
-  ind_com_sp <- pool[migrants[1:J], 2] # Assign species
+  ind_com_sp <- array(NA, J)
+  ind_com_sp[assign_com] <- pool[migrants[1:com_species], 2] # Assign species
   
-  ind_com_traits <- data.frame(apply(ind_pool_traits,2,function(y) y[migrants[1:J]])) # Assign traits
+  ind_com_traits <- matrix(NA,c(J,ncol(ind_pool_traits)))
+  ind_com_traits[assign_com,] <- apply(ind_pool_traits,2,function(y) y[migrants[1:com_species]]) # Assign traits
   colnames(ind_com_traits) <- colnames(ind_pool_traits)
  
   if (!is.null(unassign_com)) {
@@ -128,9 +131,12 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   }
   com_species <- length(assign_com)
   migrants <- sample(1:nrow(pool), com_species, prob = filt(data.frame(pool[,-(1:2)])))
-  ind_com_lab <- pool[migrants[1:J], 1] # Assign individuals
-  ind_com_sp <- pool[migrants[1:J], 2] # Assign species
-  ind_com_traits <- data.frame(apply(data.frame(pool[,-(1:2)]),2,function(y) y[migrants[1:J]])) # Assign traits
+  ind_com_lab <- array(NA, J)
+  ind_com_lab[assign_com] <- pool[migrants[1:com_species], 1] # Assign individuals
+  ind_com_sp <- array(NA, J)
+  ind_com_sp[assign_com] <- pool[migrants[1:com_species], 2] # Assign species
+  ind_com_traits <- matrix(NA,c(J,ncol(data.frame(pool[,-(1:2)]))))
+  ind_com_traits[assign_com,] <- apply(data.frame(pool[,-(1:2)]),2,function(y) y[migrants[1:com_species]]) # Assign traits
   if (!is.null(unassign_com)) {
     for (j in 1:length(unassign_com)) {
         if (j > 1) {
