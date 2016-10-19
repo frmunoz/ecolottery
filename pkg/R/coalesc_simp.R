@@ -1,5 +1,5 @@
 # Simplified version of coalesc for faster computation in intensive calculations
-.coalesc <- function (J, m = 1) 
+coalesc_simp <- function (J, m = 1) 
 {
   if (m < 1)
   {
