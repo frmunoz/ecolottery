@@ -144,7 +144,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
         limit.sim.t <- c(limit.sim.t, next_comm$limit.sim.t)
       }
       new.index <- next_comm$new.index
-      next_comm <- next_comm$a
+      next_comm <- next_comm$com
     } 
     
     return(list(com_t = comm_through_time,
