@@ -43,10 +43,9 @@
   }
   \item{pkg}{
     The packages that need to be loaded for calculation of filt.abc and/or f.sumstats.
-      }
+  }
   \item{method}{
     The method to be used in ABC estimation (see help on abc function for further information).
-    }
   }
 }
 \details{
