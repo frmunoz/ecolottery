@@ -5,23 +5,23 @@
   Estimation of neutral and non-neutral parameters of community assembly using Approximate Bayesian Computation (ABC)
 }
 \description{
-  Estimates parameters of neutral migration-drift dynamics (through migration rate \it{m} and parameters of environmental filtering (through a filtering function \it{filt.abc}) from the composition of a local community and the related regional pool. 
+  Estimates parameters of neutral migration-drift dynamics (through migration rate m and parameters of environmental filtering (through a filtering function \it{filt.abc}) from the composition of a local community and the related regional pool. 
 }
 \usage{
   coalesc_abc(comm.obs, pool, multi = F, traits = NULL, f.sumstats, filt.abc, params, nb.samp = 10^6, parallel = T, tol = 1*10^-4, pkg = NULL, method="neuralnet")
 }
 \arguments{
   \item{comm.obs}{
-    The observed community composition. If multi = F (defauly), should be a matrix of individuals on rows with their individual id (first column), and species id (second column).
+    The observed community composition. If multi = F (default), should be a matrix of individuals on rows with their individual id (first column), and species id (second column).
   }
   \item{pool}{
     Composition of the regional pool to which the local community is hypothesized to be related through migration dynamics with possible environmental filtering. Should be a matrix of individuals on rows with their individual id (first column), species id (second column), and (optionnally) the trait values of the individuals.
   }
   \item{multi}{
-  If TRUE, the user provides in \it{comm.obs} multiple community data, i.e., the first column of comm.obs includes community number, the second column the individual id and the third the species id.
+  If TRUE, the user provides in comm.obs multiple community data, i.e., the first column of comm.obs includes community number, the second column the individual id and the third the species id.
   }
   \item{traits}{
-    The trait values of species in the regional pool. It is used if trait information is not provided in \it{pool}. In this case, intraspecific trait variation is assumed to be null.
+    The trait values of species in the regional pool. It is used if trait information is not provided in pool. In this case, intraspecific trait variation is assumed to be null.
   }
   \item{f.sumstats}{
     A function allowing to calculate the summary statistics of local community composition. Will be used to compare observed and simulated community composition in the ABC estimation.
@@ -30,21 +30,21 @@
     The hypothesized environmental filtering function. It is a function of individual trait values and additional parameters to be estimated.
   }
   \item{params}{
-    A matrix of the bounds of the parameters used in \it{filt.abc}. The row names of \it{params} provide the parameter names used in ABC calculation and output.
+    A matrix of the bounds of the parameters used in filt.abc. The row names of params provide the parameter names used in ABC calculation and output.
   }
   \item{nb.samp}{
     The number of parameter values to be sampled in ABC calculation. Random values of parameters of environmental filtering (see \it{filt.abc} and \it{params}) and of migration (denoted as \it{m}) are drawn from a uniform distribution between minimum and maximum values provided in \it{params} (and between 0 and 1 for \it{m}).
   \item{parallel}{
-    If TRUE, the function will perform parallel processing using the \it{parLapply} function of package \it{parallel}.
+    If TRUE, the function will perform parallel processing using the parLapply function of package parallel.
   }
   \item{tol}{
-    The tolerance value used in ABC estimation (see help on \it{abc} function for further information).
+    The tolerance value used in ABC estimation (see help on abc function for further information).
   }
   \item{pkg}{
-    The packages that need to be loaded for calculation of \it{filt.abc} and/or \it{f.sumstats}.
+    The packages that need to be loaded for calculation of filt.abc and/or f.sumstats.
       }
   \item{method}{
-    The method to be used in ABC estimation (see help on \it{abc} function for further information).
+    The method to be used in ABC estimation (see help on abc function for further information).
     }
   }
 }
@@ -56,10 +56,10 @@ The ABC estimation is performed for one (if multi = F, default) or several commu
     The parameter values used in simulations.
   }
   \item{par}{
-    Summary statistics of the communities simulated with parameter values listed in \it{par}.
+    Summary statistics of the communities simulated with parameter values listed in par.
   }
   \item{abc}{
-    A single (if multi = F) or a list of \it{abc} objects including ABC estimation information for each community provided in input (comm.obs).
+    A single (if multi = F) or a list of abc objects including ABC estimation information for each community provided in input (comm.obs).
   }
 }
 \references{
