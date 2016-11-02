@@ -42,6 +42,7 @@
   }
   \item{pkg}{
     The packages that need to be loaded for calculation of \it{filt.abc} and/or \it{f.sumstats}.
+      }
   \item{method}{
     The method to be used in ABC estimation (see help on \it{abc} function for further information).
     }
