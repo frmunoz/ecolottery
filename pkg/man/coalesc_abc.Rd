@@ -33,7 +33,7 @@
     A matrix of the bounds of the parameters used in filt.abc. The row names of params provide the parameter names used in ABC calculation and output.
   }
   \item{nb.samp}{
-    The number of parameter values to be sampled in ABC calculation. Random values of parameters of environmental filtering (see filt.abc and params) and of migration (denoted as m) are drawn from a uniform distribution between minimum and maximum values provided in \it{params} (and between 0 and 1 for \it{m}).
+    The number of parameter values to be sampled in ABC calculation. Random values of parameters of environmental filtering (see filt.abc and params) and of migration (denoted as m) are drawn from a uniform distribution between minimum and maximum values provided in params (and between 0 and 1 for m).
   \item{parallel}{
     If TRUE, the function will perform parallel processing using the parLapply function of package parallel.
   }
