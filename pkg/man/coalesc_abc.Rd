@@ -5,7 +5,7 @@
   Estimation of neutral and non-neutral parameters of community assembly using Approximate Bayesian Computation (ABC)
 }
 \description{
-  Estimates parameters of neutral migration-drift dynamics (through migration rate m and parameters of environmental filtering (through a filtering function \it{filt.abc}) from the composition of a local community and the related regional pool. 
+  Estimates parameters of neutral migration-drift dynamics (through migration rate m and parameters of environmental filtering (through a filtering function filt.abc) from the composition of a local community and the related regional pool. 
 }
 \usage{
   coalesc_abc(comm.obs, pool, multi = F, traits = NULL, f.sumstats, filt.abc, params, nb.samp = 10^6, parallel = T, tol = 1*10^-4, pkg = NULL, method="neuralnet")
@@ -33,7 +33,7 @@
     A matrix of the bounds of the parameters used in filt.abc. The row names of params provide the parameter names used in ABC calculation and output.
   }
   \item{nb.samp}{
-    The number of parameter values to be sampled in ABC calculation. Random values of parameters of environmental filtering (see \it{filt.abc} and \it{params}) and of migration (denoted as \it{m}) are drawn from a uniform distribution between minimum and maximum values provided in \it{params} (and between 0 and 1 for \it{m}).
+    The number of parameter values to be sampled in ABC calculation. Random values of parameters of environmental filtering (see filt.abc and params) and of migration (denoted as m) are drawn from a uniform distribution between minimum and maximum values provided in \it{params} (and between 0 and 1 for \it{m}).
   \item{parallel}{
     If TRUE, the function will perform parallel processing using the parLapply function of package parallel.
   }
