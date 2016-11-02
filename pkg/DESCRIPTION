@@ -11,7 +11,8 @@ Imports:
     stats,
     graphics,
     ggplot2,
-    grDevices
+    grDevices,
+    parallel
 Suggests:
     vegan,
     knitr,
