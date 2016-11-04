@@ -9,8 +9,10 @@
   Estimates parameters of neutral migration-drift dynamics (through migration rate m and parameters of environmental filtering (through a filtering function filt.abc) from the composition of a local community and the related regional pool. 
 }
 \usage{
-  coalesc_abc(comm.obs, pool, multi = F, traits = NULL, f.sumstats, filt.abc, params, nb.samp = 10^6, parallel = T, tol = 1*10^-4, pkg = NULL, method="neuralnet")
-  do.simul(J, pool, traits = NULL, f.sumstats, filt.abc, params, nb.samp = 10^6, parallel = T, tol = 1*10^-4, pkg = NULL, method = "neuralnet")
+  coalesc_abc(comm.obs, pool, multi = F, traits = NULL, f.sumstats, filt.abc, params, nb.samp = 10^6, parallel = T, tol = 1*10^-4,
+              pkg = NULL, method="neuralnet")
+  do.simul(J, pool, traits = NULL, f.sumstats, filt.abc, params, nb.samp = 10^6, parallel = T, tol = 1*10^-4, pkg = NULL, 
+           method = "neuralnet")
 }
 \arguments{
   \item{comm.obs}{
@@ -104,8 +106,8 @@ f.sumstats <- function(com,t) array(dimnames=list(c("cwm","cwv","cws","cwk","S",
 comm <- coalesc(J = 400, m = 0.5, theta = 50, filt = function(x) filt_gaussian(x,c(0.2,0.1)))
 
 # ABC estimation of the parameters based on observed community composition
-res <- coalesc_abc(comm$com, comm$pool, f.sumstats=f.sumstats, filt.abc=filt_gaussian, params=params,
-                   nb.samp = nb.samp, parallel = T, pkg =c("e1071","vegan"))
+res <- coalesc_abc(comm$com, comm$pool, f.sumstats=f.sumstats, filt.abc=filt_gaussian, 
+                   params=params, nb.samp = nb.samp, parallel = T, pkg =c("e1071","vegan"))
 plot(res$abc,param=res$par)
 hist(res$abc)
 
@@ -117,8 +119,8 @@ comm.obs <- rbind(comm.obs,cbind(rep(2,400),as.matrix(coalesc(J = 400, m = 0.5, 
   filt_gaussian(x,c(0.5,0.1)),pool=comm$pool)$com)))
 comm.obs <- rbind(comm.obs,cbind(rep(3,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) 
   filt_gaussian(x,c(0.8,0.1)),pool=comm$pool)$com)))
-res <- coalesc_abc(comm.obs, comm$pool, multi=T, f.sumstats=f.sumstats, filt.abc=filt_gaussian, params=params,
-                   nb.samp = nb.samp, parallel = T, pkg =c("e1071","vegan"))
+res <- coalesc_abc(comm.obs, comm$pool, multi=T, f.sumstats=f.sumstats, filt.abc=filt_gaussian,
+                   params=params, nb.samp = nb.samp, parallel = T, pkg =c("e1071","vegan"))
 summary(res$abc[[1]])
 summary(res$abc[[2]])
 summary(res$abc[[3]])
