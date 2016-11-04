@@ -7,6 +7,7 @@ importFrom("graphics", "abline", "plot", "hist")
 importFrom("stats", "dist", "rmultinom", "rnorm", "runif")
 importFrom("abc", "abc")
 importFrom("parallel", "parLapply")
+importFrom("stats", "var")
 
 # Registered S3 methods
 #S3method(barplot, Tstats)
