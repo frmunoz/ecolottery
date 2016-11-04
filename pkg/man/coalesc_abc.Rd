@@ -97,10 +97,10 @@ nb.samp <- 10^6; # Should be large
 # Basic summary statistics
 f.sumstats <- function(com,t) array(dimnames=list(c("cwm","cwv","cws","cwk","S","Es")),c(mean(t),
       var(t),
-      skewness(t),  
-      kurtosis(t),
-      specnumber(table(com)),
-      diversity(table(com))))
+      e1071::skewness(t),  
+      e1071::kurtosis(t),
+      vegan::specnumber(table(com)),
+      vegan::diversity(table(com))))
 
 # An observed community is here simulated (known parameters)
 comm <- coalesc(J = 400, m = 0.5, theta = 50, filt = function(x) filt_gaussian(x,c(0.2,0.1)))
