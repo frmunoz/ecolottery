@@ -85,7 +85,8 @@ do.simul <- function(J, pool, traits=NULL, f.sumstats, filt.abc, params, nb.samp
     }
     worker <- function(j) {
       require(lottery)
-      for(i in 1:length(pkg)) require(pkg[i],character.only=T)
+      # Other required packages
+      for(i in 1:length(pkg)) if (!requireNamespace(pkg[i], quietly = TRUE)) stop(paste("Package ",pkg[i]," is not available",sep=""))
       summCalc(j,traits,prior,J,pool,filt.abc,f.sumstats)
     }
     return(worker)
