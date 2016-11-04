@@ -94,7 +94,7 @@ row.names(params) <- c("topt","sigmaopt")
 # Number of values to sample in prior distributions
 nb.samp <- 10^6; # Should be large
 
-## Not run:
+\dontrun{
 # Basic summary statistics
 f.sumstats <- function(com,t) array(dimnames=list(c("cwm","cwv","cws","cwk","S","Es")),c(mean(t),
       var(t),
@@ -125,7 +125,7 @@ res <- coalesc_abc(comm.obs, comm$pool, multi=T, f.sumstats=f.sumstats, filt.abc
 summary(res$abc[[1]])
 summary(res$abc[[2]])
 summary(res$abc[[3]])
-## End(Not run)
+}
 }
 
 \keyword{coalescent}
