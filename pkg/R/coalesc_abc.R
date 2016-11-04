@@ -4,7 +4,7 @@ coalesc_abc <- function(comm.obs, pool, multi = F, traits=NULL, f.sumstats, filt
   if (!requireNamespace("abc", quietly = TRUE))  stop("coalesc_abc requires package abc to be installed")
   
   # Other required packages
-  for(i in 1:length(pkg)) if (!requireNamespace(pkg[i], character.only=T, quietly = TRUE)) stop(paste("Package ",pkg[i]," is not available",sep=""))
+  for(i in 1:length(pkg)) if (!requireNamespace(pkg[i], quietly = TRUE)) stop(paste("Package ",pkg[i]," is not available",sep=""))
   
   # Community size
   if(!multi) J <- nrow(comm.obs) else if(var(tapply(comm.obs[,2],comm.obs[,1],length))==0) J <- mean(tapply(comm.obs[,2],comm.obs[,1],length)) else stop("multi option available with equal community sizes")
