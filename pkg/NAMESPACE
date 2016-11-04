@@ -5,6 +5,8 @@ exportPattern("^[^\\.]")
 importFrom("grDevices", "rgb")
 importFrom("graphics", "abline", "plot", "hist")
 importFrom("stats", "dist", "rmultinom", "rnorm", "runif")
+importFrom("abc", "abc")
+importFrom("parallel", "parLapply")
 
 # Registered S3 methods
 #S3method(barplot, Tstats)
