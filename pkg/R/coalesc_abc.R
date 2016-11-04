@@ -1,6 +1,10 @@
 coalesc_abc <- function(comm.obs, pool, multi = F, traits=NULL, f.sumstats, filt.abc, params, nb.samp = 10^6, parallel = T, tol = 1*10^-4, pkg = NULL, method="neuralnet")
 {
   if(is.null(pool)) stop("You must provide regional pool composition")
+  if (!requireNamespace("abc", quietly = TRUE))  stop("coalesc_abc requires package abc to be installed")
+  
+  # Other required packages
+  for(i in 1:length(pkg)) if (!requireNamespace(pkg[i], character.only=T, quietly = TRUE)) stop(paste("Package ",pkg[i]," is not available",sep=""))
   
   # Community size
   if(!multi) J <- nrow(comm.obs) else if(var(tapply(comm.obs[,2],comm.obs[,1],length))==0) J <- mean(tapply(comm.obs[,2],comm.obs[,1],length)) else stop("multi option available with equal community sizes")
@@ -8,9 +12,6 @@ coalesc_abc <- function(comm.obs, pool, multi = F, traits=NULL, f.sumstats, filt
   # Mean species traits
   if(ncol(pool)>=3) traits <- data.frame(apply(data.frame(pool[,-(1:2)]),2,function(x) tapply(x,pool[,2],mean))) else
   if(is.null(traits) & ncol(pool)<3) warning("Trait information is not provided")
-  
-  require(abc)
-  for(i in 1:length(pkg)) require(pkg[i],character.only=T)
   
   # Careful with species id
   if(multi) 
@@ -35,11 +36,11 @@ coalesc_abc <- function(comm.obs, pool, multi = F, traits=NULL, f.sumstats, filt
   for(i in unique(comm.obs[,1]))
   {
       stats.obs.scaled <- sapply(1:length(stats.obs[i,]), function(x) stats.obs[i,x]/max(abs(sim$stats[,x]),na.rm=T))
-      meta.abc[[i]] <- abc(target=stats.obs.scaled, param=sim$params.sim, sumstat=sim$stats.scaled,tol=max(1.1/nrow(sim$stats.scaled),tol),method=method)
+      meta.abc[[i]] <- abc::abc(target=stats.obs.scaled, param=sim$params.sim, sumstat=sim$stats.scaled,tol=max(1.1/nrow(sim$stats.scaled),tol),method=method)
   } else
   {
     stats.obs.scaled <- sapply(1:length(stats.obs), function(x) stats.obs[x]/max(abs(sim$stats[,x]),na.rm=T))
-    meta.abc <- abc(target=stats.obs.scaled, param=sim$params.sim, sumstat=sim$stats.scaled,tol=max(1.1/nrow(sim$stats.scaled),tol),method=method)
+    meta.abc <- abc::abc(target=stats.obs.scaled, param=sim$params.sim, sumstat=sim$stats.scaled,tol=max(1.1/nrow(sim$stats.scaled),tol),method=method)
   }
   
   return(list(par=sim$params.sim,ss=sim$stats.scaled,abc=meta.abc))
@@ -47,9 +48,14 @@ coalesc_abc <- function(comm.obs, pool, multi = F, traits=NULL, f.sumstats, filt
 
 do.simul <- function(J, pool, traits=NULL, f.sumstats, filt.abc, params, nb.samp = 10^6, parallel = T, tol = 1*10^-4, pkg = NULL, method="neuralnet")
 {
+  if (!requireNamespace("parallel", quietly = TRUE) & parallel)  
+  {
+    warning("parallel = T requires package parallel to be installed; change to parallel = F")
+    parallel <- F
+  }
+  
   if(parallel)
   {
-    require(parallel)
     # Start up a parallel cluster
     parallelCluster <- parallel::makeCluster(max(1,parallel::detectCores()-1))
   }
