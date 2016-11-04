@@ -96,16 +96,21 @@ f.sumstats <- function(com,t) array(dimnames=list(c("cwm","cwv","cws","cwk","S",
 comm <- coalesc(J = 400, m = 0.5, theta = 50, filt = function(x) filt_gaussian(x,c(0.2,0.1)))
 
 # ABC estimation of the parameters based on observed community composition
-res <- coalesc_abc(comm$com, comm$pool, f.sumstats=f.sumstats, filt.abc=filt_gaussian, params=params, nb.samp = nb.samp, parallel = T, pkg =c("e1071","vegan"))
+res <- coalesc_abc(comm$com, comm$pool, f.sumstats=f.sumstats, filt.abc=filt_gaussian, params=params,
+                   nb.samp = nb.samp, parallel = T, pkg =c("e1071","vegan"))
 plot(res$abc,param=res$par)
 hist(res$abc)
 
 # Multiple community option
 comm.obs <- c();
-comm.obs <- rbind(comm.obs,cbind(rep(1,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) filt_gaussian(x,c(0.2,0.1)),pool=comm$pool)$com)))
-comm.obs <- rbind(comm.obs,cbind(rep(2,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) filt_gaussian(x,c(0.5,0.1)),pool=comm$pool)$com)))
-comm.obs <- rbind(comm.obs,cbind(rep(3,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) filt_gaussian(x,c(0.8,0.1)),pool=comm$pool)$com)))
-res <- coalesc_abc(comm.obs, comm$pool, multi=T, f.sumstats=f.sumstats, filt.abc=filt_gaussian, params=params, nb.samp = nb.samp, parallel = T, pkg =c("e1071","vegan"))
+comm.obs <- rbind(comm.obs,cbind(rep(1,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) 
+  filt_gaussian(x,c(0.2,0.1)),pool=comm$pool)$com)))
+comm.obs <- rbind(comm.obs,cbind(rep(2,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) 
+  filt_gaussian(x,c(0.5,0.1)),pool=comm$pool)$com)))
+comm.obs <- rbind(comm.obs,cbind(rep(3,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) 
+  filt_gaussian(x,c(0.8,0.1)),pool=comm$pool)$com)))
+res <- coalesc_abc(comm.obs, comm$pool, multi=T, f.sumstats=f.sumstats, filt.abc=filt_gaussian, params=params,
+                   nb.samp = nb.samp, parallel = T, pkg =c("e1071","vegan"))
 summary(res$abc[[1]])
 summary(res$abc[[2]])
 summary(res$abc[[3]])
