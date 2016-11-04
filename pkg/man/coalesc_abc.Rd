@@ -1,5 +1,6 @@
 \name{coalesc_abc}
 \alias{coalesc_abc}
+\alias{do.simul}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
   Estimation of neutral and non-neutral parameters of community assembly using Approximate Bayesian Computation (ABC)
@@ -9,6 +10,7 @@
 }
 \usage{
   coalesc_abc(comm.obs, pool, multi = F, traits = NULL, f.sumstats, filt.abc, params, nb.samp = 10^6, parallel = T, tol = 1*10^-4, pkg = NULL, method="neuralnet")
+  do.simul(J, pool, traits = NULL, f.sumstats, filt.abc, params, nb.samp = 10^6, parallel = T, tol = 1*10^-4, pkg = NULL, method = "neuralnet")
 }
 \arguments{
   \item{comm.obs}{
@@ -47,9 +49,15 @@
   \item{method}{
     The method to be used in ABC estimation (see help on abc function for further information).
   }
+  \item{J}{
+    Local community size.
+  }
 }
 \details{
-The ABC estimation is performed for one (if multi = F, default) or several communities (if multi = T) related to the same regional pool.
+coalesc_abc performes ABC estimation for one (if multi = F, default) or several communities (if multi = T) related to the same regional pool.
+
+do.simul provides the simulated communities used in ABC estimation, and is not intended to be used directly.
+
 }
 \value{
   \item{par}{
