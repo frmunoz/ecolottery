@@ -2,8 +2,8 @@ Package: lottery
 Type: Package
 Title: Coalescent-based simulation of ecological communities
 Version: 0.1
-Date: 2015-12-21
-Author: Francois Munoz and Adrien Taudiere
+Date: 2016-11-23
+Author: François Munoz, Adrien Taudière, Fabien Laroche, Matthias Grenié, Pierre Denelle, Caroline Tucker and Cyrille Violle
 Maintainer: <francois.munoz@cirad.fr>
 Depends:
     R (>= 3.0.2),
