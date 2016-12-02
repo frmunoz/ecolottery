@@ -2,7 +2,7 @@
 \alias{plot_comm}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-  Regional vs. Local trait distrbutions of Regional vs. Local Abundances
+  Regional vs. Local trait distributions of abundances
 }
 \description{
   If type = "trait", the function provides density plots of the trait or abundance distributions in the regional pool and in a local community.
@@ -15,16 +15,16 @@ plot_comm(x, type = "trait", seltrait = 1, main = NULL)
 }
 \arguments{
  \item{x}{
-A list including the species pool composition (\code{x$pool}) and the local community composition (\code{x$com})
+ a list including the species pool composition (\code{x$pool}) and the local community composition (\code{x$com}). For example, x may be the output of \code{coalesc()} or \code{forward()} functions.
 }
  \item{type}{
-If \code{"trait"}, the function displays density plots of trait distributions. If \code{"abund"}, it displays the relationship between local and regional abundances
+if \code{"trait"}, the function displays density plots of trait distributions. If \code{"abund"}, it displays the relationship between local and regional abundances.
 }
  \item{seltrait}{
-Index of the trait to be plotted (if multiple traits used in simulation)
+index of the trait to be plotted (if multiple traits used in simulation).
 }
  \item{main}{
-A title to add on the plot
+an overall title for the plot.
 }
 }
 \details{

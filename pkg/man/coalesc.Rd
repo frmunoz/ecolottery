@@ -14,38 +14,38 @@ coalesc_simp(J, m = 1)
 }
 \arguments{
  \item{J}{
-Number of individuals in the local community.
+number of individuals in the local community.
 }
  \item{m}{
-Migration rate (if m=1 the community is a subsample of the regional pool).
+migration rate (if m=1 the community is a subsample of the regional pool).
 }
  \item{theta}{
-Parameter of neutral dynamics in the regional pool (used only if pool=NULL).
+parameter of neutral dynamics in the regional pool (used only if \code{pool=NULL}).
 }
  \item{filt}{
-A function representing the effect of local habitat filtering. For a given trait value, t, filt(t) represents the probability that an individual with trait t enters the local community. If filt=NULL, the lottery function provides a neutral community.
+a function representing the effect of local habitat filtering. For a given trait value, t,\code{filt(t)} represents the probability that an individual with trait t enters the local community. If \code{filt=NULL},  \code{coalesc} provides a neutral community.
 }
  \item{pool}{
-The regional pool of species providing immigrants to the local community. It should include the label of individual on first column, and of its species on second column. If NULL, the pool is simulated as a metacommunity at speciation-drift equilibrium, based on parameter theta.
+the regional pool of species providing immigrants to the local community. It should include the label of individual on first column, and of its species on second column. If \code{pool=NULL}, the pool is simulated as a metacommunity at speciation-drift equilibrium, based on parameter \code{theta}.
 }
  \item{traits}{
-A matrix or data.frame including one or several traits on columns. In the present version of the function, a unique trait value is assigned to each species un the regional pool. If NULL, a random trait value is given to species of the regional pool, from a uniform distribution between 0 and 1.
+a matrix or data.frame including one or several traits on columns. A unique trait value is assigned to each species un the regional pool. If \code{traits=NULL}, a random trait value is given to species of the regional pool, from a uniform distribution between 0 and 1.
 }
  \item{Jpool}{
-If pool = NULL, represents the number of individuals to be simulated in the regional pool.
+if \code{pool = NULL}, represents the number of individuals to be simulated in the regional pool.
 }
 }
 \details{
-Coalescent-based simulation of a community of size J. This generic function can simulate a neutral community (if filt=NULL) or a community undergoing both neutral and niche-based dynamics. In the later case, filt(t) represents the relative ability of immigrants with trait values t in the regional pool to enter the community.
-.coalesc is a simplified version of coalesc to increase speed in intensive calculations.
+Coalescent-based simulation of a community of size J. This generic function can simulate a neutral community (if \code{filt=NULL}) or a community undergoing both neutral and niche-based dynamics. In the later case, \code{filt(t)} represents the relative ability of immigrants with trait values t in the regional pool to enter the community.
+\code{coalesc_simp} is a simplified version of coalesc to increase speed in intensive calculations.
 }
 \value{
 \item{com}{
-A matrix of simulated individuals, with the label of ancestor individual in the regional pool on first column (as in first column of pool), species label on second column (as in second column of pool), and species trait (as in third column of pool).
-Not provided if m=1 and filt=NULL: in this case the function provides a sample of the regional pool.
+a matrix of simulated individuals, with the label of ancestor individual in the regional pool on first column (as in first column of pool), species label on second column (as in second column of pool), and species trait (as in third column of pool).
+Not provided if \code{m=1} and \code{filt=NULL}: in this case the function provides a sample of the regional pool.
 }
 \item{pool}{
-A matrix of the individuals of the regional source pool, with the label of ancestor individual in the regional pool on first column (as in first column of pool), species label on second column (as in second column of pool), and species trait (as in third column of pool).
+a matrix of the individuals of the regional source pool, with the label of ancestor individual in the regional pool on first column (as in first column of \code{pool}), species label on second column (as in second column of \code{pool}), and species trait (as in third column of \code{pool}).
 }
 }
 \references{

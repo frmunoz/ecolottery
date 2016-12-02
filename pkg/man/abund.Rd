@@ -14,7 +14,7 @@ abund(x)
 }
 \arguments{
 \item{x}{
-A list including the species pool composition (\code{x$pool}) and the local
+a list including the species pool composition (\code{x$pool}) and the local
 community composition (\code{x$com})
 }
 }
@@ -23,10 +23,10 @@ This generic function should be improved in the future for additional options.
 }
 \value{
 \item{pool}{
-Species abundances and relative abundances in the regional pool
+species abundances and relative abundances in the regional pool
 }
 \item{com}{
-Species abundances and relative abundances in the local community
+species abundances and relative abundances in the local community
 }
 }
 \author{

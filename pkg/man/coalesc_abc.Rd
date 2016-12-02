@@ -18,60 +18,60 @@
 }
 \arguments{
   \item{comm.obs}{
-    The observed community composition. If multi = F (default), should be a matrix of individuals on rows with their individual id (first column), and species id (second column).
+    the observed community composition. If multi = \code{FALSE} (default), should be a matrix of individuals on rows with their individual id (first column), and species id (second column).
   }
   \item{pool}{
-    Composition of the regional pool to which the local community is hypothesized to be related through migration dynamics with possible environmental filtering. Should be a matrix of individuals on rows with their individual id (first column), species id (second column), and (optionnally) the trait values of the individuals.
+    composition of the regional pool to which the local community is hypothesized to be related through migration dynamics with possible environmental filtering. Should be a matrix of individuals on rows with their individual id (first column), species id (second column), and (optionnally) the trait values of the individuals.
   }
   \item{multi}{
-  If TRUE, the user provides in comm.obs multiple community data, i.e., the first column of comm.obs includes community number, the second column the individual id and the third the species id.
+  if \code{TRUE}, the user provides in comm.obs multiple community data, i.e., the first column of comm.obs includes community number, the second column the individual id and the third the species id.
   }
   \item{traits}{
-    The trait values of species in the regional pool. It is used if trait information is not provided in pool. In this case, intraspecific trait variation is assumed to be null.
+    the trait values of species in the regional pool. It is used if trait information is not provided in pool. In this case, intraspecific trait variation is assumed to be null.
   }
   \item{f.sumstats}{
-    A function allowing to calculate the summary statistics of local community composition. Will be used to compare observed and simulated community composition in the ABC estimation.
+    a function allowing to calculate the summary statistics of local community composition. Will be used to compare observed and simulated community composition in the ABC estimation.
   }
   \item{filt.abc}{
-    The hypothesized environmental filtering function. It is a function of individual trait values and additional parameters to be estimated.
+    the hypothesized environmental filtering function. It is a function of individual trait values and additional parameters to be estimated.
   }
   \item{params}{
-    A matrix of the bounds of the parameters used in filt.abc. The row names of params provide the parameter names used in ABC calculation and output.
+    a matrix of the bounds of the parameters used in \code{filt.abc}. The row names of \code{params} provide the parameter names used in ABC calculation and output.
   }
   \item{nb.samp}{
-    The number of parameter values to be sampled in ABC calculation. Random values of parameters of environmental filtering (see filt.abc and params) and of migration (denoted as m) are drawn from a uniform distribution between minimum and maximum values provided in params (and between 0 and 1 for m).
+   the number of parameter values to be sampled in ABC calculation. Random values of parameters of environmental filtering (see filt.abc and params) and of migration (denoted as m) are drawn from a uniform distribution between minimum and maximum values provided in params (and between 0 and 1 for m).
   }
   \item{parallel}{
-    If TRUE, the function will perform parallel processing using the parLapply function of package parallel.
+   logical. If \code{TRUE}, the function will perform parallel processing using the \code{parLapply} function of package parallel.
   }
   \item{tol}{
-    The tolerance value used in ABC estimation (see help on abc function for further information).
+    the tolerance value used in ABC estimation (see help on abc function for further information).
   }
   \item{pkg}{
-    The packages that need to be loaded for calculation of filt.abc and/or f.sumstats.
+    packages needed for calculation of \code{filt.abc} and/or \code{f.sumstats}.
   }
   \item{method}{
-    The method to be used in ABC estimation (see help on abc function for further information).
+    the method to be used in ABC estimation (see help on \code{abc} function for further information).
   }
   \item{J}{
-    Local community size.
+    local community size.
   }
 }
 \details{
-coalesc_abc performes ABC estimation for one (if multi = F, default) or several communities (if multi = T) related to the same regional pool.
+\code{coalesc_abc} performes ABC estimation for one (if \code{multi = FALSE}, default) or several communities (if \code{multi = TRUE}) related to the same regional pool.
 
-do.simul provides the simulated communities used in ABC estimation, and is not intended to be used directly.
+\code{do.simul} provides the simulated communities used in ABC estimation, and is not intended to be used directly.
 
 }
 \value{
   \item{par}{
-    The parameter values used in simulations.
+    parameter values used in simulations.
   }
   \item{par}{
-    Summary statistics of the communities simulated with parameter values listed in par.
+    summary statistics of the communities simulated with parameter values listed in \code{par}.
   }
   \item{abc}{
-    A single (if multi = F) or a list of abc objects including ABC estimation information for each community provided in input (comm.obs).
+    a single (if \code{multi = FALSE}, default) or a list of abc objects including ABC estimation information for each community provided in input (\code{comm.obs}).
   }
 }
 \references{
@@ -108,9 +108,10 @@ f.sumstats <- function(com,t) array(dimnames=list(c("cwm","cwv","cws","cwk","S",
 # An observed community is here simulated (known parameters)
 comm <- coalesc(J = 400, m = 0.5, theta = 50, filt = function(x) filt_gaussian(x,c(0.2,0.1)))
 
-# ABC estimation of the parameters based on observed community composition
+# ABC estimation of the parameters based on observed community composition 
+## Warning: this function may take a while
 res <- coalesc_abc(comm$com, comm$pool, f.sumstats=f.sumstats, filt.abc=filt_gaussian, 
-                   params=params, nb.samp = nb.samp, parallel = T, pkg =c("e1071","vegan"))
+                   params=params, nb.samp = nb.samp, parallel = TRUE, pkg =c("e1071","vegan"))
 plot(res$abc,param=res$par)
 hist(res$abc)
 
@@ -122,8 +123,8 @@ comm.obs <- rbind(comm.obs,cbind(rep(2,400),as.matrix(coalesc(J = 400, m = 0.5, 
   filt_gaussian(x,c(0.5,0.1)),pool=comm$pool)$com)))
 comm.obs <- rbind(comm.obs,cbind(rep(3,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) 
   filt_gaussian(x,c(0.8,0.1)),pool=comm$pool)$com)))
-res <- coalesc_abc(comm.obs, comm$pool, multi=T, f.sumstats=f.sumstats, filt.abc=filt_gaussian,
-                   params=params, nb.samp = nb.samp, parallel = T, pkg =c("e1071","vegan"))
+res <- coalesc_abc(comm.obs, comm$pool, multi=TRUE, f.sumstats=f.sumstats, filt.abc=filt_gaussian,
+                   params=params, nb.samp = nb.samp, parallel = TRUE, pkg =c("e1071","vegan"))
 summary(res$abc[[1]])
 summary(res$abc[[2]])
 summary(res$abc[[3]])

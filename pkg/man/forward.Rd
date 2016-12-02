@@ -27,92 +27,87 @@ pick.immigrate(com, D = 1, prob.of.immigrate = 0, pool,
 
 \arguments{
  \item{com, initial}{
-Starting community. It is in principle a three-column matrix or data frame including individual ID, species names and trait values. For strictly neutral dynamics, can be a vector of individual species names.
+starting community. It is in principle a three-column matrix or data frame including individual ID, species names and trait values. For strictly neutral dynamics, can be a vector of individual species names.
 }
  \item{prob, prob.of.immigrate, prob.of.mutate}{
-Probability of an individual establishing in the community not being a descendent of an existing individual. If descendent from a new ancestor, can be either through immigration.
+probability of an individual establishing in the community not being a descendent of an existing individual. If descendent from a new ancestor, can be either through immigration.
 }
  \item{D}{
-Number of individuals that die in each time-step.
+number of individuals that die in each time-step.
 }
  \item{gens}{
-Number of generations to simulate.
+number of generations to simulate.
 }
  \item{keep}{
-Boolean with default \code{FALSE} meaning to return community composition at the
-end of the simulation, and \code{TRUE} meaning to return a list including
-community composition at successive time steps (see Value section).
+boolean value. If \code{FALSE} (default) the function output only the community composition 
+at the end of the simulation. If \code{TRUE} the function output a list of community 
+composition at successive time steps (see Value section).
 }
  \item{pool}{
-The regional pool of species providing immigrants to the local community. It is
+the regional pool of species providing immigrants to the local community. It is
 in principle a three-column matrix or data frame including individual ID,
 species names and trait values. If trait information is missing, a random trait
 value is given to individuals, from a uniform distribution between 0 and 1.
 If \code{NULL}, the pool is simulated as a metacommunity at speciation-drift
-equilibrium, based on prob for speciation rate.
+equilibrium, based on \code{prob} for speciation rate.
 }
  \item{limit.sim}{
-If T, limiting similarity will be simulated, based on species trait distances
-(computed with method given in method.dist). 
+if \code{TRUE,} limiting similarity will be simulated, based on species trait distances
+(computed with the method given by \code{method.dist}). 
 }
  \item{coeff.lim.sim}{
-Adjust the intensity of limiting similarity. 
+adjust the intensity of limiting similarity. 
 }
  \item{sigma}{
-Adjust the variance of the overlap function used to calculate limiting similarity.
+adjust the variance of the overlap function used to calculate limiting similarity.
 }
  \item{filt}{
-The function used to represent habitat filtering. For a given trait value, t,
+the function used to represent habitat filtering. For a given trait value, t,
 \code{filt(t)} represents the probability that an individual with trait t enters
 the local community.
 }
  \item{prob.death}{
-Provides a baseline probability of death that is homogeneous across species. It
+provides a baseline probability of death that is homogeneous across species. It
 is used in niche-based dynamics to represent the balance of baseline and
 niche-dependent mortality.
 }
  \item{method.dist}{
-Provide the method to compute trait distances between individuals (syntax of
+provide the method to compute trait distances between individuals (syntax of
 function \code{\link[stats]{dist}}).
 }
  \item{new.index}{
-Used to give a new species name when speciation occurs.
+used to give a new species name when speciation occurs.
 }
 }
 \details{
-When niche-based dynamics are simulated, the niche-based constraints influence both immigration and mortality.
-
 It is a zero-sum game, so that the number of individuals of the community is fixed to the number of individuals in initial community.
 
-Functions \code{pick.immigrate()} and \code{pick.mutate()} are used to simulate
-immigration and speciation events within a time step. They are embedded in
-forward and are not really intended for the end user. 
+When niche-based dynamics are simulated, the niche-based constraints influence both immigration and mortality.
+
+Functions \code{pick.immigrate()} and \code{pick.mutate()} are used to simulate immigration and speciation events within a time step. They are embedded in forward and are not really intended for the end user. 
 }
 \value{
 \item{a}{
-A matrix of individual in the final community, with individual ID in first column, species name in second column, and trait value in the third column.
+a matrix of individual in the final community, with individual ID in first column, species name in second column, and trait value in the third column.
 }
 \item{pool}{
-The regional pool of species used in simulation. Includes label of individual on first column, its species on second column, and a trait attribute on the third column.
+the regional pool of species used in simulation. Includes label of individual on first column, its species on second column, and a trait attribute on the third column.
 }
 \item{aa}{
-If \code{keep = T}, a list of community composition for each time step (a matrix
-as in a).
+if \code{keep = T}, a list of community composition for each time step (a matrix as in a).
 }
 \item{limit.sim.t}{
-If \code{limit.sim = T}, the average value of the limiting similarity function
-over time.
+if \code{limit.sim = T}, the average value of the limiting similarity function over time.
 }
 \item{new.index}{
-For \code{pick.mutate()}, return the new index to be used for species name at a
-next speciation event.
+for \code{pick.mutate()}, return the new index to be used for species name at a next speciation event.
 }
 }
 \references{
 For neutral dynamics, S. P. Hubbell 2001. "The Unified Neutral Theory of Biodiversity". Princeton University Press. 
 }
 \author{
-F. Munoz, derived from the untb function of R. Hankin
+F. Munoz, derived from the \code{untb} function of R. Hankin.
 }
 
 

@@ -13,7 +13,7 @@
 The DESCRIPTION file:
 \packageDESCRIPTION{lottery}
 \packageIndices{lottery}
-Two basic functions: coalesc for coalescent-based simulation, and forward for forward-in-time simulation
+Two basic functions: \code{coalesc} for coalescent-based simulation, and \code{forward} for forward-in-time simulation
 }
 \author{
 \packageAuthor{lottery}
