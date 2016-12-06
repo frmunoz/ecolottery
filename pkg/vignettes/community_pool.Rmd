@@ -11,6 +11,8 @@ vignette: >
 
 # Aim of `lottery`
 
+Quick and efficient simulation of communities undergoing both neutral and niche-based assembly processes. The coalescent-based approach provides local community composition based on the genealogy of its individuals. It does not require simulating community dynamics from an initial state forward in time, and the genealogical approach can incorporate the influence of environmental filtering and species niche differences. The sampling process allows simulating varying sample size in a flexible way.
+
 # Usage
 
 ## Regional Pool Generation
@@ -19,5 +21,65 @@ vignette: >
 
 ## Use of Environmental Filters
 
+```{r}
+
+filt_disruptive <- function(t, x, sigma) 1-exp(-(x-t)^2/(2*sigma^2))
+filt_gaussian <- function(t, x, sigma) exp(-(x-t)^2/(2*sigma^2))
+filt <- function(x) filt_gaussian(0.5, x[1], sigma = 0.1) * filt_disruptive(0.5, x[2], sigma = 0.1)
+
+ex <- coalesc(J, m, theta, filt = filt, traits = pool[, c("tra1", "tra2")], pool = pool[, c("ind", "sp")])
+
+```
 
 # Community visualizations
+
+```{r}
+
+# Example 1
+# Parameters of coalesc
+J <- 500
+Jpool <- 50*J
+m <- 1
+theta <- 50
+# A regional pool including 500 species each including 50 individuals
+pool <- cbind(1:Jpool, rep(1:500, 50))
+# 2 traits distributed uniformly
+traits <- cbind(runif(Jpool), runif(Jpool)) 
+# Simulating one community
+ex <- coalesc(J, m, theta, filt = filt, traits = traits[, 1:2], pool = pool)
+# Plots
+par(mfrow=c(1, 3))
+plot(tapply(ex$com$tra1, ex$com$sp,length) ~ tapply(apply(ex$com[, c("tra1", "tra2")], 1, filt), ex$com$sp, mean),
+     xlab = "Filtering", ylab = "Abundance")
+plot(tapply(ex$com$tra1, ex$com$sp,length) ~ tapply(ex$com$tra1, ex$com$sp, mean),
+     xlab = "Value of first trait", ylab = "Abundance")
+plot(tapply(ex$com$tra1, ex$com$sp,length) ~ tapply(ex$com$tra2, ex$com$sp, mean),
+     xlab = "Value of second trait", ylab = "Abundance")
+
+
+# Example 2
+# Parameters of coalesc
+m <- 1
+theta <- 50
+# Generate a regional pool/metacommunity with log-series distribution of abundances and uniform trait distribution
+pool <- coalesc(J = 25000, m = m, theta = theta)$pool
+# Add a second trait in regional pool, partially correlated with the first one
+tracor <- tcor(n = 25000, rho = 0.8, x = pool$tra1, mar.fun = runif)
+par(mfrow = c(1, 1))
+plot(tracor[, 1], tracor[, 2])
+cor(tracor[, 1], tracor[, 2])
+pool$tra2 <- tracor$t2
+# Simulating one community
+ex <- coalesc(J, m, theta, filt = filt, traits = pool[, c("tra1", "tra2")], pool = pool[, c("ind", "sp")])
+# Plots
+par(mfrow=c(1, 3))
+plot(tapply(ex$com$tra1, ex$com$sp,length) ~ tapply(apply(ex$com[, c("tra1", "tra2")], 1, filt), ex$com$sp, mean),
+     xlab = "Filtering", ylab = "Abundance")
+plot(tapply(ex$com$tra1, ex$com$sp,length) ~ tapply(ex$com$tra1, ex$com$sp, mean),
+     xlab = "Value of first trait", ylab = "Abundance")
+plot(tapply(ex$com$tra1, ex$com$sp,length) ~ tapply(ex$com$tra2, ex$com$sp, mean),
+     xlab = "Value of second trait", ylab = "Abundance")
+
+```
+
+

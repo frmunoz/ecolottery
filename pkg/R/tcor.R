@@ -19,8 +19,9 @@ tcor <- function(n, rho = 0.5, mar.fun = rnorm, x = NULL, ...) {
   }
   
   # correlation needs to be strictly between 0 and 1 
-  if (rho > 1 | rho < 0) stop("rho must belong to ]0; 1[ value interval")
-  
+  if (rho > 1 | rho < 0) {
+    stop("rho must belong to ]0; 1[ value interval")
+  }
   
   # Generate a correlation matrix with given correlation coefficient
   corr_mat <- matrix(rho, nrow = 2, ncol = 2)
