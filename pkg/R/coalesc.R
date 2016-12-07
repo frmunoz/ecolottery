@@ -1,11 +1,17 @@
 coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = NULL, Jpool = 50*J) {
   
+  # Check parameters
+  
   if (is.null(traits) & (is.null(pool) | NCOL(pool) < 3)) warning("No trait information provided in the regional pool")
   
   if (!is.null(traits) & is.null(colnames(traits))) colnames(traits) <- paste("tra",1:ncol(traits),sep="")
   if (!is.null(pool) & is.null(colnames(pool))) if (ncol(pool)>2) colnames(pool) <- c("ind","sp",paste("tra",1:(ncol(pool)-2),sep=""))
   
   if (is.null(theta) & is.null(pool)) stop("You must either provide regional pool composition or theta value")
+  
+  if (m == 0 | m > 1) {
+    stop("Migration parameter must belongs to ]0; 1] interval.")
+  }
     
   ## Create the regional pool if not provided
   
