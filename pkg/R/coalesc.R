@@ -12,7 +12,15 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
   if (m == 0 | m > 1) {
     stop("Migration parameter must belongs to ]0; 1] interval.")
   }
-    
+  
+  if (theta < 0) {
+    stop("Fundamental parameter of biodiversity theta must be positive.")
+  }
+  
+  if (J <= 0) {
+    stop("J must be positive.")
+  }
+  
   ## Create the regional pool if not provided
   
   if (is.null(pool)) {
