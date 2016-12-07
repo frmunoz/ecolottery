@@ -8,6 +8,46 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
   # For strictly neutral communities, a vector of species names is enough for
   # the initial community
   
+  # Checking basic parameters
+
+  if (!is.numeric(prob) | prob <= 0){
+    stop("Probability of establishment must be a number belonging to [0; 1] interval.")
+  }
+  
+  if (!is.numeric(D) | D < 0){
+    stop("Number of individuals that die in each time step must be a positive number.")
+  }
+  
+  if (!is.numeric(gens) | gens <= 0){
+    stop("Number of generations must be a positive number.")
+  }
+  
+  if (!is.logical(keep)){
+    stop("keep parameter must be a boolean.")
+  }
+  
+  if (!is.logical(limit.sim)){
+    stop("limiting similarity parameter must be a boolean.")
+  }
+  
+  if (!is.numeric(coeff.lim.sim) | coeff.lim.sim < 0){
+    stop("coeff.lim.sim parameter must be a positive number.")
+  }
+  
+  if (!is.numeric(sigma) | sigma < 0){
+    stop("sigma parameter must be a positive number.")
+  }
+  
+  if (!is.null(filt)){
+    if (!is.function(filt)){
+      stop("filt must be a function.")
+    }
+  }    
+  
+  if ((method.dist %in% c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"))==FALSE){
+    stop("Provided distance is not existing. See stats::dist function for help.")
+  }
+  
   # Stops if only a vector of species name is given as initial community with
   # environmental filtering or limiting similarity
   if ((is.character(initial) | is.vector(initial)) & (limit.sim | !is.null(filt))) {
