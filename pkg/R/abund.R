@@ -7,7 +7,7 @@ abund <- function(x) {
   
     rel_abund_list <-  lapply(x, function(y) {
       
-      if (is.list(y)) {
+      if (is.list(y) & !is.data.frame(y) & !is.matrix(y)) {
         rel_abund <- lapply(y, get_rel_abund)
       } else {
         rel_abund <- get_rel_abund(y)
