@@ -5,6 +5,16 @@ plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL)
 # x should be the output of coalesc or forward
 # seltrait is the index of the trait to be plotted (in case of multiple traits)
 {
+  
+  # Check parameters
+  if (!is.numeric(seltrait) | seltrait <= 0){
+    stop("seltrait must be the number of the column of desired trait in the community data.frame.")
+  }
+  
+  if (!is.character(main)){
+    stop("main must be a character string describing the title of the plot.")
+  }
+  
   switch(type,
     "trait" =
      {

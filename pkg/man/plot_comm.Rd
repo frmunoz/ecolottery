@@ -5,10 +5,7 @@
   Regional vs. Local trait distributions of abundances
 }
 \description{
-  If type = "trait", the function provides density plots of the trait or abundance distributions in the regional pool and in a local community.
-  If type = "abund", the function displays the relationship between regional and local species relative abundances.
-  Default type is "trait".
-  To be used on the output of \code{coalesc()} or \code{forward()} functions.
+  Graphical function to used on the output of \code{coalesc()} or \code{forward()} functions.It aims at plotting links between regional and local trait/abundance distributions.
 }
 \usage{
 plot_comm(x, type = "trait", seltrait = 1, main = NULL)
@@ -28,13 +25,16 @@ an overall title for the plot.
 }
 }
 \details{
-This generic function should be improved in the future for additional options of graphical display
+  If type = "trait", the function provides density plots of the trait or abundance distributions in the regional pool and in a local community.
+  If type = "abund", the function displays the relationship between regional and local species relative abundances.
+  Default type is "trait".
+  To be used on the output of \code{coalesc()} or \code{forward()} functions.
 }
 \value{
 Return two stacked density plots if type = "trait" and a biplot if type = "abund".
 }
 \author{
-F. Munoz
+F. Munoz; P. Denelle
 }
 
 \examples{
@@ -42,10 +42,12 @@ F. Munoz
 J <- 500; theta <- 50; m <- 0.1;
 comm1 <- coalesc(J, m, theta) 
 plot_comm(comm1)
+plot_comm(comm1, type = "abund")
 
 # Stabilizing habitat filtering around t = 0.5
 comm2 <- coalesc(J, m, theta, filt = function(x) 0.5 - abs(0.5 - x))
 plot_comm(comm2)
+plot_comm(comm2, type = "abund")
 }
 
 \keyword{trait distribution}
