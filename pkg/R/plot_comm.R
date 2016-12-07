@@ -11,8 +11,10 @@ plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL)
     stop("seltrait must be the number of the column of desired trait in the community data.frame.")
   }
   
-  if (!is.character(main)){
-    stop("main must be a character string describing the title of the plot.")
+  if (!is.null(main)){
+    if (!is.character(main)){
+      stop("main must be a character string describing the title of the plot.")
+    }
   }
   
   switch(type,
