@@ -15,25 +15,62 @@ Quick and efficient simulation of communities undergoing both neutral and niche-
 
 # Usage
 
-## Regional Pool Generation
+## Regional pool generation
 
-## Community From a Given Pool
+We can use the function coalesc to construct a regional pool of species. Otherwise, the user can provide a regional pool with individuals, species and trait values of species (optional).
 
-## Use of Environmental Filters
+By default, species abundances will follow a log-serie distribution and if no trait values will be sampled from uniform distribution.
+
+```{r}
+
+# Generate a regional pool/metacommunity with log-series distribution of abundances and uniform trait distribution
+pool <- coalesc(J = 25000, m = 1, theta = 50)$pool
+
+par(mfrow = c(1, 1))
+hist(table(pool$sp), xlab = "Species", main = "Distribution of species' abundances")
+hist(pool$tra1, xlab = "Trait values", main = "Distribution of trait values")
+
+```
+
+## Community from a given pool
+
+coalesc function constructs a community from any regional pool. In this example, we provide a regional pool with a uniform regional abundances distribution. Species also have a trait value.
+Here we simulate a set of 10 communities from this same regional pool.
+
+We get a data frame with each individual occurring in the focal community, its species label and its trait value.
+To get the abundances of species, we can use the abund function of the package.
+
+```{r}
+
+#Generate a regional pool/metacommunity with equal abundances and uniform trait distribution
+pool <- cbind(1:100000, rep(sample(1:100), 1000), rep(NA, 100000)) # 100 species
+t.sp <- runif(100)
+pool[,3] <- t.sp[pool[,2]]
+
+com_df <- c()
+
+for (i in 1:10){
+  comm <- coalesc(J, m = 0.9, theta, pool = pool, traits = NULL)
+  com_df <- rbind(com_df, cbind(rep(i, nrow(comm$com)), comm$com))
+}
+
+colnames(com_df) <- c("com", "ind", "sp", "tra1")
+
+head(abund(comm)$com)
+
+```
+
+## Use of environmental filters
+
+When drawing species from regional pool, an environmental filtering can arise and determine the probability of a species to occur in a community according its trait value.
+
+Here we show two examples where two filters happen. Both select the species according the proximity of their trait value to a local optimum called topt. The first one is stabilizing since he selects favourably the species with a trait value close to the local topt. The second one is disruptive and produces the opposite pattern.
 
 ```{r}
 
 filt_disruptive <- function(t, x, sigma) 1-exp(-(x-t)^2/(2*sigma^2))
 filt_gaussian <- function(t, x, sigma) exp(-(x-t)^2/(2*sigma^2))
 filt <- function(x) filt_gaussian(0.5, x[1], sigma = 0.1) * filt_disruptive(0.5, x[2], sigma = 0.1)
-
-ex <- coalesc(J, m, theta, filt = filt, traits = pool[, c("tra1", "tra2")], pool = pool[, c("ind", "sp")])
-
-```
-
-# Community visualizations
-
-```{r}
 
 # Example 1
 # Parameters of coalesc
@@ -79,6 +116,18 @@ plot(tapply(ex$com$tra1, ex$com$sp,length) ~ tapply(ex$com$tra1, ex$com$sp, mean
      xlab = "Value of first trait", ylab = "Abundance")
 plot(tapply(ex$com$tra1, ex$com$sp,length) ~ tapply(ex$com$tra2, ex$com$sp, mean),
      xlab = "Value of second trait", ylab = "Abundance")
+
+```
+
+# Community visualizations
+
+lottery contains a preset function to visualize the distribution of trait and abundances in the regional pool and one community drawn from this regional pool.
+
+```{r}
+
+plot_comm(ex)
+par(mfrow = c(1, 1))
+plot_comm(ex, type = "abund")
 
 ```
 
