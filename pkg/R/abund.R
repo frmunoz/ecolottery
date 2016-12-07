@@ -1,26 +1,38 @@
 # From an object output by 'forward()' or 'coalesc()' computes vector of
 # abundances per species
-abund <- function(x)
-{
-  if(!is.null(x$com)) {
-    # If there is a local pool computes regional level abundances
-    loc <- as.data.frame(table(x$com[, "sp"]))
-    colnames(loc) <- c("sp", "ab")
-    rownames(loc) <- loc$sp
-    loc$relab <- loc$ab / nrow(x$com)
-  } else {
-    stop("No local community provided, generate it with coalesc function")
+abund <- function(x) {
+  if (!is.list(x)) {
+    stop("Provided argument needs to be a list of communities")
   }
   
-  if(!is.null(x$pool)) {
-    reg <- as.data.frame(table(x$pool[, "sp"]))
-    colnames(reg) <- c("sp", "ab")
-    rownames(reg) <- reg$sp
-    reg$relab <- reg$ab / nrow(x$pool)
-    # If there is only a local community
-    return(list(com = loc, pool = reg))
+    rel_abund_list <-  lapply(x, function(y) {
+      
+      if (is.list(y)) {
+        rel_abund <- lapply(y, get_rel_abund)
+      } else {
+        rel_abund <- get_rel_abund(y)
+      } 
+      
+      return(rel_abund)
+    })
+    
+    if (sum(is.na(rel_abund_list)) + sum(is.null(rel_abund_list)) != 0) {
+      warning("Some communities were undefined; returning NA abundances")
+    }
+    
+    return(rel_abund_list)
+}
+
+# Internal function to compute relative abundances from a community data.frame
+get_rel_abund <- function(comdf) {
+  
+  if (is.data.frame(comdf) | is.matrix(comdf)) {
+    rel_abund <- as.data.frame(table(comdf[, "sp"]))
+    colnames(rel_abund) <- c("sp", "ab")
+    rel_abund$relab <- rel_abund$ab / nrow(comdf)
   } else {
-    warning("No regional pool provided")
-    return(list(com = loc))
+    rel_abund <- NA
   }
+  
+  return(rel_abund)
 }
