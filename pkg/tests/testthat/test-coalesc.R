@@ -22,7 +22,7 @@ test_that("coalesc() result structure", {
   # Result structure when defining pool
   pool <- cbind(1:10000, rep(1:500, each = 20), rep(runif(500), each = 20))
   
-  res <- coalesc(50, 0.1, 50, pool = pool)
+  res <- coalesc(50, 0.1, pool = pool)
   
   expect_is(res, "list", info = "Result must be a list")
   expect_is(res$com, "data.frame")
@@ -44,20 +44,23 @@ test_that("coalesc() behaves well with extreme cases", {
   
   ## Invalid inputs (negative parameters)
   # Bad J values
-  expect_error(coalesc(J = -4, theta = 50, pool = pool), "J must be positive.",
+  expect_error(coalesc(J = -4, theta = 50), "J must be positive.",
                fixed = TRUE)
-  expect_error(coalesc(0, theta = 50, pool = pool), "J must be positive.",
+  expect_error(coalesc(0, theta = 50), "J must be positive.",
                fixed = TRUE)
   # Bad m values
-  expect_error(coalesc(10, m = 10, 40, pool = pool), fixed = TRUE,
+  expect_error(coalesc(10, m = 10, 40), fixed = TRUE,
                "Migration parameter must belongs to ]0; 1] interval.")
-  expect_error(coalesc(10, m = 0, 40, pool = pool), fixed = TRUE,
+  expect_error(coalesc(10, m = 0, 40), fixed = TRUE,
                "Migration parameter must belongs to ]0; 1] interval.")
-  expect_error(coalesc(10, m = -1, 40, pool = pool), fixed = TRUE,
+  expect_error(coalesc(10, m = -1, 40), fixed = TRUE,
                "Migration parameter must belongs to ]0; 1] interval.")
   # Bad theta values
-  expect_error(coalesc(10, m = 0.1, -1, pool = pool), fixed = TRUE,
+  expect_error(coalesc(10, m = 0.1, -1), fixed = TRUE,
                "Fundamental parameter of biodiversity theta must be positive.")
+  # Provide both pool and theta
+  expect_warning(coalesc(10, 0.1, 40, pool = pool), fixed = TRUE,
+                 "Both theta and regional pool provided, discarding theta")
   
   # Extreme pool of species (one individual one species, individual
   # from a single species)
