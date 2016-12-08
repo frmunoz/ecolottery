@@ -44,7 +44,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = N
     } else ind_pool_traits[assign_pool,] <- traits[1:length(assign_pool),]
 
     # For all individuals without an assigned species
-    for (j in 1:length(unassign_pool)) {
+    if (length(unassign_pool) > 0) for (j in 1:length(unassign_pool)) {
       # Select randomly a previously assigned individual
       existing_sp <- sample.int(unassign_pool[j] - 1, 1)
       ind_pool_sp[unassign_pool[j]] <- ind_pool_sp[existing_sp]  # Assign species of previously assigned individual
