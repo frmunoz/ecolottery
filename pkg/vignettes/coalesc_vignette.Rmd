@@ -1,6 +1,6 @@
 ---
 title: "Basic Use of `lottery`"
-author: "Vignette Author"
+author: "Pierre DENELLE"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -17,7 +17,7 @@ Quick and efficient simulation of communities undergoing both neutral and niche-
 
 ## Regional pool generation
 
-We can use the function coalesc to construct a regional pool of species. Otherwise, the user can provide a regional pool with individuals, species and trait values of species (optional).
+We can use the function coalesc to construct a regional $pool$ of species. Otherwise, the user can provide a regional $pool$ with individuals, species and trait values of species (optional).
 
 By default, species abundances will follow a log-serie distribution and if no trait values will be sampled from uniform distribution.
 
@@ -34,13 +34,13 @@ hist(pool$tra1, xlab = "Trait values", main = "Distribution of trait values")
 
 ## Community from a given pool
 
-coalesc function constructs a community from any regional pool. In this example, we provide a regional pool with a uniform regional abundances distribution. Species also have a trait value.
+$coalesc$ function constructs a community from any regional pool. In this example, we provide a regional pool with a uniform regional abundances distribution. Species also have a trait value.
 Here we simulate a set of 10 communities from this same regional pool.
 
 We get a data frame with each individual occurring in the focal community, its species label and its trait value.
-To get the abundances of species, we can use the abund function of the package.
+To get the abundances of species, we can use the $abund$ function of the package.
 
-```{r}
+```{r, include=FALSE}
 
 #Generate a regional pool/metacommunity with equal abundances and uniform trait distribution
 pool <- cbind(1:100000, rep(sample(1:100), 1000), rep(NA, 100000)) # 100 species
@@ -50,11 +50,15 @@ pool[,3] <- t.sp[pool[,2]]
 com_df <- c()
 
 for (i in 1:10){
-  comm <- coalesc(J, m = 0.9, theta, pool = pool, traits = NULL)
+  comm <- coalesc(J = 200, m = 0.9, theta = 50, pool = pool, traits = NULL)
   com_df <- rbind(com_df, cbind(rep(i, nrow(comm$com)), comm$com))
 }
 
 colnames(com_df) <- c("com", "ind", "sp", "tra1")
+
+```
+
+```{r}
 
 head(abund(comm)$com)
 
@@ -64,7 +68,7 @@ head(abund(comm)$com)
 
 When drawing species from regional pool, an environmental filtering can arise and determine the probability of a species to occur in a community according its trait value.
 
-Here we show two examples where two filters happen. Both select the species according the proximity of their trait value to a local optimum called topt. The first one is stabilizing since he selects favourably the species with a trait value close to the local topt. The second one is disruptive and produces the opposite pattern.
+Here we show two examples where two filters happen. Both select the species according the proximity of their trait value to a local optimum called topt. The first one is stabilizing since it selects favourably the species with a trait value close to the local topt. The second one is disruptive and produces the opposite pattern.
 
 ```{r}
 
@@ -121,7 +125,7 @@ plot(tapply(ex$com$tra1, ex$com$sp,length) ~ tapply(ex$com$tra2, ex$com$sp, mean
 
 # Community visualizations
 
-lottery contains a preset function to visualize the distribution of trait and abundances in the regional pool and one community drawn from this regional pool.
+$lottery$ contains a preset function called $plot_comm$ to visualize the distribution of trait and abundances in the regional pool and one community drawn from this regional pool.
 
 ```{r}
 
@@ -130,5 +134,59 @@ par(mfrow = c(1, 1))
 plot_comm(ex, type = "abund")
 
 ```
+
+# Comparison with forward approach
+
+A second way to construct communities is implemented in $lottery$ package. $forward$ function starts from an initial state and then draws death, birth and arrival by dispersal of individuals over a given number of successive generations. 
+
+Several parameters can be implemented, including environmental filtering as described above for the coalesc function.
+
+$forward$ function provides a list with two elements:
+- a $data.frame$ called $com$ describing the final community, with individuals and their species labels and trait values
+- a $data.frame$ called $pool$ describing the regional pool of individuals used to draw the communities
+
+If $keep$ parameter is set to $TRUE$, the object contains three elements:
+- a $list$ called $com_t$ which contains all the communities generated per iteration step
+- a $vector$ called $limit.sim.t$ containing the average value of limiting similarity over each generation
+- a $data.frame$ called $pool$ describing the regional pool of individuals used to draw the communities
+
+Trait distributions can be viewed with $plot_comm$ function.
+
+```{r}
+
+# Disruptive environmental filtering around topt = 0.5
+filt_disruptive <- function(t, x, sigma) 1-exp(-(x-t)^2/(2*sigma^2))
+filt <- function(x) filt_disruptive(0.5, x, sigma = 0.1)
+
+# A regional pool including 100 species each including 10 individuals
+pool <- sort(rep(as.character(1:100), 10))
+
+# Initial community composed of 10 species each including 10 individuals, 
+# with trait information for niche-based dynamics
+initial <- data.frame(sp = sort(rep(as.character(1:10), 10)), trait = runif(100))
+
+# Variation of community richness with time
+final <- forward(initial = initial2, prob = 0.1, gens = 1000, pool = pool, 
+                 limit.sim = TRUE, keep = TRUE, filt = filt)
+
+final2 <- forward(initial = initial2, prob = 0.1, gens = 1000, pool = pool, 
+                 limit.sim = TRUE, keep = F, filt = filt)
+
+# Check stationarity
+plot(unlist(lapply(final$com_t, function(x) length(unique(x[, 2])))), 
+     xlab = "Time step", ylab = "Community richness") 
+
+# Index of limiting similarity over time
+plot(final$limit.sim.t, xlab = "Time step", ylab = "Limiting similarity")
+
+# Comparison of regional and local trait distributions
+plot_comm(list("pool" = final$pool, "com" = final$com_t[1000][[1]]))
+plot_comm(final2)
+
+```
+
+The use of $forward$ function then produces the same pattern than $coalesc$ function but differs in two aspects:
+- it allows the user to see in details the processes happening at each generation
+- it is more time and memory consuming
 
 
