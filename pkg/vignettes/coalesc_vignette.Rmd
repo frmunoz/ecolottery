@@ -22,6 +22,7 @@ We can use the function coalesc to construct a regional $pool$ of species. Other
 By default, species abundances will follow a log-serie distribution and if no trait values will be sampled from uniform distribution.
 
 ```{r}
+library(lottery)
 
 # Generate a regional pool/metacommunity with log-series distribution of abundances and uniform trait distribution
 pool <- coalesc(J = 25000, m = 1, theta = 50)$pool
