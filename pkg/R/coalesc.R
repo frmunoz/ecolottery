@@ -162,7 +162,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
                                        function(y) y[migrants[1:com_species]]) 
   colnames(ind_com_traits) <- colnames(ind_pool_traits)
  
-  if (!is.null(unassign_com)) {
+  if (!is.null(unassign_com) & length(unassign_com) > 0) {
     for (j in 1:length(unassign_com)) {
     existing_sp <- sample.int(unassign_com[j] - 1, 1)
     ind_com_lab[unassign_com[j]] <- ind_com_lab[existing_sp]
