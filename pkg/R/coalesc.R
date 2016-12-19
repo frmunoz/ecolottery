@@ -93,6 +93,10 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
       stop("The regional pool is misdefined (two columns required)")
     }
     
+    # Handling of factors
+    if (is.factor(pool[,1])) pool[,1] <- as.character(pool[,1])
+    if (is.factor(pool[,2])) pool[,2] <- as.character(pool[,2])
+      
     ind_pool_lab <- pool[,1]; ind_pool_sp <- pool[,2]
     
     if (ncol(pool) >= 3)  {
