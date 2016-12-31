@@ -1,5 +1,5 @@
 coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
-                    traits = NULL, Jpool = 50*J) {
+                    traits = NULL, Jpool = 50*J, verbose = F) {
   
   # Check parameters
   if (is.null(theta) & is.null(pool)) {
@@ -14,7 +14,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
     if (theta <= 0) {
       stop("Fundamental parameter of biodiversity theta must be positive.")
     } else if (theta > 0 & !is.null(pool)) {
-      warning("Both theta and regional pool provided, discarding theta")
+      if (verbose) warning("Both theta and regional pool provided, discarding theta")
     }
   }
   
@@ -23,7 +23,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
   }
   
   if (is.null(traits) & (is.null(pool) | NCOL(pool) < 3)) {
-    warning("No trait information provided in the regional pool")
+    if (verbose) warning("No trait information provided in the regional pool")
   }
   
   if (!is.null(traits) & is.null(colnames(traits))) {
