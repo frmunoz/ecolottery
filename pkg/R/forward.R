@@ -92,14 +92,13 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
     } else if (ncol(pool) == 2) {
       cat("No trait information provided in the regional pool\n")
     }
-    if (!limit.sim | !is.null(filt)) {
+    if (!limit.sim | !is.null(filt) & ncol(pool) < 3) {
       pool[, 3] <- runif(nrow(pool))
       
       cat(paste0("Random (uniform) trait values attributed to individuals of ",
                  "the regional pool\n"))
-      
-      colnames(pool) <- c("id", "sp", "trait")
     }
+      colnames(pool) <- c("id", "sp", "trait")
   }
   
   # "init_comm" is a 3 columns matrix of individuals in the initial community,
