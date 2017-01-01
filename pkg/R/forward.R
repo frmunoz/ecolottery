@@ -151,7 +151,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
       next_comm <- pick(next_comm, D = D, prob = prob, pool = pool,
                         prob.death = prob.death, limit.sim = limit.sim,
                         coeff.lim.sim = coeff.lim.sim, sigma = sigma,
-                        filt = filt, new.index = new.index)
+                        filt = filt, new.index = new.index, method.dist = "euclidean")
       
       # Store limiting similarity matrix if simulated
       if (!is.null(limit.sim)) {
@@ -171,7 +171,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
       next_comm <- pick(next_comm, D = D, prob = prob, pool = pool,
                         prob.death = prob.death, limit.sim = limit.sim,
                         coeff.lim.sim = coeff.lim.sim, sigma = sigma,
-                        filt = filt, new.index = new.index)
+                        filt = filt, new.index = new.index, method.dist = "euclidean")
       
       new.index <- next_comm$new.index
       next_comm <- next_comm$com
@@ -184,7 +184,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
 # the pool or make an individual mutate
 pick <- function(com, D = 1, prob = 0, pool = NULL, prob.death = prob.death,
                  limit.sim = NULL, coeff.lim.sim = 2, sigma = 0.1, filt = NULL,
-                 new.index = new.index) {
+                 new.index = new.index, method.dist = "euclidean") {
   
   
   if (is.null(pool)) {
@@ -197,7 +197,7 @@ pick <- function(com, D = 1, prob = 0, pool = NULL, prob.death = prob.death,
     return(pick.immigrate(com, D = D, prob.of.immigrate = prob, pool = pool,
                           prob.death = prob.death, limit.sim = limit.sim,
                           coeff.lim.sim = coeff.lim.sim, sigma = sigma,
-                          filt = filt))
+                          filt = filt, method.dist = "euclidean"))
   }
 }
 
@@ -266,7 +266,7 @@ pick.mutate <- function(com, D = 1, prob.of.mutate = 0, new.index = 0) {
 # limit.sim = distances de traits; filt = habitat filtering function
 pick.immigrate <- function(com, D = 1, prob.of.immigrate = 0, pool,
                            prob.death = NULL, limit.sim = NULL,
-                           coeff.lim.sim = 2, sigma = 0.1, filt = NULL) {
+                           coeff.lim.sim = 2, sigma = 0.1, filt = NULL, method.dist = "euclidean") {
   
   if (is.vector(com)) {
     # If community only defined by species names
