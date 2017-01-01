@@ -252,8 +252,10 @@ pick.mutate <- function(com, D = 1, prob.of.mutate = 0, new.index = 0) {
     com[died[mutated], 1:2] <- paste("new.sp", new.index + (1:n_mutated),
                                      sep = "")
     
-    com[died[mutated], 3] <- rep(NA, n_mutated)  # No trait values
-    
+    #com[died[mutated], 3] <- rep(NA, n_mutated)  # No trait values
+    # Default to be a trait value drawn from uniform distribution between 0 and 1
+    com[died[mutated], 3] <- runif(n_mutated)
+	  
     # Number of new species which appeared (next one will be new.index + 1)
     new.index <- new.index + n_mutated
   }
