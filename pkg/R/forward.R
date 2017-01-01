@@ -300,9 +300,9 @@ pick.immigrate <- function(com, D = 1, prob.of.immigrate = 0, pool,
   
   # Limiting similarity depends on community composition at each time step
   if (limit.sim) {
-   limit.sim <- as.matrix(dist(init_comm[, 3], method = method.dist))
-   colnames(limit.sim) <- init_comm[, 1]
-   rownames(limit.sim) <- init_comm[, 1]
+   limit.sim <- as.matrix(dist(com[, 3], method = method.dist))
+   colnames(limit.sim) <- com[, 1]
+   rownames(limit.sim) <- com[, 1]
    diag(limit.sim) <- 0
   } else {
     limit.sim <- NULL
