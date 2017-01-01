@@ -133,33 +133,8 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
   
   colnames(init_comm) <- c("id", "sp", "trait")
   
-  
-  # Limiting similarity is based on trait distances in the metacommunity plus
-  # the initial community
-  # Compute trait distance matrices in the inital community and the species
-  # pool
-  if (limit.sim) {
-    if (!is.null(pool)) {
-      limit.sim <- as.matrix(dist(c(init_comm[, 3], pool[, 3]),
-                                  method = method.dist))
-      
-      colnames(limit.sim) <- c(init_comm[, 1], pool[, 1])
-      rownames(limit.sim) <- c(init_comm[, 1], pool[, 1])
-    
-    } else {
-      limit.sim <- as.matrix(dist(init_comm[, 3], method = method.dist))
-      
-      colnames(limit.sim) <- init_comm[, 1]
-      rownames(limit.sim) <- init_comm[, 1]
-    }
-    diag(limit.sim) <- 0
-  } else {
-    limit.sim <- NULL
-  }
-  
   new.index <- 0
-  
-  
+   
   ## Forward simulation with community
   
   # Begins with the initial community
@@ -322,6 +297,16 @@ pick.immigrate <- function(com, D = 1, prob.of.immigrate = 0, pool,
 	  hab_filter <- function(x) sapply(x, function(x) 1)
   }
   
+  # Limiting similarity depends on community composition at each time step
+  if (limit.sim) {
+   limit.sim <- as.matrix(dist(init_comm[, 3], method = method.dist))
+   colnames(limit.sim) <- init_comm[, 1]
+   rownames(limit.sim) <- init_comm[, 1]
+   diag(limit.sim) <- 0
+  } else {
+    limit.sim <- NULL
+  }
+					   
   # Initial community
   com.init <- com
   
