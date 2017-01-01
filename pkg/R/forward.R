@@ -342,7 +342,7 @@ pick.immigrate <- function(com, D = 1, prob.of.immigrate = 0, pool,
       
       prob.death <- (coeff.lim.sim - 1)*limit.sim.t
       
-      limit.sim.t <- mean(limit.sim.t)
+      limit.sim.t <- mean(limit.sim[com[, 1], com[, 1]], na.rm = T)
     }
     # Habitat filtering also influences the individual death probability
     if (!is.null(filt)) {
