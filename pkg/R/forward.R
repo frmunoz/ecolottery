@@ -92,7 +92,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
     } else if (ncol(pool) == 2) {
       cat("No trait information provided in the regional pool\n")
     }
-    if (!limit.sim | !is.null(filt) & ncol(pool) < 3) {
+    if ((!limit.sim | !is.null(filt)) & ncol(pool) < 3) {
       pool[, 3] <- runif(nrow(pool))
       
       cat(paste0("Random (uniform) trait values attributed to individuals of ",
