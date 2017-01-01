@@ -10,8 +10,8 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
   
   # Checking basic parameters
 
-  if (!is.numeric(prob) | prob <= 0){
-    stop("Probability of establishment must be a number belonging to [0; 1] interval.")
+  if (!is.numeric(prob) | prob < 0){
+    stop("Probability of migration or mutation must be a number belonging to [0; 1] interval.")
   }
   
   if (!is.numeric(D) | D < 0){
