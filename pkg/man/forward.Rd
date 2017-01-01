@@ -30,7 +30,7 @@ pick.immigrate(com, D = 1, prob.of.immigrate = 0, pool,
 starting community. It is in principle a three-column matrix or data frame including individual ID, species names and trait values. For strictly neutral dynamics, can be a vector of individual species names.
 }
  \item{prob, prob.of.immigrate, prob.of.mutate}{
-probability of an individual establishing in the community not being a descendent of an existing individual. If descendent from a new ancestor, can be either through immigration.
+probability of an individual establishing in the community not being a descendent of an existing individual. If descendent from a new ancestor, can be either through immigration (in pick.immigrate) or through mutation (in pick.mutate).
 }
  \item{D}{
 number of individuals that die in each time-step.
