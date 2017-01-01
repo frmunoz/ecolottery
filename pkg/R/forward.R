@@ -303,7 +303,7 @@ pick.immigrate <- function(com, D = 1, prob.of.immigrate = 0, pool,
    limit.sim <- as.matrix(dist(com[, 3], method = method.dist))
    colnames(limit.sim) <- com[, 1]
    rownames(limit.sim) <- com[, 1]
-   diag(limit.sim) <- 0
+   diag(limit.sim) <- NA
   } else {
     limit.sim <- NULL
   }
@@ -338,7 +338,7 @@ pick.immigrate <- function(com, D = 1, prob.of.immigrate = 0, pool,
       }
       
       limit.sim.t <- apply(limit.sim[com[, 1], com[, 1]], 2,
-                           function(x) (sum(exp( -x^2 / (2*(sigma^2))))))
+                           function(x) (sum(exp( -x^2 / (2*(sigma^2))), na.rm = T)))
       
       prob.death <- (coeff.lim.sim - 1)*limit.sim.t
       
