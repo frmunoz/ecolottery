@@ -315,7 +315,7 @@ pick.immigrate <- function(com, D = 1, prob.of.immigrate = 0, pool,
     
     died <- sample(J, D, replace = TRUE)
     
-    com <- com[-died, ]
+    com <- com[died==0, ]
     
     if (any(is.na(com[, 1]))) {
       stop("Error: NA values in community composition (1)")
@@ -354,7 +354,7 @@ pick.immigrate <- function(com, D = 1, prob.of.immigrate = 0, pool,
     
     died <- rmultinom(1, D, prob.death)
     
-    com <- com[ -died, ] # Community composition after mortality
+    com <- com[died==0, ] # Community composition after mortality
     
     if (sum(is.na(com[, 1])) != 0) {
       stop("Error: NA values in community composition (2)")
