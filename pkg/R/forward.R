@@ -116,13 +116,15 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
     if (ncol(initial) < 3) {
       cat(paste0("Two-column initial community: assumed to represent species ",
                  "and trait information; individual ids will be generated"))
-    }
-  	
     J <- nrow(initial)
     init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
                             sp = initial[, 1],
                             trait = initial[, 2],
                             stringsAsFactors = F)
+	    } else
+	    {
+	    	init_comm <- initial
+	    }
   }
   
   if ((limit.sim | !is.null(filt)) & any(is.na(init_comm[, 3]))) {
