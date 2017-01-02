@@ -195,7 +195,11 @@ pick <- function(com, D = 1, prob = 0, pool = NULL, prob.death = prob.death,
   
   } else {
 	  
-    # If there is a species pool make an individual immigrates
+    if((!is.null(filt) | limit.sim) & prob.of.immigrate > 0 & any(is.na(pool[,3]))) {
+	    stop("With environmental filtering, NA trait values not allowed in regional pool")
+    }
+	  
+  # If there is a species pool make an individual immigrates
     return(pick.immigrate(com, D = D, prob.of.immigrate = prob, pool = pool,
                           prob.death = prob.death, limit.sim = limit.sim,
                           coeff.lim.sim = coeff.lim.sim, sigma = sigma,
