@@ -220,11 +220,9 @@ pick.mutate <- function(com, D = 1, prob.of.mutate = 0, new.index = 0) {
     J <- nrow(com)
     
     if (is.matrix(com)) {
-      com <- as.data.frame(com, stringsAsFactors = F)}
-	  
-     com[, 1] <- as.character(com[, 1])
-     com[, 2] <- as.character(com[, 2])
-	  
+      	com <- as.data.frame(com, stringsAsFactors = F)
+ 	com[, 1] <- as.character(com[, 1])
+     	com[, 2] <- as.character(com[, 2])	  
     }
     
   } else {
@@ -287,10 +285,10 @@ pick.immigrate <- function(com, D = 1, prob.of.immigrate = 0, pool,
     J <- nrow(com)
     
     if (is.matrix(com)) {
-      com <- as.data.frame(com, stringsAsFactors = F)
-      com[, 2] <- as.character(com[, 2])
-    }
-  
+      com <- as.data.frame(com, stringsAsFactors = F)}
+    com[, 1] <- as.character(com[, 1])
+    com[, 2] <- as.character(com[, 2])
+      
   } else {
     stop("pick.immigrate: misdefined community composition")
   }
