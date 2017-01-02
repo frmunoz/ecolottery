@@ -220,8 +220,11 @@ pick.mutate <- function(com, D = 1, prob.of.mutate = 0, new.index = 0) {
     J <- nrow(com)
     
     if (is.matrix(com)) {
-      com <- as.data.frame(com, stringsAsFactors = F)
-      com[, 1] <- as.character(com[, 2])
+      com <- as.data.frame(com, stringsAsFactors = F)}
+	  
+     com[, 1] <- as.character(com[, 1])
+     com[, 2] <- as.character(com[, 2])
+	  
     }
     
   } else {
