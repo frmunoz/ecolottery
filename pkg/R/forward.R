@@ -195,7 +195,7 @@ pick <- function(com, D = 1, prob = 0, pool = NULL, prob.death = prob.death,
   
   } else {
 	  
-    if((!is.null(filt) | limit.sim) & prob.of.immigrate > 0 & any(is.na(pool[,3]))) {
+    if((!is.null(filt) | limit.sim) & prob > 0 & any(is.na(pool[,3]))) {
 	    stop("With environmental filtering, NA trait values not allowed in regional pool")
     }
 	  
