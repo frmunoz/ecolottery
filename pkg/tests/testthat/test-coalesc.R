@@ -59,7 +59,8 @@ test_that("coalesc() behaves well with extreme cases", {
   expect_error(coalesc(10, m = 0.1, -1), fixed = TRUE,
                "Fundamental parameter of biodiversity theta must be positive.")
   # Provide both pool and theta
-  expect_warning(coalesc(10, 0.1, 40, pool = pool), fixed = TRUE,
+  expect_warning(coalesc(10, 0.1, 40, pool = pool, verbose = TRUE),
+                 fixed = TRUE,
                  "Both theta and regional pool provided, discarding theta")
   
   # Extreme pool of species (one individual one species, individual
