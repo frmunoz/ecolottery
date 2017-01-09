@@ -48,13 +48,19 @@ test_that("coalesc() behaves well with extreme cases", {
                fixed = TRUE)
   expect_error(coalesc(0, theta = 50), "J must be positive.",
                fixed = TRUE)
-  # Bad m values
+  
+  # Problematic m values
+  # m too high
   expect_error(coalesc(10, m = 10, 40), fixed = TRUE,
-               "Migration parameter must belongs to ]0; 1] interval.")
-  expect_error(coalesc(10, m = 0, 40), fixed = TRUE,
-               "Migration parameter must belongs to ]0; 1] interval.")
+               "Migration parameter must belongs to [0; 1] interval.")
+  
+  # negative m
   expect_error(coalesc(10, m = -1, 40), fixed = TRUE,
-               "Migration parameter must belongs to ]0; 1] interval.")
+               "Migration parameter must belongs to [0; 1] interval.")
+  
+  # null m
+  expect_silent(coalesc(10, m = 0, 40))
+  
   # Bad theta values
   expect_error(coalesc(10, m = 0.1, -1), fixed = TRUE,
                "Fundamental parameter of biodiversity theta must be positive.")
