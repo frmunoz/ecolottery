@@ -6,8 +6,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
     stop("You must either provide regional pool composition or theta value")
   }
   
-  if (m <= 0 | m > 1) {
-    stop("Migration parameter must belongs to ]0; 1] interval.")
+  if (m < 0 | m > 1) {
+    stop("Migration parameter must belongs to [0; 1] interval.")
   }
   
   if (!is.null(theta)) {
@@ -132,10 +132,34 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
   } else {
     env_filter <- function(x) t(apply(x,1,function(y) 1))
   }
+                                      
+  ## Environmental filter should not provide negative values                                    
+                                      
+  prob <- env_filter(ind_pool_traits)
+  
+  if (any(prob<0)) {
+      if(verbose) warning("Negative weights yielded by filtering function are set to 0. 
+Maybe better defining the filtering function in a different way!")
+      prob[prob<0] <- 0
+      if (all(prob<0)) 
+        stop("Your filtering function does not allow any immigrant to enter the community")
+  }  
 
   ## Community generation
-                                      
-  # If migration rate < 1
+  
+  ind_com_lab <- array(NA, J)
+  ind_com_sp <- array(NA, J)
+  ind_com_traits <- matrix(NA, nrow = J, ncol = ncol(ind_pool_traits))      
+  
+  # If migration rate = 0, ecological fixation
+  if (m == 0) {
+    migrant <- sample(1:nrow(pool), 1, prob = prob)
+    ind_com_traits <- t(apply(ind_com_traits, 1, function(x) ind_pool_traits[migrant, ]))
+    com <- data.frame(ind = rep(pool[migrant, 1], J), sp = rep(pool[migrant, 2], J), ind_com_traits)
+    return(list(com = com, pool = pool)
+  }
+    
+  # If migration rate > 0
   if (m < 1) {
     I <- m * (J - 1) / (1 - m) # Number of available immigrants
     X <- runif(J)
@@ -152,15 +176,12 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
   
   com_species <- length(assign_com) # Number of individuals taken from the regional pool
   
-  migrants <- sample(1:nrow(pool), com_species, prob = env_filter(ind_pool_traits))
+  migrants <- sample(1:nrow(pool), com_species, prob = prob)
   
-  ind_com_lab <- array(NA, J)
   ind_com_lab[assign_com] <- pool[migrants[1:com_species], 1] # Assign individuals
   
-  ind_com_sp <- array(NA, J)
   ind_com_sp[assign_com] <- pool[migrants[1:com_species], 2] # Assign species
-  
-  ind_com_traits <- matrix(NA, nrow = J, ncol = ncol(ind_pool_traits))
+ 
   # Assign traits
   ind_com_traits[assign_com,] <- apply(ind_pool_traits, 2,
                                        function(y) y[migrants[1:com_species]]) 
