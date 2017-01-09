@@ -156,7 +156,7 @@ Maybe better defining the filtering function in a different way!")
     migrant <- sample(1:nrow(pool), 1, prob = prob)
     ind_com_traits <- t(apply(ind_com_traits, 1, function(x) ind_pool_traits[migrant, ]))
     com <- data.frame(ind = rep(pool[migrant, 1], J), sp = rep(pool[migrant, 2], J), ind_com_traits)
-    return(list(com = com, pool = pool)
+    return(list(com = com, pool = pool))
   }
     
   # If migration rate > 0
