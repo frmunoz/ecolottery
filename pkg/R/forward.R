@@ -30,8 +30,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     stop("limiting similarity parameter must be a boolean.")
   }
   
-  if (!is.numeric(coeff.lim.sim) | coeff.lim.sim < 0){
-    stop("coeff.lim.sim parameter must be a positive number.")
+  if (!is.numeric(coeff.lim.sim) | coeff.lim.sim < 2){
+    stop("coeff.lim.sim parameter must be a positive integer superior to 1.")
   }
   
   if (!is.numeric(sigma) | sigma < 0){
@@ -349,6 +349,10 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
                            function(x) (sum(exp( -x^2 / (2*(sigma^2))), na.rm = T)))
       
       prob.death <- (coeff.lim.sim - 1)*limit.sim.t
+      
+      if(sum(prob.death)==0){
+        prob.death <- prob.death + 0.001
+      }
       
       limit.sim.t <- mean(limit.sim[com[, 1], com[, 1]], na.rm = T)
     }
