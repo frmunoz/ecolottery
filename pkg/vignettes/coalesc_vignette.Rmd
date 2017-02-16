@@ -164,7 +164,7 @@ pool <- sort(rep(as.character(1:100), 10))
 
 # Initial community composed of 10 species each including 10 individuals, 
 # with trait information for niche-based dynamics
-initial <- data.frame(sp = sort(rep(as.character(1:10), 10)), trait = runif(100))
+initial2 <- data.frame(sp = sort(rep(as.character(1:10), 10)), trait = runif(100))
 
 # Variation of community richness with time
 final <- forward(initial = initial2, prob = 0.1, gens = 1000, pool = pool, 
