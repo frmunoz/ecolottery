@@ -289,7 +289,8 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     J <- nrow(com)
     
     if (is.matrix(com)) {
-      com <- as.data.frame(com, stringsAsFactors = F)}
+      com <- as.data.frame(com, stringsAsFactors = F)
+    }
     com[, 1] <- as.character(com[, 1])
     com[, 2] <- as.character(com[, 2])
       
@@ -360,7 +361,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     }
     
     died <- sample(J, d, replace = T, prob = prob.death)
-    com <- com[-died==0, ] # Community composition after mortality
+    com <- com[-died, ] # Community composition after mortality: died individuals removed
     
     if (sum(is.na(com[, 1])) != 0) {
       stop("Error: NA values in community composition (2)")
