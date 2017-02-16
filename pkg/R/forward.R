@@ -1,6 +1,6 @@
 # Function to compute forward simulation of community dynamics with (eventually)
 # environmental filtering
-forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
+forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
                     pool = NULL, limit.sim = F, coeff.lim.sim = 2, sigma = 0.1,
                     filt = NULL, prob.death = NULL, method.dist = "euclidean") {
   # The function will stop if niche - based dynamics is requested, but trait
@@ -14,7 +14,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
     stop("Probability of migration or mutation must be a number belonging to [0; 1] interval.")
   }
   
-  if (!is.numeric(D) | D < 0){
+  if (!is.numeric(d) | d < 0){
     stop("Number of individuals that die in each time step must be a positive number.")
   }
   
@@ -150,7 +150,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
       comm_through_time[[i]] <- next_comm  # Store the community at time i
       
       # Simulate community dynamics
-      next_comm <- pick(next_comm, D = D, prob = prob, pool = pool,
+      next_comm <- pick(next_comm, d = d, prob = prob, pool = pool,
                         prob.death = prob.death, limit.sim = limit.sim,
                         coeff.lim.sim = coeff.lim.sim, sigma = sigma,
                         filt = filt, new.index = new.index, method.dist = "euclidean")
@@ -170,7 +170,7 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
   } else {# Keep only the last community
     for (i in 1:gens) {
       # Simulate community dynamics for a timestep
-      next_comm <- pick(next_comm, D = D, prob = prob, pool = pool,
+      next_comm <- pick(next_comm, d = d, prob = prob, pool = pool,
                         prob.death = prob.death, limit.sim = limit.sim,
                         coeff.lim.sim = coeff.lim.sim, sigma = sigma,
                         filt = filt, new.index = new.index, method.dist = "euclidean")
@@ -184,14 +184,14 @@ forward <- function(initial, prob = 0, D = 1, gens = 150, keep = FALSE,
 
 # Precise function to simulate a single timestep by picking an individual in
 # the pool or make an individual mutate
-pick <- function(com, D = 1, prob = 0, pool = NULL, prob.death = prob.death,
+pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
                  limit.sim = NULL, coeff.lim.sim = 2, sigma = 0.1, filt = NULL,
                  new.index = new.index, method.dist = "euclidean") {
   
   
   if (is.null(pool)) {
     # If no species pool specified, mutate an individual
-    return(pick.mutate(com, D = D, prob.of.mutate = prob, new.index = new.index)) 
+    return(pick.mutate(com, d = d, prob.of.mutate = prob, new.index = new.index)) 
   
   } else {
 	  
@@ -200,7 +200,7 @@ pick <- function(com, D = 1, prob = 0, pool = NULL, prob.death = prob.death,
     }
 	  
   # If there is a species pool make an individual immigrates
-    return(pick.immigrate(com, D = D, prob.of.immigrate = prob, pool = pool,
+    return(pick.immigrate(com, d = d, prob.of.immigrate = prob, pool = pool,
                           prob.death = prob.death, limit.sim = limit.sim,
                           coeff.lim.sim = coeff.lim.sim, sigma = sigma,
                           filt = filt, method.dist = "euclidean"))
@@ -208,7 +208,7 @@ pick <- function(com, D = 1, prob = 0, pool = NULL, prob.death = prob.death,
 }
 
 # Return community with mutated inidividual (= new species)
-pick.mutate <- function(com, D = 1, prob.of.mutate = 0, new.index = 0) {
+pick.mutate <- function(com, d = 1, prob.of.mutate = 0, new.index = 0) {
   
   if (is.vector(com)) {
     # If community only defined by species names
@@ -236,7 +236,7 @@ pick.mutate <- function(com, D = 1, prob.of.mutate = 0, new.index = 0) {
   ## Simulate the dynamics of the community
   
   # Number of individuals who die at this timestep
-  died <- sample(J, D, replace = TRUE)
+  died <- sample(J, d, replace = TRUE)
   
   # How many of the dead individuals are replaced by mutated individuals
   mutated <- runif(length(died)) < prob.of.mutate
@@ -271,7 +271,7 @@ pick.mutate <- function(com, D = 1, prob.of.mutate = 0, new.index = 0) {
 
 # Function to return individuals who immigrated from the species pool
 # limit.sim = distances de traits; filt = habitat filtering function
-pick.immigrate <- function(com, D = 1, prob.of.immigrate = 0, pool,
+pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
                            prob.death = NULL, limit.sim = NULL,
                            coeff.lim.sim = 2, sigma = 0.1, filt = NULL, method.dist = "euclidean") {
   
@@ -320,7 +320,7 @@ pick.immigrate <- function(com, D = 1, prob.of.immigrate = 0, pool,
   
   if (is.null(limit.sim) & is.null(filt)) {
     
-    died <- sample(J, D, replace = TRUE)
+    died <- sample(J, d, replace = TRUE)
     
     com <- com[-died, ]
     
@@ -359,7 +359,7 @@ pick.immigrate <- function(com, D = 1, prob.of.immigrate = 0, pool,
       prob.death <- prob.death * (1 - hab_filter(com[, 3]) / sum(hab_filter(com[, 3])))
     }
     
-    died <- sample(J, D, replace = T, prob = prob.death)
+    died <- sample(J, d, replace = T, prob = prob.death)
     com <- com[-died==0, ] # Community composition after mortality
     
     if (sum(is.na(com[, 1])) != 0) {
@@ -367,7 +367,7 @@ pick.immigrate <- function(com, D = 1, prob.of.immigrate = 0, pool,
     }
   } 
   
-  immigrated <- runif(D) < prob.of.immigrate
+  immigrated <- runif(d) < prob.of.immigrate
   
   J1 <- sum(immigrated)
   J2 <- sum(!immigrated)
