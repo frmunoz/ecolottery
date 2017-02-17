@@ -2,7 +2,7 @@
 # environmental filtering
 forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
                     pool = NULL, limit.sim = F, coeff.lim.sim = 1, sigma = 0.1,
-                    filt = NULL, prob.death = NULL, method.dist = "euclidean") {
+                    filt = NULL, prob.death = NULL, method.dist = "euclidean", plot_gens = FALSE) {
   # The function will stop if niche - based dynamics is requested, but trait
   # information is missing in the local community
   # For strictly neutral communities, a vector of species names is enough for
@@ -46,6 +46,14 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   
   if ((method.dist %in% c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"))==FALSE){
     stop("Provided distance is not existing. See stats::dist function for help.")
+  }
+  
+  if (!is.logical(plot_gens)){
+    stop("plot_gens parameter must be a boolean.")
+  }
+  
+  if (plot_gens & !keep){
+    warning("plot_gens is valid only if keep parameter is set as TRUE.")
   }
   
   # Stops if only a vector of species name is given as initial community with
@@ -166,6 +174,26 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     return(list(com_t = comm_through_time,
                 limit.sim.t = limit.sim.t,
                 pool = pool))
+    
+    if(plot_gens){ # Plotting number of individuals and species over generations
+      
+      uniq_list <- lapply(comm_through_time, function(y) apply(y, 2, function(x) length(unique(x))))
+      uniq_df <- do.call(rbind.data.frame, uniq_list)
+      colnames(uniq_df) <- c("id_uniq", "nb_sp", "nb_tra")
+      uniq_df$gens <- seq(1:nrow(uniq_df))
+      uniq_df$nb_id <- J
+      
+      print(ggplot(uniq_df, aes(gens, nb_id)) +
+        geom_line() +
+        geom_line(aes(gens, id_uniq)) +
+        xlab("Number of generations") +
+        ylab("Number of unique individuals"))
+      
+      print(ggplot(uniq_df, aes(gens, nb_sp)) +
+        geom_line() +
+        xlab("Number of generations") +
+        ylab("Number of unique species"))
+    }
   
   } else {# Keep only the last community
     for (i in 1:gens) {

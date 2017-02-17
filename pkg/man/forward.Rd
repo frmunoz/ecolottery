@@ -78,6 +78,9 @@ function \code{\link[stats]{dist}}).
  \item{new.index}{
 used to give a new species name when speciation occurs.
 }
+ \item{plot_gens}{
+plot the number of unique individuals and species over generations.
+}
 }
 \details{
 It is a zero-sum game, so that the number of individuals of the community is fixed to the number of individuals in initial community.
