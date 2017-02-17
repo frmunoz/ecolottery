@@ -347,14 +347,16 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       
       # For each species: compute limiting similarity coefficient based on Gaussian distribution
       limit.sim.t <- apply(limit.sim[com[, 1], com[, 1]], 2,
-                           function(x) (sum(exp( -x^2 / (2*(sigma^2))), na.rm = T)))
+                           function(x) (sum(-exp( -x^2 / (2*(sigma^2))), na.rm = T)))
       
       prob.death <- coeff.lim.sim*limit.sim.t
       
+      # If all probabilities null, sample won't work. An identical and weak probability is given to each species.
       if(sum(prob.death)==0){
         prob.death <- prob.death + 0.001
       }
       
+      # limit.sim.t will display the average distance between trait of species for the whole community
       limit.sim.t <- mean(limit.sim[com[, 1], com[, 1]], na.rm = T)
     }
     # Habitat filtering also influences the individual death probability
@@ -363,6 +365,11 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
         stop("Error: NA values in habitat filter")
       }
       prob.death <- prob.death * (1 - hab_filter(com[, 3]) / sum(hab_filter(com[, 3])))
+      
+      # If all probabilities null, sample won't work. An identical and weak probability is given to each species.
+      if(sum(prob.death)==0){
+        prob.death <- prob.death + 0.001
+      }
     }
     
     died <- sample(J, d, replace = T, prob = prob.death)
@@ -375,10 +382,12 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
   
   immigrated <- runif(d) < prob.of.immigrate
   
+  # If probability of immigration is high, then the new individual is drawn from the regional pool
   J1 <- sum(immigrated)
+  # The lower the probability of immigration, the higher the probability of drawing the new individual from the community
   J2 <- sum(!immigrated)
   
-  if (J1 > 0) {
+  if (J1 > 0) { # Immigrant drawn from regional pool
     # Influence of habitat filtering on immigration
     if (is.null(filt)) {
       add <- pool[sample(1:nrow(pool), J1, replace = TRUE), 1:3]
@@ -401,7 +410,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       }
   }
   
-  if (J2 > 0) {
+  if (J2 > 0) { # Immigrant drawn from com.init
     
     com <- rbind(com, com.init[sample(1:nrow(com.init), J2, replace = TRUE), 1:3])
     
