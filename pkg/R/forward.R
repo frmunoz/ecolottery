@@ -347,9 +347,13 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       
       # For each species: compute limiting similarity coefficient based on Gaussian distribution
       limit.sim.t <- apply(limit.sim[com[, 1], com[, 1]], 2,
-                           function(x) (sum(-exp( -x^2 / (2*(sigma^2))), na.rm = T)))
+                           function(x) (sum(exp( -x^2 / (2*(sigma^2))), na.rm = T)))
       
       prob.death <- coeff.lim.sim*limit.sim.t
+      # Scaling prob.death
+      prob.death <- (prob.death - min(prob.death)) / (max(prob.death) - min(prob.death))
+      # Putting death probabilities in the right way
+      prob.death <- 1- prob.death
       
       # If all probabilities null, sample won't work. An identical and weak probability is given to each species.
       if(sum(prob.death)==0){
