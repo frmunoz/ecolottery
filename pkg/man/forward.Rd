@@ -160,7 +160,7 @@ plot_comm(final6) # the distribution will be more even
 
 # Variation of community richness with time
 final7 <- forward(initial = initial2, prob = 0.1, gens = 1000, pool = pool, 
-                 limit.sim = TRUE, keep = TRUE)
+                 limit.sim = TRUE, keep = TRUE, plot_gens = TRUE)
 
 # Check stationarity
 plot(unlist(lapply(final7$com_t, function(x) length(unique(x[, 2])))), 
