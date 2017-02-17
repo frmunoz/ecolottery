@@ -1,7 +1,7 @@
 # Function to compute forward simulation of community dynamics with (eventually)
 # environmental filtering
 forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
-                    pool = NULL, limit.sim = F, coeff.lim.sim = 2, sigma = 0.1,
+                    pool = NULL, limit.sim = F, coeff.lim.sim = 1, sigma = 0.1,
                     filt = NULL, prob.death = NULL, method.dist = "euclidean") {
   # The function will stop if niche - based dynamics is requested, but trait
   # information is missing in the local community
@@ -30,8 +30,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     stop("limiting similarity parameter must be a boolean.")
   }
   
-  if (!is.numeric(coeff.lim.sim) | coeff.lim.sim < 2){
-    stop("coeff.lim.sim parameter must be a positive integer superior to 1.")
+  if (!is.numeric(coeff.lim.sim) | coeff.lim.sim < 1){
+    stop("coeff.lim.sim parameter must be a positive integer superior to 0.")
   }
   
   if (!is.numeric(sigma) | sigma < 0){
@@ -185,7 +185,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
 # Precise function to simulate a single timestep by picking an individual in
 # the pool or make an individual mutate
 pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
-                 limit.sim = NULL, coeff.lim.sim = 2, sigma = 0.1, filt = NULL,
+                 limit.sim = NULL, coeff.lim.sim = 1, sigma = 0.1, filt = NULL,
                  new.index = new.index, method.dist = "euclidean") {
   
   
@@ -273,7 +273,7 @@ pick.mutate <- function(com, d = 1, prob.of.mutate = 0, new.index = 0) {
 # limit.sim = distances de traits; filt = habitat filtering function
 pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
                            prob.death = NULL, limit.sim = NULL,
-                           coeff.lim.sim = 2, sigma = 0.1, filt = NULL, method.dist = "euclidean") {
+                           coeff.lim.sim = 1, sigma = 0.1, filt = NULL, method.dist = "euclidean") {
   
   if (is.vector(com)) {
     # If community only defined by species names
@@ -345,10 +345,11 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
         stop("limit.sim: mismatch of species names")
       }
       
+      # For each species: compute limiting similarity coefficient based on Gaussian distribution
       limit.sim.t <- apply(limit.sim[com[, 1], com[, 1]], 2,
                            function(x) (sum(exp( -x^2 / (2*(sigma^2))), na.rm = T)))
       
-      prob.death <- (coeff.lim.sim - 1)*limit.sim.t
+      prob.death <- coeff.lim.sim*limit.sim.t
       
       if(sum(prob.death)==0){
         prob.death <- prob.death + 0.001
