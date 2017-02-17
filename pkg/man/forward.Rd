@@ -14,15 +14,15 @@ generations.
 
 \usage{
 forward(initial, prob = 0, d = 1, gens = 150, keep = FALSE, pool = NULL,
-        limit.sim = F, coeff.lim.sim = 1, sigma = 0.1, filt = NULL, 
+        limit.sim = F, coeff.lim.sim = 1, sigm = 0.1, filt = NULL, 
         prob.death = NULL, method.dist = "euclidean")
 pick(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
-     limit.sim = NULL, coeff.lim.sim = 1, sigma = 0.1, filt = NULL, 
+     limit.sim = NULL, coeff.lim.sim = 1, sigm = 0.1, filt = NULL, 
      new.index = new.index)
 pick.mutate(com, d = 1, prob.of.mutate = 0, new.index = 0)
 pick.immigrate(com, d = 1, prob.of.immigrate = 0, pool, 
                  prob.death = NULL, limit.sim = NULL, coeff.lim.sim = 1,
-                 sigma = 0.1, filt = NULL)
+                 sigm = 0.1, filt = NULL)
 }
 
 \arguments{
@@ -58,7 +58,7 @@ if \code{TRUE,} limiting similarity will be simulated, based on species trait di
  \item{coeff.lim.sim}{
 adjust the intensity of limiting similarity. 
 }
- \item{sigma}{
+ \item{sigm}{
 adjust the variance of the overlap function used to calculate limiting similarity.
 }
  \item{filt}{
@@ -137,8 +137,8 @@ initial2 <- data.frame(sp = sort(rep(as.character(1:10), 10)),
                       trait = runif(100))
 
 # Simulation of stabilizing habitat filtering around t = 0.5, over 1000 time steps
-sigma <- 0.1
-filt_gaussian <- function(t,x) exp(-(x-t)^2/(2*sigma^2))
+sigm <- 0.1
+filt_gaussian <- function(t,x) exp(-(x-t)^2/(2*sigm^2))
 final3 <- forward(initial = initial2, prob = 0.1, gens = 1000, pool = pool, 
                  filt = function(x) filt_gaussian(0.5,x))
 plot_comm(final3) # trait distribution in final community
