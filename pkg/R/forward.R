@@ -399,6 +399,9 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       }
       prob.death <- prob.death * (1 - hab_filter(com[, 3]) / sum(hab_filter(com[, 3])))
       
+      # Giving names to prob.death
+      names(prob.death) <- com[, 1]
+      
       # If all probabilities null, sample won't work. An identical and weak probability is given to each species.
       if(sum(prob.death)==0){
         prob.death <- prob.death + 0.001
