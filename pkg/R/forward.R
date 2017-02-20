@@ -382,9 +382,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       prob.death <- coeff.lim.sim*limit.sim.t
       # Scaling prob.death
       prob.death <- (prob.death - min(prob.death)) / (max(prob.death) - min(prob.death))
-      # Putting death probabilities in the right way
-      prob.death <- 1- prob.death
-      
+
       # If all probabilities null, sample won't work. An identical and weak probability is given to each species.
       if(sum(prob.death)==0){
         prob.death <- prob.death + 0.001
@@ -392,6 +390,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       
       # limit.sim.t will display the average distance between trait of species for the whole community
       limit.sim.t <- mean(limit.sim[com[, 1], com[, 1]], na.rm = T)
+      
     }
     # Habitat filtering also influences the individual death probability
     if (!is.null(filt)) {
@@ -406,8 +405,14 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       }
     }
     
+    # Position of dead individuals in prob.death vector
     died <- sample(J, d, replace = T, prob = prob.death)
-    com <- com[-died, ] # Community composition after mortality: died individuals removed
+    # Identities of dead individuals
+    id_died <- names(prob.death)[died]
+    # If several individuals concerned: the first one of each identity dies
+    id_died_pos <- as.numeric(sapply(id_died, function(x) which(com[, 1] %in% x)[1]))
+    # Community composition after mortality: died individuals removed
+    com <- com[-id_died_pos, ] 
     
     if (sum(is.na(com[, 1])) != 0) {
       stop("Error: NA values in community composition (2)")
