@@ -11,7 +11,6 @@ Simulates the composition of a community based on immigration from a regional po
 \usage{
 coalesc(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = NULL, Jpool = 50 * J,
         verbose = FALSE)
-coalesc_simp(J, m = 1)
 }
 \arguments{
  \item{J}{
