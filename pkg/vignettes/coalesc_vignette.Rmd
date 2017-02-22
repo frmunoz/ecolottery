@@ -168,17 +168,17 @@ initial2 <- data.frame(sp = sort(rep(as.character(1:10), 10)), trait = runif(100
 
 # Variation of community richness with time
 final <- forward(initial = initial2, prob = 0.1, gens = 1000, pool = pool, 
-                 limit.sim = TRUE, keep = TRUE, filt = filt)
+                 limit.sim = FALSE, keep = TRUE, filt = filt)
 
 final2 <- forward(initial = initial2, prob = 0.1, gens = 1000, pool = pool, 
-                 limit.sim = TRUE, keep = F, filt = filt)
+                 limit.sim = FALSE, keep = FALSE, filt = filt)
 
 # Check stationarity
 plot(unlist(lapply(final$com_t, function(x) length(unique(x[, 2])))), 
      xlab = "Time step", ylab = "Community richness") 
 
 # Index of limiting similarity over time
-plot(final$limit.sim.t, xlab = "Time step", ylab = "Limiting similarity")
+# plot(final$limit.sim.t, xlab = "Time step", ylab = "Limiting similarity")
 
 # Comparison of regional and local trait distributions
 plot_comm(list("pool" = final$pool, "com" = final$com_t[1000][[1]]))
