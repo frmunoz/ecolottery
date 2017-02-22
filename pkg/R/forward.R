@@ -171,26 +171,35 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
       next_comm <- next_comm$com
     } 
     
-    if(plot_gens){ # Plotting number of individuals and species over generations
+    if (plot_gens) { # Plotting number of individuals and species over generations
       
-      require(ggplot2)
+      uniq_list <- lapply(comm_through_time,
+                          function(y) apply(y, 2, function(x) length(unique(x))))
       
-      uniq_list <- lapply(comm_through_time, function(y) apply(y, 2, function(x) length(unique(x))))
       uniq_df <- do.call(rbind.data.frame, uniq_list)
       colnames(uniq_df) <- c("id_uniq", "nb_sp", "nb_tra")
       uniq_df$gens <- seq(1:nrow(uniq_df))
       uniq_df$nb_id <- J
       
-      print(ggplot(uniq_df, aes(gens, nb_id)) +
-              geom_line() +
-              geom_line(aes(gens, id_uniq), size = 1) +
-              xlab("Number of generations") +
-              ylab("Number of unique individuals"))
+      if (requireNamespace("ggplot2", quietly = TRUE)) {
+        
+        # Plot the number of individuals through all the generations
+        plot_individuals = ggplot2::ggplot(uniq_df, ggplot2::aes(gens, nb_id)) +
+                ggplot2::geom_line() +
+                ggplot2::geom_line(aes(gens, id_uniq), size = 1) +
+                ggplot2::labs(x = "Number of generations",
+                              y = "Number of unique individuals")
+        
+        # Plot the number of species through all the generations
+        plot_species = ggplot2::ggplot(uniq_df, ggplot2::aes(gens, nb_sp)) +
+                ggplot2::geom_line(size = 1) +
+                ggplot2::labs(x = "Number of generations",
+                     y = "Number of unique species")
+        
+        print(plot_individuals)
+        print(plot_species)
+      }
       
-      print(ggplot(uniq_df, aes(gens, nb_sp)) +
-              geom_line(size = 1) +
-              xlab("Number of generations") +
-              ylab("Number of unique species"))
     }
     
     return(list(com_t = comm_through_time,
