@@ -8,16 +8,16 @@ test_that("get_rel_abund() works", {
                                    relab = c(0.5, 0.25, 0.25),
                                    stringsAsFactors = FALSE)
   
-  comp_rel_abund <- get_rel_abund(given_com)
+  comp_rel_abund <- .get_rel_abund(given_com)
   
   expect_is(comp_rel_abund, "data.frame")
   expect_named(comp_rel_abund, c("sp", "ab", "relab"))
   expect_equal(dim(comp_rel_abund), c(3, 3))
-  expect_equal(get_rel_abund(given_com),
+  expect_equal(.get_rel_abund(given_com),
                expected_rel_abund)
   
   # Extreme case single individual of a single species in community
-  expect_equal(get_rel_abund(data.frame(ind = 1, sp = 1)), 
+  expect_equal(.get_rel_abund(data.frame(ind = 1, sp = 1)), 
                data.frame(sp = "1", ab = 1, relab = 1,
                           stringsAsFactors = FALSE))
   
