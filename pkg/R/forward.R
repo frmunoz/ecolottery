@@ -2,7 +2,8 @@
 # environmental filtering
 forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
                     pool = NULL, limit.sim = F, coeff.lim.sim = 1, sigm = 0.1,
-                    filt = NULL, prob.death = NULL, method.dist = "euclidean", plot_gens = FALSE) {
+                    filt = NULL, prob.death = NULL, method.dist = "euclidean",
+                    plot_gens = FALSE) {
   # The function will stop if niche - based dynamics is requested, but trait
   # information is missing in the local community
   # For strictly neutral communities, a vector of species names is enough for
@@ -10,49 +11,49 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   
   # Checking basic parameters
 
-  if (!is.numeric(prob) | prob < 0){
+  if (!is.numeric(prob) | prob < 0) {
     stop("Probability of migration or mutation must be a number belonging to [0; 1] interval.")
   }
   
-  if (!is.numeric(d) | d < 0){
+  if (!is.numeric(d) | d < 0) {
     stop("Number of individuals that die in each time step must be a positive number.")
   }
   
-  if (!is.numeric(gens) | gens <= 0){
+  if (!is.numeric(gens) | gens <= 0) {
     stop("Number of generations must be a positive number.")
   }
   
-  if (!is.logical(keep)){
+  if (!is.logical(keep)) {
     stop("keep parameter must be a boolean.")
   }
   
-  if (!is.logical(limit.sim)){
+  if (!is.logical(limit.sim)) {
     stop("limiting similarity parameter must be a boolean.")
   }
   
-  if (!is.numeric(coeff.lim.sim) | coeff.lim.sim < 1){
+  if (!is.numeric(coeff.lim.sim) | coeff.lim.sim < 1) {
     stop("coeff.lim.sim parameter must be a positive integer superior to 0.")
   }
   
-  if (!is.numeric(sigm) | sigm < 0){
+  if (!is.numeric(sigm) | sigm < 0) {
     stop("sigm parameter must be a positive number.")
   }
   
   if (!is.null(filt)){
-    if (!is.function(filt)){
+    if (!is.function(filt)) {
       stop("filt must be a function.")
     }
   }    
   
-  if ((method.dist %in% c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"))==FALSE){
+  if ((method.dist %in% c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski")) == FALSE) {
     stop("Provided distance is not existing. See stats::dist function for help.")
   }
   
-  if (!is.logical(plot_gens)){
+  if (!is.logical(plot_gens)) {
     stop("plot_gens parameter must be a boolean.")
   }
   
-  if (plot_gens & !keep){
+  if (plot_gens & !keep) {
     warning("plot_gens is valid only if keep parameter is set as TRUE.")
   }
   
@@ -184,14 +185,17 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
       if (requireNamespace("ggplot2", quietly = TRUE)) {
         
         # Plot the number of individuals through all the generations
-        plot_individuals = ggplot2::ggplot(uniq_df, ggplot2::aes(gens, nb_id)) +
+        plot_individuals = ggplot2::ggplot(uniq_df,
+                                           ggplot2::aes_string("gens", "nb_id")) +
                 ggplot2::geom_line() +
-                ggplot2::geom_line(aes(gens, id_uniq), size = 1) +
+                ggplot2::geom_line(ggplot2::aes_string("gens", "id_uniq"),
+                                   size = 1) +
                 ggplot2::labs(x = "Number of generations",
                               y = "Number of unique individuals")
         
         # Plot the number of species through all the generations
-        plot_species = ggplot2::ggplot(uniq_df, ggplot2::aes(gens, nb_sp)) +
+        plot_species = ggplot2::ggplot(uniq_df,
+                                       ggplot2::aes_string("gens", "nb_sp")) +
                 ggplot2::geom_line(size = 1) +
                 ggplot2::labs(x = "Number of generations",
                      y = "Number of unique species")
