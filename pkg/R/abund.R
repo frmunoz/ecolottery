@@ -8,9 +8,9 @@ abund <- function(x) {
     rel_abund_list <-  lapply(x, function(y) {
       
       if (is.list(y) & !is.data.frame(y) & !is.matrix(y)) {
-        rel_abund <- lapply(y, get_rel_abund)
+        rel_abund <- lapply(y, .get_rel_abund)
       } else {
-        rel_abund <- get_rel_abund(y)
+        rel_abund <- .get_rel_abund(y)
       } 
       
       return(rel_abund)
@@ -24,7 +24,7 @@ abund <- function(x) {
 }
 
 # Internal function to compute relative abundances from a community data.frame
-get_rel_abund <- function(comdf) {
+.get_rel_abund <- function(comdf) {
   
   if (is.data.frame(comdf) | is.matrix(comdf)) {
     rel_abund <- as.data.frame(table(comdf[, "sp"]), stringsAsFactors = F)
