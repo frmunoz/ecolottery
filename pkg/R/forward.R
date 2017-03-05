@@ -149,7 +149,10 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   
   # Begins with the initial community
   next_comm <- init_comm
-  sp_t <- length(unique(init_comm$sp))
+  
+  # Richness of initial community is not included
+  #sp_t <- length(unique(init_comm$sp))
+  sp_t <- c()
 	
   if (keep) {  # If the user asked to keep all the communities at each timestep
     comm_through_time <- c()
