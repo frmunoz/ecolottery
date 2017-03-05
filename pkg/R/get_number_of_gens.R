@@ -21,7 +21,7 @@ get_number_of_gens = function(given_size, pool, nbrep = 100, prob = 0, d = 1, ge
                      method.dist = method.dist, plot_gens = plot_gens)
     
     nb_sp <- final$sp_t
-    nb_sp_gen <- rbind(nb_sp_gen, data.frame(gens = 1:number_gens, rich = nb_sp,
+    nb_sp_gen <- rbind(nb_sp_gen, data.frame(gens = 1:gens, rich = nb_sp,
                                              stringsAsFactors = F))
     
     gens_conv_cpt <- c(gens_conv_cpt, cpts(cpt.mean(nb_sp, penalty = "BIC")))
