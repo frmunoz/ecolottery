@@ -1,5 +1,6 @@
 \name{forward}
 \alias{forward}
+\alias{get_number_of_gens}
 \alias{pick}
 \alias{pick.mutate}
 \alias{pick.immigrate}
@@ -16,6 +17,9 @@ generations.
 forward(initial, prob = 0, d = 1, gens = 150, keep = FALSE, pool = NULL,
         limit.sim = F, coeff.lim.sim = 1, sigm = 0.1, filt = NULL, 
         prob.death = NULL, method.dist = "euclidean", plot_gens = FALSE)
+get_number_of_gen(given_size, pool, nbrep = 100, prob = 0, d = 1, gens = NULL, limit.sim = F,
+                              coeff.lim.sim = 1, sigm = 0.1, filt = NULL, prob.death = NULL,
+method.dist = "euclidean", plot_gens = FALSE)
 pick(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
      limit.sim = NULL, coeff.lim.sim = 1, sigm = 0.1, filt = NULL, 
      new.index = new.index, method.dist = "euclidean")
@@ -86,6 +90,8 @@ plot the number of unique individuals and species over generations.
 It is a zero-sum game, so that the number of individuals of the community is fixed to the number of individuals in initial community.
 
 When niche-based dynamics are simulated, the niche-based constraints influence both immigration and mortality.
+
+Function \code{get_number_of_gen()} allows determining the number of generations needed to reach stationary richness for given parameterization of \code{forward()}. The target number of generation is based on assessing the change point in species richness change over time for replicate simulated communities with random initial composition. A conservative measure is proposed as the maximum time to reach stationary richness over the replicate simulated communities.
 
 Functions \code{pick.immigrate()} and \code{pick.mutate()} are used to simulate immigration and speciation events within a time step. They are embedded in forward and are not really intended for the end user. 
 }
