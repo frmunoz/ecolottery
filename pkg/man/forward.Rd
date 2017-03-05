@@ -102,6 +102,9 @@ a matrix of individual in the final community, with individual ID in first colum
 \item{pool}{
 the regional pool of species used in simulation. Includes label of individual on first column, its species on second column, and a trait attribute on the third column.
 }
+\item{sp_t}{
+a vector of species richness at each time step.
+}
 \item{com_t}{
 if \code{keep = T}, a list of community composition for each time step (a matrix as in com).
 }
@@ -118,7 +121,6 @@ For neutral dynamics, S. P. Hubbell 2001. "The Unified Neutral Theory of Biodive
 \author{
 F. Munoz, derived from the \code{untb} function of R. Hankin.
 }
-
 
 \examples{
 # Initial community composed of 10 species each including 10 individuals
