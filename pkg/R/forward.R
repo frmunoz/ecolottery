@@ -149,7 +149,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   
   # Begins with the initial community
   next_comm <- init_comm
-  
+  sp_t <- length(unique(init_comm$sp))
+	
   if (keep) {  # If the user asked to keep all the communities at each timestep
     comm_through_time <- c()
     limit.sim.t <- c()
@@ -207,7 +208,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     }
     
     return(list(com_t = comm_through_time,
-                limit.sim.t = limit.sim.t,
+		sp_t = sp_t,
+		limit.sim.t = limit.sim.t,
                 pool = pool))
     
   } else {# Keep only the last community
@@ -217,11 +219,12 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
                         prob.death = prob.death, limit.sim = limit.sim,
                         coeff.lim.sim = coeff.lim.sim, sigm = sigm,
                         filt = filt, new.index = new.index, method.dist = "euclidean")
-      
+      sp_t <- c(sp_t, length(unique(next_comm$com$sp)))
+
       new.index <- next_comm$new.index
       next_comm <- next_comm$com
     }
-    return(list(com = next_comm, pool = pool))
+    return(list(com = next_comm, sp_t = sp_t, pool = pool))
   }
 }
 
