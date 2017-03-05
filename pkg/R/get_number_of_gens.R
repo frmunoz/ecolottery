@@ -16,12 +16,11 @@ get_number_of_gens = function(given_size, pool, nbrep = 100, prob = 0, d = 1, ge
   for(i in 1:nbrep)
   {
     final <- forward(initial = start_com,
-                     prob = prob, d = d, gens = gens, keep = T, pool = pool, limit.sim = limit.sim, 
+                     prob = prob, d = d, gens = gens, keep = F, pool = pool, limit.sim = limit.sim, 
                      coeff.lim.sim = coeff.lim.sim, sigm = sigm, filt = filt, prob.death = prob.death, 
                      method.dist = method.dist, plot_gens = plot_gens)
     
-    nb_sp <- unlist(lapply(final$com_t, function(x) length(unique(x[,2]))))
-    
+    nb_sp <- final$sp_t
     nb_sp_gen <- rbind(nb_sp_gen, data.frame(gens = 1:number_gens, rich = nb_sp,
                                              stringsAsFactors = F))
     
