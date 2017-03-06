@@ -2,6 +2,8 @@ exportPattern("^[^\\.]")
 
 ## Import all packages listed as Imports or Depends
 
+import("ggplot2")
+
 importFrom("grDevices", "rgb")
 importFrom("graphics", "abline", "plot", "hist")
 importFrom("stats", "dist", "rmultinom", "rnorm", "runif", "var")

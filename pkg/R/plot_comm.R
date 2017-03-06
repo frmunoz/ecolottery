@@ -29,10 +29,10 @@ plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL)
          trait = c(x$pool[, seltrait + 2], x$com[, seltrait + 2]))
        # Plot
        if (requireNamespace("ggplot2", quietly = TRUE)) {
-         ggplot2::ggplot(data, ggplot2::aes_string(x = "trait"), main = main) +
-         ggplot2::geom_density(ggplot2::aes_string(group = "level", fill = "level"), alpha = 0.5) +
-         ggplot2::scale_fill_manual(values = c("pool" = metaCol, "comm" = localCol)) +
-         ggplot2::ggtitle(main)
+         ggplot(data, aes_string(x = "trait"), main = main) +
+         geom_density(aes_string(group = "level", fill = "level"), alpha = 0.5) +
+         scale_fill_manual(values = c("pool" = metaCol, "comm" = localCol)) +
+         ggtitle(main)
        } else {
          tmin <- min(c(x$pool[, seltrait + 2],x$com[, seltrait + 2]))
          tmax <- max(c(x$pool[, seltrait + 2],x$com[, seltrait + 2]))
