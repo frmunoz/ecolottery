@@ -366,7 +366,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
   
   if (is.null(limit.sim) & is.null(filt)) {
     
-    died <- sample(J, d, replace = TRUE)
+    died <- sample(J, d, replace = F)
     
     com <- com[-died, ]
     
@@ -424,7 +424,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     }
     
     # Position of dead individuals in prob.death vector
-    died <- sample(J, d, replace = T, prob = prob.death)
+    died <- sample(J, d, replace = F, prob = prob.death)
     # Identities of dead individuals
     id_died <- names(prob.death)[died]
     # If several individuals concerned: the first one of each identity dies
