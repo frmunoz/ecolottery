@@ -23,7 +23,8 @@ Suggests:
     testthat,
     untb,
     ape,
-    rmarkdown
+    rmarkdown,
+    changepoint
 Description: Coalescent-based simulation of ecological communities.
 License: GPL (>= 2)
 URL: https://github.com/adrientaudiere/lottery
