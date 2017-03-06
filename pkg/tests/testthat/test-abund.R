@@ -40,7 +40,7 @@ test_that("abund() works", {
   expect_length(ab_coal, 2)
   expect_named(ab_coal, c("com", "pool"))
   
-  expect_length(ab_fwd, 3)
+  expect_length(ab_fwd, 4)
   expect_warning(abund(fwd_final), fixed = TRUE,
                  "Some communities were undefined; returning NA abundances")
   
