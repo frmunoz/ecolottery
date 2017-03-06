@@ -281,7 +281,7 @@ pick.mutate <- function(com, d = 1, prob.of.mutate = 0, new.index = 0) {
   ## Simulate the dynamics of the community
   
   # Number of individuals who die at this timestep
-  died <- sample(J, d, replace = TRUE)
+  died <- sample(J, d, replace = F)
   
   # How many of the dead individuals are replaced by mutated individuals
   mutated <- runif(length(died)) < prob.of.mutate
@@ -425,12 +425,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     
     # Position of dead individuals in prob.death vector
     died <- sample(J, d, replace = F, prob = prob.death)
-    # Identities of dead individuals
-    id_died <- names(prob.death)[died]
-    # If several individuals concerned: the first one of each identity dies
-    id_died_pos <- as.numeric(sapply(id_died, function(x) which(com[, 1] %in% x)[1]))
-    # Community composition after mortality: died individuals removed
-    com <- com[-id_died_pos, ] 
+    com <- com[-died, ] 
     
     if (sum(is.na(com[, 1])) != 0) {
       stop("Error: NA values in community composition (2)")
