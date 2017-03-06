@@ -154,13 +154,17 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   #sp_t <- length(unique(init_comm$sp))
   sp_t <- c()
 	
+  ind_t <- c()	
+  limit.sim.t <- c()
+	
   if (keep) {  # If the user asked to keep all the communities at each timestep
     comm_through_time <- c()
-    limit.sim.t <- c()
-    
-    # Simulate the community for the given number of generations
-    for (i in 1:gens) {
-      comm_through_time[[i]] <- next_comm  # Store the community at time i
+    }
+  
+   # Simulate the community for the given number of generations
+   for (i in 1:gens) {
+      if(keep)
+	      comm_through_time[[i]] <- next_comm  # Store the community at time i
       
       # Simulate community dynamics
       next_comm <- pick(next_comm, d = d, prob = prob, pool = pool,
@@ -168,67 +172,59 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
                         coeff.lim.sim = coeff.lim.sim, sigm = sigm,
                         filt = filt, new.index = new.index, method.dist = "euclidean")
       
+      sp_t <- c(sp_t, length(unique(next_comm$com$sp)))
+      ind_t <- c(ind_t, length(unique(next_comm$com$ind)))
+	      
       # Store limiting similarity matrix if simulated
       if (!is.null(limit.sim)) {
         limit.sim.t <- c(limit.sim.t, next_comm$limit.sim.t)
       }
       new.index <- next_comm$new.index
       next_comm <- next_comm$com
-    } 
-    
-    if (plot_gens) { # Plotting number of individuals and species over generations
+  }
+	
+  if (plot_gens) { # Plotting number of individuals and species over generations
       
-      uniq_list <- lapply(comm_through_time,
-                          function(y) apply(y, 2, function(x) length(unique(x))))
-      
-      uniq_df <- do.call(rbind.data.frame, uniq_list)
-      colnames(uniq_df) <- c("id_uniq", "nb_sp", "nb_tra")
-      uniq_df$gens <- seq(1:nrow(uniq_df))
-      uniq_df$nb_id <- J
-      
+      uniq_df <- data.frame(gens=1:gens, ind_t=ind_t, sp_t=sp_t, stringsAsFactors = F)
+	      
       if (requireNamespace("ggplot2", quietly = TRUE)) {
         
         # Plot the number of individuals through all the generations
         plot_individuals = ggplot2::ggplot(uniq_df,
-                                           ggplot2::aes_string("gens", "nb_id")) +
+                                           ggplot2::aes_string("gens", "ind_t")) +
                 ggplot2::geom_line() +
-                ggplot2::geom_line(ggplot2::aes_string("gens", "id_uniq"),
+                ggplot2::geom_line(ggplot2::aes_string("gens", "ind_t"),
                                    size = 1) +
                 ggplot2::labs(x = "Number of generations",
-                              y = "Number of unique individuals")
+                              y = "Number of distinct ancestors")
         
         # Plot the number of species through all the generations
         plot_species = ggplot2::ggplot(uniq_df,
-                                       ggplot2::aes_string("gens", "nb_sp")) +
+                                       ggplot2::aes_string("gens", "sp_t")) +
                 ggplot2::geom_line(size = 1) +
                 ggplot2::labs(x = "Number of generations",
-                     y = "Number of unique species")
+                     y = "Number of species")
         
         print(plot_individuals)
         print(plot_species)
       }
-      
     }
-    
-    return(list(com_t = comm_through_time,
-		sp_t = sp_t,
-		limit.sim.t = limit.sim.t,
-                pool = pool))
-    
-  } else {# Keep only the last community
-    for (i in 1:gens) {
-      # Simulate community dynamics for a timestep
-      next_comm <- pick(next_comm, d = d, prob = prob, pool = pool,
-                        prob.death = prob.death, limit.sim = limit.sim,
-                        coeff.lim.sim = coeff.lim.sim, sigm = sigm,
-                        filt = filt, new.index = new.index, method.dist = "euclidean")
-      sp_t <- c(sp_t, length(unique(next_comm$com$sp)))
-
-      new.index <- next_comm$new.index
-      next_comm <- next_comm$com
+					    
+    if (!is.null(limit.sim))
+    {
+        if(keep) return(list(com_t = comm_through_time,
+	sp_t = sp_t,
+	limit.sim.t = limit.sim.t,
+        pool = pool))
+	else return(list(com = next_comm, sp_t = sp_t, 
+			 limit.sim.t = limit.sim.t, pool = pool))
+    } else
+    {
+	if(keep) return(list(com_t = comm_through_time,
+	sp_t = sp_t,
+        pool = pool))
+	else return(list(com = next_comm, sp_t = sp_t, pool = pool))
     }
-    return(list(com = next_comm, sp_t = sp_t, pool = pool))
-  }
 }
 
 # Precise function to simulate a single timestep by picking an individual in
@@ -481,8 +477,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     
     }
   }
-  
-  
+    
   if (!is.null(limit.sim)) {
     # If there limiting similarity return the factor
     return(list(com = com, limit.sim.t = limit.sim.t))
