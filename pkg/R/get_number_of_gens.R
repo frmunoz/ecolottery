@@ -1,4 +1,4 @@
-get_number_of_gens <- function(given_size, pool, nbrep = 100, prob = 0, d = 1,
+get_number_of_gens <- function(given_size, pool, nbrep = 100, prob = 1, d = 1,
                                gens = NULL, limit.sim = F, coeff.lim.sim = 1,
                                sigm = 0.1, filt = NULL, prob.death = NULL,
                                method.dist = "euclidean", plot_gens = FALSE) {
