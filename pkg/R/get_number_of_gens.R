@@ -23,7 +23,7 @@ get_number_of_gens <- function(given_size, pool, nbrep = 100, prob = 1, d = 1,
     # Loop to simulate the communities and determine changepoint
     for (i in 1:nbrep) {
       final <- forward(initial = start_com, prob = prob, d = d, gens = gens,
-                       keep = F, pool = pool, limit.sim = limit.sim, 
+                       keep = FALSE, pool = pool, limit.sim = limit.sim, 
                        coeff.lim.sim = coeff.lim.sim, sigm = sigm, filt = filt,
                        prob.death = prob.death, method.dist = method.dist,
                        plot_gens = plot_gens)
@@ -52,7 +52,7 @@ get_number_of_gens <- function(given_size, pool, nbrep = 100, prob = 1, d = 1,
             axis.title = element_text(size = 14, face = "bold")) +
       theme_bw()
     
-    return(list(n = max(gens_conv_cpt), plot = diagnostic_plot))
+    return(list(n = gens_conv_cpt, plot = diagnostic_plot))
   
   } else {
     stop("Install package 'changepoint' to compute number of generations")
