@@ -434,9 +434,11 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
   
   immigrated <- runif(d) < prob.of.immigrate
   
-  # If probability of immigration is high, then the new individual is drawn from the regional pool
+  # If probability of immigration is high, then the new individual is drawn
+  # from the regional pool
   J1 <- sum(immigrated)
-  # The lower the probability of immigration, the higher the probability of drawing the new individual from the community
+  # The lower the probability of immigration, the higher the probability of
+  # drawing the new individual from the community
   J2 <- sum(!immigrated)
   
   if (J1 > 0) { # Immigrant drawn from regional pool
@@ -449,8 +451,10 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
         stop("Error: NA values in immigrants")
       }
     } else {
+      # Add new immigrated individual to community
       com <- rbind(com, pool[sample(1:nrow(pool), J1, replace = TRUE,
-                                prob = hab_filter(pool[, 3])), 1:3])
+                                    prob = vapply(pool[, 3], hab_filter, 0)),
+                             1:3])
       
       if (any(is.na(hab_filter(pool[, 3])))) {
         stop("Error: NA values in habitat filtering")
@@ -464,7 +468,8 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
   
   if (J2 > 0) { # Immigrant drawn from com.init
     
-    com <- rbind(com, com.init[sample(1:nrow(com.init), J2, replace = TRUE), 1:3])
+    com <- rbind(com, com.init[sample(1:nrow(com.init), J2, replace = TRUE),
+                               1:3])
     
     if (any(is.na(com[, 1]))) {
       print(J2)
