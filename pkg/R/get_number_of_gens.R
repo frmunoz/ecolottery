@@ -4,7 +4,17 @@ get_number_of_gens <- function(given_size, pool, nbrep = 100, prob = 1, d = 1,
                                prob.death = NULL, method.dist = "euclidean",
                                plot_gens = FALSE) {
   
-  if (requireNamespace("changepoint", quietly = TRUE)) {
+    if (is.character(pool)) {
+      pool <- data.frame(id = 1:length(pool), sp = pool, trait = rep(NA, length(pool)), stringsAsFactors = FALSE)
+      if (limit.sim | !is.null(filt)) {
+        cat("No trait information provided in the regional pool\n") 
+        pool[, 3] <- runif(nrow(pool))
+        cat(paste0("Random trait values attributed to individuals of the ", "regional pool\n"))
+        colnames(pool) <- c("id", "sp", "trait")
+      }
+    }
+    
+    if (requireNamespace("changepoint", quietly = TRUE)) {
     
     # Simulate starting community from given pool
     start_com <- pool[sample(1:nrow(pool), given_size),]
