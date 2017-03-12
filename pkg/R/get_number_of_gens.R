@@ -48,7 +48,7 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
       sqerror <- function (par, x, t) {
         sum((x - changePoint(t, par[1], par[2], init_sp))^2)
       }
-      sp.fit <- optim(par = c(final_sp, median(data$t)), fn = sqerror, x = data$rich, t = data$gens, 
+      sp.fit <- optim(par = c(final_sp, median(data$gens)), fn = sqerror, x = data$rich, t = data$gens, 
                       lower=c(1,1), upper=c(given_size,gens), method = "L-BFGS-B")
       gens_conv_cpt <- c(gens_conv_cpt, sp.fit$par[2])
     }
