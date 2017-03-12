@@ -43,7 +43,7 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
       final_sp <- final$sp_t[length(final$sp_t)]
       init_sp <- length(unique(start_com$sp))
       changePoint <- function(t, spf, Tval, init_sp) {
-        init_sp*exp(log(spf/init_sp)*t/Tval)*as.numeric(t<=Tval)+spf*as.numeric(t>Tval)    
+        init_sp*exp(log(spf/init_sp)*t/Tval)*as.numeric(t<=Tval)+spf*as.numeric(t>Tval)
       }
       sqerror <- function (par, x, t) {
         sum((x - changePoint(t, par[1], par[2], init_sp))^2)
