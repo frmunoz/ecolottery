@@ -57,11 +57,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     stop("plot_gens parameter must be a boolean.")
   }
   
-  if (plot_gens & !keep) {
-    warning("plot_gens is valid only if keep parameter is set as TRUE.")
-  }
-  
-  # Stops if only a vector of species name is given as initial community with
+   # Stops if only a vector of species name is given as initial community with
   # environmental filtering or limiting similarity
   if ((is.character(initial) | is.vector(initial)) &
       (limit.sim | !is.null(filt))) {
