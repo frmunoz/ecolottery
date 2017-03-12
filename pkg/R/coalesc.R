@@ -14,7 +14,9 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
     if (theta <= 0) {
       stop("Fundamental parameter of biodiversity theta must be positive.")
     } else if (theta > 0 & !is.null(pool)) {
-      if (verbose) warning("Both theta and regional pool provided, discarding theta")
+      if (verbose) {
+        warning("Both theta and regional pool provided, discarding theta")
+      }
     }
   }
   
@@ -39,7 +41,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
   ## Create the regional pool if not provided
   
   if (is.null(pool)) {
-    # If m = 1 and no environmental filtering, directly simulates a sample from the pool of size J
+    # If m = 1 and no environmental filtering, directly simulates a sample from
+    # the pool of size J
     if (m == 1 & is.null(filt)) pool_size <- J else  pool_size <- Jpool
     ind_pool_lab <- 1:pool_size  # Labels of individuals
     ind_pool_sp <- array(NA, c(pool_size, 1))  # Species labels
@@ -52,9 +55,11 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
     
     Y <- runif(pool_size)  # Generate a vector to determine species
     
-    # Vector to determine species
-    R_pool <- theta / (theta + (1:pool_size) - 1) # Probability that new species arrives in the regional pool
-    assign_pool <- which(Y <= R_pool)  # Get all individuals with different species
+    ## Vector to determine species
+    # Probability that new species arrives in the regional pool
+    R_pool <- theta / (theta + (1:pool_size) - 1) 
+    # Get all individuals with different species
+    assign_pool <- which(Y <= R_pool)
     
     # All individuals that are reassigned to previous species
     unassign_pool <- which(Y > R_pool)
@@ -62,7 +67,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
     ind_pool_sp[assign_pool] <- 1:length(assign_pool)  # Set species number
     
     if (is.null(traits)) {
-      ind_pool_traits[assign_pool,1] <- runif(length(assign_pool))  # Compute Trait
+      # Give random trait values
+      ind_pool_traits[assign_pool,1] <- runif(length(assign_pool))  
     } else {
       ind_pool_traits[assign_pool,] <- traits[1:length(assign_pool),]
     }
@@ -80,7 +86,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
     if (!is.null(traits)) {
       colnames(ind_pool_traits) <- colnames(traits)
     } else {
-      colnames(ind_pool_traits) <- paste("tra", 1:ncol(ind_pool_traits), sep = "")
+      colnames(ind_pool_traits) <- paste("tra", 1:ncol(ind_pool_traits),
+                                         sep = "")
     }
     
     if (m == 1 & is.null(filt)) {
@@ -132,17 +139,24 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
   } else {
     env_filter <- function(x) t(apply(x,1,function(y) 1))
   }
-                                      
-  ## Environmental filter should not provide negative values                                    
-                                      
+  
+  # Environmental filter should not provide negative values
+  
   prob <- env_filter(ind_pool_traits)
   
   if (any(prob < 0)) {
-      if (verbose) warning("Negative weights yielded by filtering function are set to 0. 
-Maybe better defining the filtering function in a different way!")
+      if (verbose) {
+        warning(paste0("Negative weights yielded by filtering function ",
+                       "are set to 0.\n",
+                       "Maybe better defining the filtering function in a ",
+                       "different way!"))
+      }
       prob[prob < 0] <- 0
-      if (all(prob < 0)) 
-        stop("Your filtering function does not allow any immigrant to enter the community")
+      
+      if (all(prob < 0)) {
+        stop(paste0("Your filtering function does not allow any immigrant",
+                    "to enter the community"))
+      }
   }  
 
   ## Community generation
@@ -153,9 +167,15 @@ Maybe better defining the filtering function in a different way!")
   
   # If migration rate = 0, ecological fixation
   if (m == 0) {
+    
     migrant <- sample(1:nrow(pool), 1, prob = prob)
-    ind_com_traits <- t(apply(ind_com_traits, 1, function(x) ind_pool_traits[migrant, ]))
-    com <- data.frame(ind = rep(pool[migrant, 1], J), sp = rep(pool[migrant, 2], J), ind_com_traits)
+    
+    ind_com_traits <- t(apply(ind_com_traits, 1,
+                              function(x) ind_pool_traits[migrant, ]))
+    
+    com <- data.frame(ind = rep(pool[migrant, 1], J),
+                      sp = rep(pool[migrant, 2], J),
+                      ind_com_traits)
     return(list(com = com, pool = pool))
   }
     
@@ -170,15 +190,17 @@ Maybe better defining the filtering function in a different way!")
   } else {
     # migration rate set at its maximum, unlimited regional pool.
     # All new individuals taken from the regional pool
-    assign_com = 1:J
-    unassign_com = NULL
+    assign_com <- 1:J
+    unassign_com <- NULL
   }
   
-  com_species <- length(assign_com) # Number of individuals taken from the regional pool
+  # Number of individuals taken from the regional pool
+  com_species <- length(assign_com) 
   
   migrants <- sample(1:nrow(pool), com_species, prob = prob)
   
-  ind_com_lab[assign_com] <- pool[migrants[1:com_species], 1] # Assign individuals
+  # Assign individuals
+  ind_com_lab[assign_com] <- pool[migrants[1:com_species], 1] 
   
   ind_com_sp[assign_com] <- pool[migrants[1:com_species], 2] # Assign species
  

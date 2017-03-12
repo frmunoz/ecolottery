@@ -1,9 +1,9 @@
 # Function to compute forward simulation of community dynamics with (eventually)
 # environmental filtering
 forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
-                    pool = NULL, limit.sim = F, coeff.lim.sim = 1, sigm = 0.1,
-                    filt = NULL, prob.death = NULL, method.dist = "euclidean",
-                    plot_gens = FALSE) {
+                    pool = NULL, limit.sim = FALSE, coeff.lim.sim = 1,
+                    sigm = 0.1, filt = NULL, prob.death = NULL,
+                    method.dist = "euclidean", plot_gens = FALSE) {
   # The function will stop if niche - based dynamics is requested, but trait
   # information is missing in the local community
   # For strictly neutral communities, a vector of species names is enough for
@@ -12,11 +12,13 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   # Checking basic parameters
 
   if (!is.numeric(prob) | prob < 0) {
-    stop("Probability of migration or mutation must be a number belonging to [0; 1] interval.")
+    stop(paste0("Probability of migration or mutation must be a number ",
+                "belonging to [0; 1] interval."))
   }
   
   if (!is.numeric(d) | d < 0) {
-    stop("Number of individuals that die in each time step must be a positive number.")
+    stop(paste0("Number of individuals that die in each time step must be a ",
+                "positive number."))
   }
   
   if (!is.numeric(gens) | gens <= 0) {
@@ -45,8 +47,10 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     }
   }    
   
-  if ((method.dist %in% c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski")) == FALSE) {
-    stop("Provided distance is not existing. See stats::dist function for help.")
+  if ((method.dist %in% c("euclidean", "maximum", "manhattan", "canberra",
+                          "binary", "minkowski")) == FALSE) {
+    stop(paste0("Provided distance does not exist.",
+                " See stats::dist function for help."))
   }
   
   if (!is.logical(plot_gens)) {
@@ -59,14 +63,16 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   
   # Stops if only a vector of species name is given as initial community with
   # environmental filtering or limiting similarity
-  if ((is.character(initial) | is.vector(initial)) & (limit.sim | !is.null(filt))) {
-    stop(paste0("Trait information must be provided along with species",
-                " identity in the initial community for niche - based dynamics"))
+  if ((is.character(initial) | is.vector(initial)) &
+      (limit.sim | !is.null(filt))) {
+    stop(paste0("Trait information must be provided along with species ",
+                "identity in the initial community for niche - based dynamics"))
   }
   
   # If environmental filtering or limiting similarity, the initial community
   # needs to be a matrix or a data.frame
-  if (!is.matrix(initial) & !is.data.frame(initial) & (limit.sim | !is.null(filt))) {
+  if (!is.matrix(initial) & !is.data.frame(initial) &
+      (limit.sim | !is.null(filt))) {
     stop("Misdefined initial community")
   }
   
@@ -83,12 +89,13 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     pool <- data.frame(id = 1:length(pool),
                        sp = pool,
                        trait = rep(NA, length(pool)),
-                       stringsAsFactors = F)
+                       stringsAsFactors = FALSE)
   
     if (limit.sim | !is.null(filt)) {
       cat("No trait information provided in the regional pool\n")
       pool[, 3] <- runif(nrow(pool))
-      cat("Random trait values attributed to individuals of the regional pool\n")
+      cat(paste0("Random trait values attributed to individuals of the ",
+                 "regional pool\n"))
       colnames(pool) <- c("id", "sp", "trait")
     }
   }
@@ -119,7 +126,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
                           sp = initial,
                           trait = rep(NA, J),
-                          stringsAsFactors = F) 
+                          stringsAsFactors = FALSE) 
   } else {
     
     if (ncol(initial) < 3) {
@@ -129,7 +136,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
                             sp = initial[, 1],
                             trait = initial[, 2],
-                            stringsAsFactors = F)
+                            stringsAsFactors = FALSE)
 	    } else
 	    {
 	    	init_comm <- initial
@@ -170,7 +177,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
       next_comm <- pick(next_comm, d = d, prob = prob, pool = pool,
                         prob.death = prob.death, limit.sim = limit.sim,
                         coeff.lim.sim = coeff.lim.sim, sigm = sigm,
-                        filt = filt, new.index = new.index, method.dist = "euclidean")
+                        filt = filt, new.index = new.index,
+                        method.dist = "euclidean")
       
       sp_t <- c(sp_t, length(unique(next_comm$com$sp)))
       ind_t <- c(ind_t, length(unique(next_comm$com$ind)))
@@ -185,24 +193,24 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
 	
   if (plot_gens) { # Plotting number of individuals and species over generations
       
-      uniq_df <- data.frame(gens=1:gens, ind_t=ind_t, sp_t=sp_t, stringsAsFactors = F)
+      uniq_df <- data.frame(gens = 1:gens, ind_t = ind_t, sp_t = sp_t,
+                            stringsAsFactors = FALSE)
 	      
       if (requireNamespace("ggplot2", quietly = TRUE)) {
         
         # Plot the number of individuals through all the generations
-        plot_individuals = ggplot2::ggplot(uniq_df,
-                                           ggplot2::aes_string("gens", "ind_t")) +
-                ggplot2::geom_line() +
-                ggplot2::geom_line(ggplot2::aes_string("gens", "ind_t"),
+        plot_individuals <- ggplot(uniq_df, aes_string("gens", "ind_t")) +
+                geom_line() +
+                geom_line(aes_string("gens", "ind_t"),
                                    size = 1) +
-                ggplot2::labs(x = "Number of generations",
+                labs(x = "Number of generations",
                               y = "Number of distinct ancestors")
         
         # Plot the number of species through all the generations
-        plot_species = ggplot2::ggplot(uniq_df,
-                                       ggplot2::aes_string("gens", "sp_t")) +
-                ggplot2::geom_line(size = 1) +
-                ggplot2::labs(x = "Number of generations",
+        plot_species <- ggplot(uniq_df,
+                                       aes_string("gens", "sp_t")) +
+                geom_line(size = 1) +
+                labs(x = "Number of generations",
                      y = "Number of species")
         
         print(plot_individuals)
@@ -236,12 +244,16 @@ pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
   
   if (is.null(pool)) {
     # If no species pool specified, mutate an individual
-    return(pick.mutate(com, d = d, prob.of.mutate = prob, new.index = new.index)) 
+    return(pick.mutate(com,
+                       d = d,
+                       prob.of.mutate = prob,
+                       new.index = new.index)) 
   
   } else {
 	  
     if((!is.null(filt) | limit.sim) & prob > 0 & any(is.na(pool[,3]))) {
-	    stop("With environmental filtering, NA trait values not allowed in regional pool")
+	    stop(paste0("With environmental filtering, NA trait values not allowed",
+	                " in regional pool"))
     }
 	  
   # If there is a species pool make an individual immigrates
@@ -262,14 +274,14 @@ pick.mutate <- function(com, d = 1, prob.of.mutate = 0, new.index = 0) {
     com <- data.frame(id = paste("ind", 1:J, sep = ""),
                       sp = as.character(com),
                       trait = rep(NA, J),
-                      stringsAsFactors = F)
+                      stringsAsFactors = FALSE)
   
   } else if (is.matrix(com) | is.data.frame(com)) {
     # If the community has defined traits
     J <- nrow(com)
     
     if (is.matrix(com)) {
-      	com <- as.data.frame(com, stringsAsFactors = F)
+      	com <- as.data.frame(com, stringsAsFactors = FALSE)
  	com[, 1] <- as.character(com[, 1])
      	com[, 2] <- as.character(com[, 2])	  
     }
@@ -281,7 +293,7 @@ pick.mutate <- function(com, d = 1, prob.of.mutate = 0, new.index = 0) {
   ## Simulate the dynamics of the community
   
   # Number of individuals who die at this timestep
-  died <- sample(J, d, replace = F)
+  died <- sample(J, d, replace = FALSE)
   
   # How many of the dead individuals are replaced by mutated individuals
   mutated <- runif(length(died)) < prob.of.mutate
@@ -304,7 +316,7 @@ pick.mutate <- function(com, d = 1, prob.of.mutate = 0, new.index = 0) {
                                      sep = "")
     
     #com[died[mutated], 3] <- rep(NA, n_mutated)  # No trait values
-    # Default to be a trait value drawn from uniform distribution between 0 and 1
+    # Default = trait value drawn from uniform distribution between 0 and 1
     com[died[mutated], 3] <- runif(n_mutated)
 	  
     # Number of new species which appeared (next one will be new.index + 1)
@@ -318,7 +330,8 @@ pick.mutate <- function(com, d = 1, prob.of.mutate = 0, new.index = 0) {
 # limit.sim = distances de traits; filt = habitat filtering function
 pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
                            prob.death = NULL, limit.sim = NULL,
-                           coeff.lim.sim = 1, sigm = 0.1, filt = NULL, method.dist = "euclidean") {
+                           coeff.lim.sim = 1, sigm = 0.1, filt = NULL,
+                           method.dist = "euclidean") {
   
   if (is.vector(com)) {
     # If community only defined by species names
@@ -327,14 +340,14 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     com <- data.frame(id = paste("ind", 1:J, sep = ""),
                     sp = as.character(com),
                     trait = rep(NA, J),
-                    stringsAsFactors = F)
+                    stringsAsFactors = FALSE)
   
   } else if (is.matrix(com) | is.data.frame(com)) {
     # If the community has defined traits
     J <- nrow(com)
     
     if (is.matrix(com)) {
-      com <- as.data.frame(com, stringsAsFactors = F)
+      com <- as.data.frame(com, stringsAsFactors = FALSE)
     }
     com[, 1] <- as.character(com[, 1])
     com[, 2] <- as.character(com[, 2])
@@ -366,7 +379,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
   
   if (is.null(limit.sim) & is.null(filt)) {
     
-    died <- sample(J, d, replace = F)
+    died <- sample(J, d, replace = FALSE)
     
     com <- com[-died, ]
     
@@ -390,21 +403,26 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
         stop("limit.sim: mismatch of species names")
       }
       
-      # For each species: compute limiting similarity coefficient based on Gaussian distribution
+      # For each species: compute limiting similarity coefficient based on
+      # Gaussian distribution
       limit.sim.t <- apply(limit.sim[com[, 1], com[, 1]], 2,
-                           function(x) (sum(exp( -x^2 / (2*(sigm^2))), na.rm = T)))
+                           function(x) (sum(exp( -x^2 / (2*(sigm^2))),
+                                            na.rm = TRUE)))
       
       prob.death <- coeff.lim.sim*limit.sim.t
       # Scaling prob.death
-      prob.death <- (prob.death - min(prob.death)) / (max(prob.death) - min(prob.death))
+      prob.death <- (prob.death - min(prob.death)) / (max(prob.death) -
+                                                        min(prob.death))
 
-      # If all probabilities null, sample won't work. An identical and weak probability is given to each species.
+      # If all probabilities null, sample won't work. An identical and weak
+      # probability is given to each species.
       if(sum(prob.death)==0){
         prob.death <- prob.death + 0.001
       }
       
-      # limit.sim.t will display the average distance between trait of species for the whole community
-      limit.sim.t <- mean(limit.sim[com[, 1], com[, 1]], na.rm = T)
+      # limit.sim.t will display the average distance between trait of species
+      # for the whole community
+      limit.sim.t <- mean(limit.sim[com[, 1], com[, 1]], na.rm = TRUE)
       
     }
     # Habitat filtering also influences the individual death probability
@@ -412,19 +430,21 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       if (any(is.na(hab_filter(com[, 3])))) {
         stop("Error: NA values in habitat filter")
       }
-      prob.death <- prob.death * (1 - hab_filter(com[, 3]) / sum(hab_filter(com[, 3])))
+      prob.death <- prob.death * (1 - hab_filter(com[, 3]) /
+                                    sum(hab_filter(com[, 3])))
       
       # Giving names to prob.death
       names(prob.death) <- com[, 1]
       
-      # If all probabilities null, sample won't work. An identical and weak probability is given to each species.
+      # If all probabilities null, sample won't work. An identical and weak
+      # probability is given to each species.
       if(sum(prob.death)==0){
         prob.death <- prob.death + 0.001
       }
     }
     
     # Position of dead individuals in prob.death vector
-    died <- sample(J, d, replace = F, prob = prob.death)
+    died <- sample(J, d, replace = FALSE, prob = prob.death)
     com <- com[-died, ] 
     
     if (sum(is.na(com[, 1])) != 0) {

@@ -13,7 +13,7 @@ test_that("tcor() function works", {
   expect_equal(colnames(tcor(10)), c("t1", "t2"))
   
   # Make sure the correlation is enough
-  traits = tcor(10000)
+  traits <- tcor(10000)
   expect_equal(cor(traits$t1, traits$t2), 0.5, tolerance = 0.02)
   
   # Extreme correlation values
@@ -27,8 +27,8 @@ test_that("tcor() function works", {
                fixed = TRUE)
   
   # When providing trait vector
-  given_trait = rnorm(10000)
-  corr_traits = tcor(10000, rho = 0.7, x = given_trait)
+  given_trait <- rnorm(10000)
+  corr_traits <- tcor(10000, rho = 0.7, x = given_trait)
   expect_equal(colnames(corr_traits), c("trait", "t2"))
   expect_equal(cor(corr_traits$trait, corr_traits$t2), 0.7, tolerance = 0.02)
   

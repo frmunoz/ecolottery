@@ -27,7 +27,7 @@ abund <- function(x) {
 .get_rel_abund <- function(comdf) {
   
   if (is.data.frame(comdf) | is.matrix(comdf)) {
-    rel_abund <- as.data.frame(table(comdf[, "sp"]), stringsAsFactors = F)
+    rel_abund <- as.data.frame(table(comdf[, "sp"]), stringsAsFactors = FALSE)
     colnames(rel_abund) <- c("sp", "ab")
     rel_abund$relab <- rel_abund$ab / nrow(comdf)
   } else {

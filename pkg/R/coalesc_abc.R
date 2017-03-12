@@ -1,6 +1,7 @@
-coalesc_abc <- function(comm.obs, pool, multi = F, traits=NULL, f.sumstats,
-                        filt.abc, params, nb.samp = 10^6, parallel = T,
-                        tol = 1*10^-4, pkg = NULL, method="neuralnet")
+coalesc_abc <- function(comm.obs, pool, multi = FALSE, traits = NULL,
+                        f.sumstats, filt.abc, params, nb.samp = 10^6,
+                        parallel = TRUE, tol = 1*10^-4, pkg = NULL,
+                        method="neuralnet")
 {
   
   if(is.null(pool)) {
@@ -12,10 +13,10 @@ coalesc_abc <- function(comm.obs, pool, multi = F, traits=NULL, f.sumstats,
   }
   
   # Other required packages
-  for (i in 1:length(pkg)) {
+  for (i in pkg) {
     
-    if (!requireNamespace(pkg[i], quietly = TRUE)) {
-      stop(paste("Package ", pkg[i], " is not available", sep = ""))
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      stop(paste("Package ", pkg, " is not available", sep = ""))
     }
     
   }
@@ -44,8 +45,9 @@ coalesc_abc <- function(comm.obs, pool, multi = F, traits=NULL, f.sumstats,
       if (is.null(traits)) {
         stats.obs <- rbind(stats.obs, f.sumstats(comm.obs[comm.obs[,1] == i,3]))
       } else {
-        stats.obs <- rbind(stats.obs, f.sumstats(comm.obs[comm.obs[,1] == i,3],
-                                                 traits[comm.obs[comm.obs[,1] == i,3],]))
+        stats.obs <- rbind(stats.obs,
+                           f.sumstats(comm.obs[comm.obs[,1] == i,3],
+                                      traits[comm.obs[comm.obs[,1] == i,3],]))
       }
     }
   } else if (is.null(traits)) {
@@ -62,7 +64,7 @@ coalesc_abc <- function(comm.obs, pool, multi = F, traits=NULL, f.sumstats,
   colnames(sim$stats) <- names(stats.obs)
   sim$stats.scaled <- sapply(1:ncol(sim$stats),
                              function(y) sim$stats[,y]/max(abs(sim$stats[,y]),
-                                                           na.rm = T))
+                                                           na.rm = TRUE))
   colnames(sim$stats.scaled) <- colnames(sim$stats)
   meta.abc <- c()
   
@@ -70,8 +72,9 @@ coalesc_abc <- function(comm.obs, pool, multi = F, traits=NULL, f.sumstats,
     for (i in unique(comm.obs[,1])) {
     
       stats.obs.scaled <- sapply(1:length(stats.obs[i,]),
-                                 function(x) stats.obs[i,x]/max(abs(sim$stats[,x]),
-                                                                na.rm = T))
+                                 function(x)
+                                   stats.obs[i,x]/max(abs(sim$stats[,x]),
+                                                      na.rm = TRUE))
       meta.abc[[i]] <- abc::abc(target = stats.obs.scaled,
                                 param = sim$params.sim,
                                 sumstat = sim$stats.scaled,
@@ -81,7 +84,7 @@ coalesc_abc <- function(comm.obs, pool, multi = F, traits=NULL, f.sumstats,
   } else {
     stats.obs.scaled <- sapply(1:length(stats.obs),
                                function(x) stats.obs[x]/max(abs(sim$stats[,x]),
-                                                            na.rm = T))
+                                                            na.rm = TRUE))
     meta.abc <- abc::abc(target = stats.obs.scaled,
                          param = sim$params.sim,
                          sumstat = sim$stats.scaled,
@@ -93,23 +96,24 @@ coalesc_abc <- function(comm.obs, pool, multi = F, traits=NULL, f.sumstats,
 }
 
 do.simul <- function(J, pool, traits = NULL, f.sumstats, filt.abc, params,
-                     nb.samp = 10^6, parallel = T, tol = 1*10^-4, pkg = NULL,
+                     nb.samp = 10^6, parallel = TRUE, tol = 1*10^-4, pkg = NULL,
                      method = "neuralnet") {
   if (!requireNamespace("parallel", quietly = TRUE) & parallel)  
   {
-    warning("parallel = T requires package parallel to be installed; change to parallel = F")
-    parallel <- F
+    warning(paste0("parallel = TRUE requires package 'parallel' to be ",
+                   " installed\nchanged to parallel = FALSE"))
+    parallel <- FALSE
   }
   
   if (parallel) {
     # Start up a parallel cluster
-    parallelCluster <- parallel::makeCluster(max(1, parallel::detectCores() - 1))
+    parCluster <- parallel::makeCluster(max(1, parallel::detectCores() - 1))
   }
   
   # Uniform prior distributions of parameters
   prior <- c()
   for (i in 1:nrow(params)) {
-    prior[[i]] = runif(nb.samp, min = params[i, 1], max = params[i, 2])
+    prior[[i]] <- runif(nb.samp, min = params[i, 1], max = params[i, 2])
   }              
   
   names(prior) <- rownames(params)
@@ -154,7 +158,7 @@ do.simul <- function(J, pool, traits = NULL, f.sumstats, filt.abc, params,
   
   # Calculation of summary statistics over the whole range of parameters
   if (parallel) {
-    models <- parallel::parLapply(parallelCluster, 1:nb.samp,
+    models <- parallel::parLapply(parCluster, 1:nb.samp,
                                   mkWorker(traits, prior, J, pool, filt.abc,
                                            f.sumstats, pkg))
   } else {
@@ -163,10 +167,10 @@ do.simul <- function(J, pool, traits = NULL, f.sumstats, filt.abc, params,
   }
   
   if (parallel) {
-    # Close parallelCluster
-    if (!is.null(parallelCluster)) {
-      parallel::stopCluster(parallelCluster)
-      parallelCluster <- c()
+    # Close parCluster
+    if (!is.null(parCluster)) {
+      parallel::stopCluster(parCluster)
+      parCluster <- c()
     }
   }
   

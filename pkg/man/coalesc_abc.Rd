@@ -9,11 +9,11 @@
   Estimates parameters of neutral migration-drift dynamics (through migration rate m and parameters of environmental filtering (through a filtering function filt.abc) from the composition of a local community and the related regional pool. 
 }
 \usage{
-  coalesc_abc(comm.obs, pool, multi = F, traits = NULL, f.sumstats, filt.abc, 
-              params, nb.samp = 10^6, parallel = T, tol = 1*10^-4,
+  coalesc_abc(comm.obs, pool, multi = FALSE, traits = NULL, f.sumstats,
+              filt.abc, params, nb.samp = 10^6, parallel = TRUE, tol = 1*10^-4,
               pkg = NULL, method="neuralnet")
   do.simul(J, pool, traits = NULL, f.sumstats, filt.abc, params, 
-           nb.samp = 10^6, parallel = T, tol = 1*10^-4, pkg = NULL, 
+           nb.samp = 10^6, parallel = TRUE, tol = 1*10^-4, pkg = NULL, 
            method = "neuralnet")
 }
 \arguments{

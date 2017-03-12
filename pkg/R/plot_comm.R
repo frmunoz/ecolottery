@@ -8,7 +8,8 @@ plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL)
   
   # Check parameters
   if (!is.numeric(seltrait) | seltrait <= 0){
-    stop("seltrait must be the number of the column of desired trait in the community data.frame.")
+    stop(paste0("seltrait must be the number of the column of desired trait",
+                " in the community data.frame."))
   }
   
   if (!is.null(main)){
@@ -29,19 +30,25 @@ plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL)
          trait = c(x$pool[, seltrait + 2], x$com[, seltrait + 2]))
        # Plot
        if (requireNamespace("ggplot2", quietly = TRUE)) {
+         
          ggplot(data, aes_string(x = "trait"), main = main) +
-         geom_density(aes_string(group = "level", fill = "level"), alpha = 0.5) +
+         geom_density(aes_string(group = "level", fill = "level"),
+                      alpha = 0.5) +
          scale_fill_manual(values = c("pool" = metaCol, "comm" = localCol)) +
          ggtitle(main)
-       } else {
+         
+      } else {
          tmin <- min(c(x$pool[, seltrait + 2],x$com[, seltrait + 2]))
          tmax <- max(c(x$pool[, seltrait + 2],x$com[, seltrait + 2]))
-         h1 <- hist(x$pool[, seltrait + 2], plot=F, breaks = 10)
-         h1$density=h1$counts/sum(h1$counts)*100
-         h2 <- hist(x$com[, seltrait + 2], plot=F, breaks = 10)
-         h2$density=h2$counts/sum(h2$counts)*100
-         plot(h1, xlim=c(0.9*tmin,1.1*tmax), ylim=c(0,max(c(h1$density, h2$density))), main=main, xlab="trait", col=metaCol, freq=F)
-         plot(h2, col=localCol, add=T, freq=F)
+         h1 <- hist(x$pool[, seltrait + 2], plot = FALSE, breaks = 10)
+         h1$density <- h1$counts/sum(h1$counts)*100
+         h2 <- hist(x$com[, seltrait + 2], plot = FALSE, breaks = 10)
+         h2$density <- h2$counts/sum(h2$counts)*100
+         plot(h1,
+              xlim = c(0.9*tmin,1.1*tmax), main = main, xlab = "trait",
+              ylim = c(0,max(c(h1$density, h2$density))),
+              col = metaCol, freq = FALSE)
+         plot(h2, col = localCol, add = TRUE, freq = FALSE)
       }
      },
     "abund" =

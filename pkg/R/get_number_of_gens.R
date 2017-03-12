@@ -1,7 +1,8 @@
 get_number_of_gens <- function(given_size, pool, nbrep = 100, prob = 1, d = 1,
-                               gens = NULL, limit.sim = F, coeff.lim.sim = 1,
-                               sigm = 0.1, filt = NULL, prob.death = NULL,
-                               method.dist = "euclidean", plot_gens = FALSE) {
+                               gens = NULL, limit.sim = FALSE,
+                               coeff.lim.sim = 1, sigm = 0.1, filt = NULL,
+                               prob.death = NULL, method.dist = "euclidean",
+                               plot_gens = FALSE) {
   
   if (requireNamespace("changepoint", quietly = TRUE)) {
     
@@ -31,7 +32,7 @@ get_number_of_gens <- function(given_size, pool, nbrep = 100, prob = 1, d = 1,
       
       nb_sp <- final$sp_t
       nb_sp_gen <- rbind(nb_sp_gen, data.frame(gens = 1:gens, rich = nb_sp,
-                                               stringsAsFactors = F))
+                                               stringsAsFactors = FALSE))
       
       cpt_bic <- changepoint::cpt.mean(nb_sp, penalty = "BIC")
       
