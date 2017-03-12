@@ -18,8 +18,6 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
     if(is.null(gens)) gens <- 100*given_size/d
     gens = min(100*given_size/d, gens, na.rm=T) 
     
-    if (requireNamespace("changepoint", quietly = TRUE)) {
-    
     # Simulate starting community from given pool
     start_com <- pool[sample(1:nrow(pool), given_size),]
     
@@ -38,14 +36,23 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
                        prob.death = prob.death, method.dist = method.dist,
                        plot_gens = plot_gens)
       
-      
-      nb_sp <- final$sp_t
-      nb_sp_gen <- rbind(nb_sp_gen, data.frame(gens = 1:gens, rich = nb_sp,
+      nb_sp_gen <- rbind(nb_sp_gen, data.frame(gens = 1:gens, rich = final$sp_t,
                                                stringsAsFactors = FALSE))
       
-      cpt_bic <- changepoint::cpt.mean(nb_sp, penalty = "BIC")
-      
-      gens_conv_cpt <- c(gens_conv_cpt, changepoint::cpts(cpt_bic))
+      # Customized non-linear regression with fixed number of generations
+      final_sp <- final$sp_t[length(final$sp_t)]
+      init_sp <- length(unique(start_com$sp))
+      # sp.nls <- nls(sp ~ B1*exp(-B0*t)+B2, start=list(B0=1,B1=init_sp-final_sp,B2=final_sp),data=data)
+      # sp.nls <- nls(sp ~ init_sp*exp(log(spf/init_sp)*t/Tval), start=list(spf=final_sp,Tval=median(data$t)),data=data)
+      changePoint <- function(t, spf, Tval, init_sp) {
+        init_sp*exp(log(spf/init_sp)*t/Tval)*as.numeric(t<=Tval)+spf*as.numeric(t>Tval)    
+      }
+      sqerror <- function (par, x, t) {
+        sum((x - changePoint(t, par[1], par[2], init_sp))^2)
+      }
+      sp.fit <- optim(par = c(final_sp, median(data$t)), fn = sqerror, x = data$sp, t = data$t, lower=c(1,1), 
+                      upper=c(given_size,gens), method = "L-BFGS-B")    
+      gens_conv_cpt <- c(gens_conv_cpt, sp.fit$par[2])
     }
     
     # Average number of generations
@@ -63,9 +70,5 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
       theme_bw()
     
     return(list(n = gens_conv_cpt, plot = diagnostic_plot))
-  
-  } else {
-    stop("Install package 'changepoint' to compute number of generations")
-  }
   
 }
