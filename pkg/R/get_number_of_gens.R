@@ -23,11 +23,6 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
     # Simulate starting community from given pool
     start_com <- pool[sample(1:nrow(pool), given_size),]
     
-    # Gives the number of generation to test
-    if (is.null(gens)) {
-      gens <- 100*given_size
-    }
-    
     if (is.null(filt)) {
       filt <- function(x) return(1)
     }
