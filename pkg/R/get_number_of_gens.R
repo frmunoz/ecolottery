@@ -39,11 +39,9 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
       nb_sp_gen <- rbind(nb_sp_gen, data.frame(gens = 1:gens, rich = final$sp_t,
                                                stringsAsFactors = FALSE))
       
-      # Customized non-linear regression with fixed number of generations
+      # Customized non-linear regression
       final_sp <- final$sp_t[length(final$sp_t)]
       init_sp <- length(unique(start_com$sp))
-      # sp.nls <- nls(sp ~ B1*exp(-B0*t)+B2, start=list(B0=1,B1=init_sp-final_sp,B2=final_sp),data=data)
-      # sp.nls <- nls(sp ~ init_sp*exp(log(spf/init_sp)*t/Tval), start=list(spf=final_sp,Tval=median(data$t)),data=data)
       changePoint <- function(t, spf, Tval, init_sp) {
         init_sp*exp(log(spf/init_sp)*t/Tval)*as.numeric(t<=Tval)+spf*as.numeric(t>Tval)    
       }
