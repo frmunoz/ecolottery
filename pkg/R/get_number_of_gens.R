@@ -1,4 +1,4 @@
-get_number_of_gens <- function(given_size, pool, nbrep = 100, prob = 1, d = 1,
+get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
                                gens = NULL, limit.sim = FALSE,
                                coeff.lim.sim = 1, sigm = 0.1, filt = NULL,
                                prob.death = NULL, method.dist = "euclidean",
@@ -13,6 +13,10 @@ get_number_of_gens <- function(given_size, pool, nbrep = 100, prob = 1, d = 1,
         colnames(pool) <- c("id", "sp", "trait")
       }
     }
+    
+    # At least 100 total replacements in expectation
+    if(is.null(gens)) gens <- 100*given_size/d
+    gens = min(100*given_size/d, gens, na.rm=T) 
     
     if (requireNamespace("changepoint", quietly = TRUE)) {
     
