@@ -6,7 +6,8 @@ import("ggplot2")
 
 importFrom("grDevices", "rgb")
 importFrom("graphics", "abline", "plot", "hist")
-importFrom("stats", "dist", "rmultinom", "rnorm", "runif", "var")
+importFrom("stats", "dist", "median", "optime", "rmultinom", "rnorm", "runif",
+           "var")
 importFrom("abc", "abc")
 importFrom("parallel", "parLapply")
 
