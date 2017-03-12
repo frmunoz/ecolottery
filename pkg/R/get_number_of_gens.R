@@ -67,6 +67,6 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
             axis.title = element_text(size = 14, face = "bold")) +
       theme_bw()
     
-    return(list(n = gens_conv_cpt, plot = diagnostic_plot))
+    return(list(n = max(gens_conv_cpt), plot = diagnostic_plot))
   
 }
