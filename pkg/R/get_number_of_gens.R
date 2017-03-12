@@ -5,11 +5,19 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
                                plot_gens = FALSE) {
   
     if (is.character(pool)) {
-      pool <- data.frame(id = 1:length(pool), sp = pool, trait = rep(NA, length(pool)), stringsAsFactors = FALSE)
+      pool <- data.frame(id = 1:length(pool),
+                         sp = pool,
+                         trait = rep(NA, length(pool)),
+                         stringsAsFactors = FALSE)
+      
       if (limit.sim | !is.null(filt)) {
         cat("No trait information provided in the regional pool\n") 
+        
         pool[, 3] <- runif(nrow(pool))
-        cat(paste0("Random trait values attributed to individuals of the ", "regional pool\n"))
+        
+        cat(paste0("Random trait values attributed to individuals of the ",
+                   "regional pool\n"))
+        
         colnames(pool) <- c("id", "sp", "trait")
       }
     }
@@ -36,20 +44,31 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
                        prob.death = prob.death, method.dist = method.dist,
                        plot_gens = plot_gens)
       
-      data <- data.frame(gens = 1:gens, rich = final$sp_t, stringsAsFactors = FALSE)
+      data <- data.frame(gens = 1:gens, rich = final$sp_t,
+                         stringsAsFactors = FALSE)
+      
       nb_sp_gen <- rbind(nb_sp_gen, data)
       
       # Customized non-linear regression
       final_sp <- final$sp_t[length(final$sp_t)]
       init_sp <- length(unique(start_com$sp))
+      
       changePoint <- function(t, spf, Tval, init_sp) {
-        init_sp*exp(log(spf/init_sp)*t/Tval)*as.numeric(t<=Tval)+spf*as.numeric(t>Tval)
+        init_sp * exp(log(spf/init_sp) * t/Tval) * as.numeric(t <= Tval) +
+          spf * as.numeric(t > Tval)
       }
+      
       sqerror <- function (par, x, t) {
         sum((x - changePoint(t, par[1], par[2], init_sp))^2)
       }
-      sp.fit <- optim(par = c(final_sp, median(data$gens)), fn = sqerror, x = data$rich, t = data$gens, 
-                      lower=c(1,1), upper=c(given_size,gens), method = "L-BFGS-B")
+      
+      sp.fit <- optim(par    = c(final_sp, median(data$gens)),
+                      fn     = sqerror, x = data$rich,
+                      t      = data$gens, 
+                      lower  = c(1,1),
+                      upper  = c(given_size,gens),
+                      method = "L-BFGS-B")
+      
       gens_conv_cpt <- c(gens_conv_cpt, sp.fit$par[2])
     }
     
