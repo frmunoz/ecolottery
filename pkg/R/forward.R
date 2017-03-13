@@ -404,7 +404,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       # (Gaussian function of pairwise trait distance), plus a baseline individual death probability
       # coeff.lim.sim modulates the strength of limiting similarity compared to the baseline mortality
       prob.death <- apply(tr.dist[com[, 1], com[, 1]], 2,
-                           function(x) coeff.limit.sim*(sum(exp( -x^2 / (2*(sigm^2))),
+                           function(x) coeff.lim.sim*(sum(exp( -x^2 / (2*(sigm^2))),
                                             na.rm = TRUE)))
       # Add baseline probability
       prob.death <- prob.death + 1/J
