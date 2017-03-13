@@ -33,8 +33,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     stop("limiting similarity parameter must be a boolean.")
   }
   
-  if (!is.numeric(coeff.lim.sim) | coeff.lim.sim < 1) {
-    stop("coeff.lim.sim parameter must be a positive integer superior to 0.")
+  if (!is.numeric(coeff.lim.sim)) {
+    stop("coeff.lim.sim parameter must be numeric.")
   }
   
   if (!is.numeric(sigm) | sigm < 0) {
