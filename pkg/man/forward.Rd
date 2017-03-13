@@ -183,7 +183,7 @@ plot(unlist(lapply(final7$com_t, function(x) length(unique(x[, 2])))),
      xlab = "Time step", ylab = "Community richness") 
 
 # Index of limiting similarity over time
-plot(final7$limit.sim.t, xlab = "Time step", ylab = "Limiting similarity")
+plot(final7$dist.t, xlab = "Time step", ylab = "Limiting similarity")
 }
 
 \keyword{neutral dynamics}
