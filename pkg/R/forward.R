@@ -158,7 +158,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   sp_t <- c()
 	
   ind_t <- c()	
-  limit.sim.t <- c()
+  dist.t <- c()
 	
   if (keep) {  # If the user asked to keep all the communities at each timestep
     comm_through_time <- c()
@@ -179,9 +179,9 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
       sp_t <- c(sp_t, length(unique(next_comm$com$sp)))
       ind_t <- c(ind_t, length(unique(next_comm$com$ind)))
 	      
-      # Store limiting similarity matrix if simulated
+      # Store average trait distance among coexisting individuals
       if (!is.null(limit.sim)) {
-        limit.sim.t <- c(limit.sim.t, next_comm$limit.sim.t)
+        dist.t <- c(dist.t, next_comm$dist.t)
       }
       new.index <- next_comm$new.index
       next_comm <- next_comm$com
@@ -218,10 +218,10 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     {
         if(keep) return(list(com_t = comm_through_time,
 	sp_t = sp_t,
-	limit.sim.t = limit.sim.t,
+	dist.t = dist.t,
         pool = pool))
 	else return(list(com = next_comm, sp_t = sp_t, 
-			 limit.sim.t = limit.sim.t, pool = pool))
+			 dist.t = dist.t, pool = pool))
     } else
     {
 	if(keep) return(list(com_t = comm_through_time,
@@ -360,14 +360,14 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
 	  hab_filter <- function(x) sapply(x, function(x) 1)
   }
   
-  # Limiting similarity depends on community composition at each time step
+  # Traits distances used to simulate limiting similarity
   if (limit.sim) {
-   limit.sim <- as.matrix(dist(com[, 3], method = method.dist))
-   colnames(limit.sim) <- com[, 1]
-   rownames(limit.sim) <- com[, 1]
-   diag(limit.sim) <- NA
+   tr.dist <- as.matrix(dist(com[, 3], method = method.dist))
+   colnames(tr.dist) <- com[, 1]
+   rownames(tr.dist) <- com[, 1]
+   diag(tr.dist) <- NA
   } else {
-    limit.sim <- NULL
+    tr.dist <- NULL
   }
 					   
   # Initial community
@@ -392,33 +392,29 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     
     # Under limiting similarity, mortality increases when an individual is more
     # similar to other resident individuals
-    if (!is.null(limit.sim)) {
+    if (!is.null(tr.dist)) {
       
-      if (sum(!com[, 1] %in% rownames(limit.sim)) > 0 |
-          sum(!com[, 1] %in% colnames(limit.sim)) > 0) {
-        stop("limit.sim: mismatch of species names")
+      if (sum(!com[, 1] %in% rownames(tr.dist)) > 0 |
+          sum(!com[, 1] %in% colnames(tr.dist)) > 0) {
+        stop("tr.dist: mismatch of species names")
       }
       
-      # For each species: compute limiting similarity coefficient based on
-      # Gaussian distribution
-      limit.sim.t <- apply(limit.sim[com[, 1], com[, 1]], 2,
-                           function(x) (sum(exp( -x^2 / (2*(sigm^2))),
+      # For each species: compute death probability depending on limiting similarity
+      # Individual death probability is the sum of the influence of each other individuals 
+      # (Gaussian function of pairwise trait distance), plus a baseline individual death probability
+      # coeff.lim.sim modulates the strength of limiting similarity compared to the baseline mortality
+      prob.death <- apply(tr.dist[com[, 1], com[, 1]], 2,
+                           function(x) coeff.limit.sim*(sum(exp( -x^2 / (2*(sigm^2))),
                                             na.rm = TRUE)))
-      
-      prob.death <- coeff.lim.sim*limit.sim.t
+      # Add baseline probability
+      prob.death <- prob.death + 1/J
       # Scaling prob.death
-      prob.death <- (prob.death - min(prob.death)) / (max(prob.death) -
-                                                        min(prob.death))
-
-      # If all probabilities null, sample won't work. An identical and weak
-      # probability is given to each species.
-      if(sum(prob.death)==0){
-        prob.death <- prob.death + 0.001
-      }
-      
-      # limit.sim.t will display the average distance between trait of species
-      # for the whole community
-      limit.sim.t <- mean(limit.sim[com[, 1], com[, 1]], na.rm = TRUE)
+      prob.death <- prob.death / max(prob.death)			  
+      names(prob.death ) <- com[, 1]
+				   
+      # dist.t will display the average distance between trait of species
+      # for the whole community at each generation
+      dist.t <- mean(tr.dist[com[, 1], com[, 1]], na.rm = TRUE)
       
     }
     # Habitat filtering also influences the individual death probability
@@ -426,17 +422,12 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       if (any(is.na(hab_filter(com[, 3])))) {
         stop("Error: NA values in habitat filter")
       }
-      prob.death <- prob.death * (1 - hab_filter(com[, 3]) /
+      ## This part should be changes when hab_filter can be above 1
+	    prob.death <- prob.death * (1 - hab_filter(com[, 3])) /
                                     sum(hab_filter(com[, 3])))
       
       # Giving names to prob.death
-      names(prob.death) <- com[, 1]
-      
-      # If all probabilities null, sample won't work. An identical and weak
-      # probability is given to each species.
-      if(sum(prob.death)==0){
-        prob.death <- prob.death + 0.001
-      }
+      names(prob.death) <- com[, 1]      
     }
     
     # Position of dead individuals in prob.death vector
