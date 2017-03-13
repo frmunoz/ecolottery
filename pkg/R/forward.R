@@ -485,9 +485,9 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     }
   }
     
-  if (!is.null(limit.sim)) {
+  if (limit.sim) {
     # If there limiting similarity return the factor
-    return(list(com = com, limit.sim.t = limit.sim.t))
+    return(list(com = com, dist.t = dist.t))
   
   } else {
     # Without limiting similarity
