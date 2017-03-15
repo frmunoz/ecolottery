@@ -81,7 +81,7 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
       geom_point(alpha = 0.5) +
       geom_vline(xintercept = max(gens_conv_cpt), colour = "red",
                  linetype = "dashed") +
-      labs(x = "Generation number", y = "Specific richness") +
+      labs(x = "Generation number", y = "Richness") +
       theme(axis.text = element_text(size = 12),
             axis.title = element_text(size = 14, face = "bold")) +
       theme_bw()
