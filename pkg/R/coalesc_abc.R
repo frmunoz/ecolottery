@@ -1,7 +1,7 @@
 coalesc_abc <- function(comm.obs, pool, multi = FALSE, traits = NULL,
-                        f.sumstats, filt.abc, params, nb.samp = 10^6,
-                        parallel = TRUE, tol = 1*10^-4, pkg = NULL,
-                        method="neuralnet")
+                        f.sumstats, filt.abc = NULL, params, theta.max = NULL,
+                        nb.samp = 10^6, parallel = TRUE, tol = 1*10^-4, 
+                        pkg = NULL, method = "neuralnet")
 {
   
   if(is.null(pool)) {
