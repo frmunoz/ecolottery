@@ -32,7 +32,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "none", traits = NULL,
   # Community size
   if (multi=="none") {
     J <- nrow(comm.obs)
-    nb. com <- 1
+    nb.com <- 1
   } else {
     if(multi=="tab")
     { 
