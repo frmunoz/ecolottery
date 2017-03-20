@@ -18,7 +18,7 @@ forward(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
         pool = NULL, limit.sim = FALSE, coeff.lim.sim = 1,
         sigm = 0.1, filt = NULL, prob.death = NULL,
         method.dist = "euclidean", plot_gens = FALSE)
-get_number_of_gens(given_size, pool, nbrep = 100, prob = 1, d = 1, gens = NULL,
+get_number_of_gens(given_size, pool, nbrep = 5, prob = 1, d = 1, gens = NULL,
                    limit.sim = FALSE, coeff.lim.sim = 1, sigm = 0.1,
                    filt = NULL, prob.death = NULL, method.dist = "euclidean",
                    plot_gens = FALSE)

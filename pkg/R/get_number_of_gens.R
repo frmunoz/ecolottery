@@ -23,7 +23,7 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
     }
     
     # At least 100 total replacements in expectation
-    if(is.null(gens)) gens <- 100*given_size/d
+    if (is.null(gens)) gens <- 100*given_size/d
     gens = min(100*given_size/d, gens, na.rm = TRUE) 
     
     # Simulate starting community from given pool

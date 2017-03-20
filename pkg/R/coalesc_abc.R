@@ -30,7 +30,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "none", traits = NULL,
   }
   
   # Community size
-  if (multi=="none") {
+  if (multi == "none") {
     J <- nrow(comm.obs)
     nb.com <- 1
   } else {
@@ -43,28 +43,28 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "none", traits = NULL,
       }
       # nb.com is equal to number communities
       nb.com <- nrow(comm.obs)
-    } else if(multi=="seqcom") stop("seqcom option not implemented yet")
+    } else if (multi == "seqcom") stop("seqcom option not implemented yet")
   }
   
   # Trait values can be provided with community composition
   # Mean trait values of pool are stored in traits in absence of
   # trait information in local community
-  if (!is.null(pool) & ncol(com.obs) < 3) if(ncol(pool) >= 3) {
+  if (!is.null(pool) & ncol(comm.obs) < 3) if (ncol(pool) >= 3) {
       traits <- data.frame(apply(data.frame(pool[, -(1:2)]), 2,
                                function(x) tapply(x, pool[, 2], mean)))
     }
-  if(is.null(traits) & ncol(com.obs) < 3) warning("Trait information is not provided")
+  if(is.null(traits) & ncol(comm.obs) < 3) warning("Trait information is not provided")
   
   if (is.null(traits)) {stats.obs <- f.sumstats(comm.obs)
   } else stats.obs <- f.sumstats(comm.obs, traits)
   
   # Community simulation
-  sim <- do.simul(J, pool, nb.com, traits, f.sumstats, filt.abc, params, theta.max, nb.samp,
-                  parallel, tol, pkg, method)
+  sim <- do.simul(J, pool, nb.com, traits, f.sumstats, filt.abc, params,
+                  theta.max, nb.samp, parallel, tol, pkg, method)
    
-  stats.mean <- apply(sim$stats, 2, function(x) mean(x, na.rm=T))
-  stats.sd <- apply(sim$stats, 2, function(x) sd(x, na.rm=T))
-  sim$stats.scaled <- t(apply(sim$stats, 1, function(x) (x-stats.mean)/stats.sd))
+  stats.mean <- apply(sim$stats, 2, function(x) mean(x, na.rm = T))
+  stats.sd <- apply(sim$stats, 2, function(x) sd(x, na.rm = T))
+  sim$stats.scaled <- t(apply(sim$stats, 1, function(x) (x - stats.mean)/stats.sd))
   
   colnames(sim$stats.scaled) <- colnames(sim$stats)
  
