@@ -9,12 +9,12 @@
   Estimates parameters of neutral migration-drift dynamics (through migration rate m and parameters of environmental filtering (through a filtering function filt.abc) from the composition of a local community and the related regional pool. 
 }
 \usage{
-  coalesc_abc(comm.obs, pool, multi = FALSE, traits = NULL, f.sumstats,
-              filt.abc, params, nb.samp = 10^6, parallel = TRUE, tol = 1*10^-4,
-              pkg = NULL, method="neuralnet")
-  do.simul(J, pool, traits = NULL, f.sumstats, filt.abc, params, 
-           nb.samp = 10^6, parallel = TRUE, tol = 1*10^-4, pkg = NULL, 
-           method = "neuralnet")
+  coalesc_abc(comm.obs, pool = NULL, multi = "none", traits = NULL, f.sumstats,
+              filt.abc = NULL, params, theta.max = NULL, nb.samp = 10^6,
+              parallel = TRUE, tol = 1*10^-4, pkg = NULL, method="neuralnet")
+  do.simul(J, pool = NULL, nb.com = NULL, traits = NULL, f.sumstats = NULL,
+           filt.abc = NULL, params, theta.max = NULL, nb.samp = 10^6,
+           parallel = TRUE, tol = 1*10^-4, pkg = NULL, method = "neuralnet")
 }
 \arguments{
   \item{comm.obs}{
@@ -38,6 +38,9 @@
   \item{params}{
     a matrix of the bounds of the parameters used in \code{filt.abc}. The row names of \code{params} provide the parameter names used in ABC calculation and output.
   }
+  \item{theta.max}{
+    TO BE COMPLETED
+  }
   \item{nb.samp}{
    the number of parameter values to be sampled in ABC calculation. Random values of parameters of environmental filtering (see filt.abc and params) and of migration (denoted as m) are drawn from a uniform distribution between minimum and maximum values provided in params (and between 0 and 1 for m).
   }
@@ -55,6 +58,9 @@
   }
   \item{J}{
     local community size.
+  }
+  \item{nb.com}{
+    TO BE COMPLETED
   }
 }
 \details{
