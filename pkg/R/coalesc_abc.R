@@ -1,4 +1,4 @@
-coalesc_abc <- function(comm.obs, pool, multi = "none", traits = NULL,
+coalesc_abc <- function(comm.obs, pool = NULL, multi = "none", traits = NULL,
                         f.sumstats, filt.abc = NULL, params, theta.max = NULL,
                         nb.samp = 10^6, parallel = TRUE, tol = 1*10^-4, 
                         pkg = NULL, method = "neuralnet")
@@ -59,7 +59,7 @@ coalesc_abc <- function(comm.obs, pool, multi = "none", traits = NULL,
   } else stats.obs <- f.sumstats(comm.obs, traits)
   
   # Community simulation
-  sim <- do.simul(J, pool, nb.com, traits, f.sumstats, filt.abc, params, nb.samp,
+  sim <- do.simul(J, pool, nb.com, traits, f.sumstats, filt.abc, params, theta.max, nb.samp,
                   parallel, tol, pkg, method)
    
   stats.mean <- apply(sim$stats, 2, function(x) mean(x, na.rm=T))
@@ -82,7 +82,7 @@ coalesc_abc <- function(comm.obs, pool, multi = "none", traits = NULL,
 }
 
 do.simul <- function(J, pool = NULL, nb.com = NULL, traits = NULL, f.sumstats = NULL,
-                     filt.abc = NULL, params, nb.samp = 10^6, parallel = TRUE, tol = 1*10^-4, 
+                     filt.abc = NULL, params, theta.max = NULL, nb.samp = 10^6, parallel = TRUE, tol = 1*10^-4, 
                      pkg = NULL, method = "neuralnet") {
   if (!requireNamespace("parallel", quietly = TRUE) & parallel)  
   {
