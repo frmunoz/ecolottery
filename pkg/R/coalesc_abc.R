@@ -4,6 +4,14 @@ coalesc_abc <- function(comm.obs, pool, multi = FALSE, traits = NULL,
                         pkg = NULL, method = "neuralnet")
 {
   
+  if (is.character(comm.obs)) {
+      comm.obs <- data.frame(id = 1:length(comm.obs),
+                       sp = comm.obs,
+                       trait = rep(NA, length(comm.obs)),
+                       stringsAsFactors = FALSE)
+      colnames(comm.obs) <- c("id", "sp", "trait")
+  }
+  
   if(is.null(pool)) {
     stop("You must provide regional pool composition")
   }
