@@ -165,7 +165,7 @@ do.simul <- function(J, pool = NULL, nb.com = NULL, traits = NULL, f.sumstats = 
         } else stats.samp <- f.sumstats(comm.samp$com, traits)
       }
           
-      return(list(sum.stats = stats.samp, param = params.samp))
+      return(list(sum.stats = stats.samp, param = params.samp.all))
     }
     
     worker <- function(j) {
