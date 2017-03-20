@@ -62,10 +62,10 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "none", traits = NULL,
     stats.obs <- f.sumstats(comm.obs)
   } else {
     stats.obs <- f.sumstats(comm.obs, traits)
-    }
+  }
   
   # Community simulation
-  sim <- do.simul(J, pool, nb.com, traits, f.sumstats, filt.abc, params,
+  sim <- do.simul(J, pool, multi, nb.com, traits, f.sumstats, filt.abc, params,
                   theta.max, nb.samp, parallel, tol, pkg, method)
    
   stats.mean <- apply(sim$stats, 2, function(x) mean(x, na.rm = T))
@@ -88,8 +88,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "none", traits = NULL,
   return(list(par = sim$params.sim, ss = sim$stats.scaled, abc = res.abc))
 }
 
-do.simul <- function(J, pool = NULL, nb.com = NULL, traits = NULL,
-                     f.sumstats = NULL, filt.abc = NULL, params,
+do.simul <- function(J, pool = NULL, multi = "none", nb.com = NULL,
+                     traits = NULL, f.sumstats = NULL, filt.abc = NULL, params,
                      theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
                      tol = 1*10^-4, pkg = NULL, method = "neuralnet") {
   
@@ -120,8 +120,8 @@ do.simul <- function(J, pool = NULL, nb.com = NULL, traits = NULL,
   }
   
   # Function to perform simulations
-  mkWorker <- function(traits, nb.com, prior, J, pool, filt.abc, f.sumstats,
-                       pkg) {
+  mkWorker <- function(traits, nb.com, multi, prior, J, pool, filt.abc,
+                       f.sumstats, pkg) {
     force(J)
     force(pool)
     force(traits)
@@ -131,7 +131,7 @@ do.simul <- function(J, pool = NULL, nb.com = NULL, traits = NULL,
     force(nb.com)
     force(pkg)
     
-    summCalc <- function(j, traits, nb.com, prior, J, pool, filt.abc,
+    summCalc <- function(j, multi, traits, nb.com, prior, J, pool, filt.abc,
                          f.sumstats) {
       
       params.samp <- unlist(lapply(prior,function(x) x[j]))
@@ -153,7 +153,7 @@ do.simul <- function(J, pool = NULL, nb.com = NULL, traits = NULL,
       if (nb.com > 1) {
         
         pool.sp <- unique(pool$sp)
-        meta.samp <- array(0,c(multi,length(pool.sp)));
+        meta.samp <- array(0, c(multi, length(pool.sp)))
         colnames(meta.samp) <- pool.sp
                 
         for (i in 1:multi) {
@@ -187,7 +187,8 @@ do.simul <- function(J, pool = NULL, nb.com = NULL, traits = NULL,
       return(list(sum.stats = stats.samp, param = params.samp.all))
     }
     
-    worker <- function(j) {
+    worker <- function(j, multi, traits, nb.com, prior, J, pool, filt.abc,
+                       f.sumstats, pkg) {
       require(lottery)
       # Other required packages
       if (!is.null(pkg)) for (i in 1:length(pkg)) {
@@ -195,7 +196,7 @@ do.simul <- function(J, pool = NULL, nb.com = NULL, traits = NULL,
           stop(paste("Package ", pkg[i], " is not available", sep = ""))
         }
       }
-      summCalc(j, traits, nb.com, prior, J, pool, filt.abc, f.sumstats)
+      summCalc(j, multi, traits, nb.com, prior, J, pool, filt.abc, f.sumstats)
     }
     return(worker)
   }
@@ -203,10 +204,10 @@ do.simul <- function(J, pool = NULL, nb.com = NULL, traits = NULL,
   # Calculation of summary statistics over the whole range of parameters
   if (parallel) {
     models <- parallel::parLapply(parCluster, 1:nb.samp,
-                                  mkWorker(traits, nb.com, prior, J, pool,
-                                           filt.abc, f.sumstats, pkg))
+                                  mkWorker(traits, nb.com, multi, prior, J,
+                                           pool, filt.abc, f.sumstats, pkg))
   } else {
-    models <- lapply(1:nb.samp, mkWorker(traits, nb.com, prior, J, pool,
+    models <- lapply(1:nb.samp, mkWorker(traits, nb.com, multi, prior, J, pool,
                                          filt.abc, .sumstats, pkg))
   }
   

@@ -37,7 +37,7 @@ Munoz, F., B. R. Ramesh and P. Couteron (2014). "How do habitat filtering and ni
 \examples{
 ## Coalescent-based simulation of stabilizing habitat filtering around t=0.5
 J <- 100; theta <- 50; m <- 0.5;
-comm <- coalesc(J, theta, m, filt = function(x) 0.5 - abs(0.5 - x))
+comm <- coalesc(J, m, theta, filt = function(x) 0.5 - abs(0.5 - x))
 plot_comm(comm)
 
 ## Forward-in-time simulation of stabilizing habitat filtering around 

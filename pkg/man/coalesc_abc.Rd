@@ -12,9 +12,10 @@
   coalesc_abc(comm.obs, pool = NULL, multi = "none", traits = NULL, f.sumstats,
               filt.abc = NULL, params, theta.max = NULL, nb.samp = 10^6,
               parallel = TRUE, tol = 1*10^-4, pkg = NULL, method="neuralnet")
-  do.simul(J, pool = NULL, nb.com = NULL, traits = NULL, f.sumstats = NULL,
-           filt.abc = NULL, params, theta.max = NULL, nb.samp = 10^6,
-           parallel = TRUE, tol = 1*10^-4, pkg = NULL, method = "neuralnet")
+  do.simul(J, pool = NULL, multi = "none", nb.com = NULL, traits = NULL,
+           f.sumstats = NULL, filt.abc = NULL, params, theta.max = NULL,
+           nb.samp = 10^6, parallel = TRUE, tol = 1*10^-4, pkg = NULL,
+           method = "neuralnet")
 }
 \arguments{
   \item{comm.obs}{
