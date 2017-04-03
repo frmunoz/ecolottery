@@ -11,12 +11,12 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
                          stringsAsFactors = FALSE)
       
       if (limit.sim | !is.null(filt)) {
-        cat("No trait information provided in the regional pool\n") 
+        message("No trait information provided in the regional pool") 
         
         pool[, 3] <- runif(nrow(pool))
         
-        cat(paste0("Random trait values attributed to individuals of the ",
-                   "regional pool\n"))
+        message("Random trait values attributed to individuals of the ",
+                "regional pool")
         
         colnames(pool) <- c("id", "sp", "trait")
       }

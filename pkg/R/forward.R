@@ -12,13 +12,13 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   # Checking basic parameters
 
   if (!is.numeric(prob) | prob < 0) {
-    stop(paste0("Probability of migration or mutation must be a number ",
-                "belonging to [0; 1] interval."))
+    stop("Probability of migration or mutation must be a number belonging to ",
+         "[0; 1] interval.")
   }
   
   if (!is.numeric(d) | d < 0) {
-    stop(paste0("Number of individuals that die in each time step must be a ",
-                "positive number."))
+    stop("Number of individuals that die in each time step must be a positive",
+         " number.")
   }
   
   if (!is.numeric(gens) | gens <= 0) {
@@ -49,8 +49,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   
   if ((method.dist %in% c("euclidean", "maximum", "manhattan", "canberra",
                           "binary", "minkowski")) == FALSE) {
-    stop(paste0("Provided distance does not exist.",
-                " See stats::dist function for help."))
+    stop("Provided distance does not exist. See stats::dist function for help.")
   }
   
   if (!is.logical(plot_gens)) {
@@ -61,8 +60,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   # environmental filtering or limiting similarity
   if ((is.character(initial) | is.vector(initial)) &
       (limit.sim | !is.null(filt))) {
-    stop(paste0("Trait information must be provided along with species ",
-                "identity in the initial community for niche - based dynamics"))
+    stop("Trait information must be provided along with species identity in",
+         " the initial community for niche - based dynamics")
   }
   
   # If environmental filtering or limiting similarity, the initial community
@@ -75,7 +74,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   # If no limiting similarity nor environmental filter -> community dynamics are
   # considered neutral
   if (!limit.sim & is.null(filt)) {
-    cat("Simulation of a neutral community\n")
+    message("Simulation of a neutral community")
   }
   
   # "pool" will be a three - column matrix of individuals in the regional pool,
@@ -88,10 +87,10 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
                        stringsAsFactors = FALSE)
   
     if (limit.sim | !is.null(filt)) {
-      cat("No trait information provided in the regional pool\n")
+      message("No trait information provided in the regional pool\n")
       pool[, 3] <- runif(nrow(pool))
-      cat(paste0("Random trait values attributed to individuals of the ",
-                 "regional pool\n"))
+      message("Random trait values attributed to individuals of the regional",
+              " pool")
       colnames(pool) <- c("id", "sp", "trait")
     }
   }
@@ -99,16 +98,16 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   # If species pool is specified by user
   if (!is.null(pool)) {
     if (ncol(pool) < 2) {
-      stop(paste0("The regional pool is misdefined (at least two columns ",
-                  "required when a matrix or data frame is provided)"))
+      stop("The regional pool is misdefined (at least two columns ",
+           "required when a matrix or data frame is provided)")
     } else if (ncol(pool) == 2) {
-      cat("No trait information provided in the regional pool\n")
+      message("No trait information provided in the regional pool\n")
     }
     if ((!limit.sim | !is.null(filt)) & ncol(pool) < 3) {
       pool[, 3] <- runif(nrow(pool))
       
-      cat(paste0("Random (uniform) trait values attributed to individuals of ",
-                 "the regional pool\n"))
+      message("Random (uniform) trait values attributed to individuals of ",
+              "the regional pool\n")
     }
       colnames(pool) <- c("id", "sp", "trait")
   }
@@ -126,8 +125,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   } else {
     
     if (ncol(initial) < 3) {
-      cat(paste0("Two-column initial community: assumed to represent species ",
-                 "and trait information; individual ids will be generated"))
+      message("Two-column initial community: assumed to represent species ",
+               "and trait information; individual ids will be generated")
     J <- nrow(initial)
     init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
                             sp = initial[, 1],
@@ -140,8 +139,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   }
   
   if ((limit.sim | !is.null(filt)) & any(is.na(init_comm[, 3]))) {
-    stop(paste0("Trait information must be provided in initial community",
-                "composition for niche-based dynamics"))
+    stop("Trait information must be provided in initial community ",
+         "composition for niche-based dynamics")
   }
   
   colnames(init_comm) <- c("id", "sp", "trait")
@@ -248,8 +247,8 @@ pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
   } else {
 	  
     if((!is.null(filt) | limit.sim) & prob > 0 & any(is.na(pool[,3]))) {
-	    stop(paste0("With environmental filtering, NA trait values not allowed",
-	                " in regional pool"))
+	    stop("With environmental filtering, NA trait values not allowed in ",
+	         "regional pool")
     }
 	  
   # If there is a species pool make an individual immigrates

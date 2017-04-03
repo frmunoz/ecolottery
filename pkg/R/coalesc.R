@@ -146,16 +146,15 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
   
   if (any(prob < 0)) {
       if (verbose) {
-        warning(paste0("Negative weights yielded by filtering function ",
-                       "are set to 0.\n",
-                       "Maybe better defining the filtering function in a ",
-                       "different way!"))
+        warning("Negative weights yielded by filtering function are set to ",
+                "0.\n", "Maybe better defining the filtering function in a ",
+                "different way!")
       }
       prob[prob < 0] <- 0
       
       if (all(prob < 0)) {
-        stop(paste0("Your filtering function does not allow any immigrant",
-                    "to enter the community"))
+        stop("Your filtering function does not allow any immigrant to enter ",
+             "the community")
       }
   }  
 
