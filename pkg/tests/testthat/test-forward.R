@@ -13,7 +13,7 @@ test_that("forward() works and returns desired result structure", {
   sink()
   
   expect_is(res, "list")
-  expect_named(res, c("com", "sp_t", "limit.sim.t", "pool"))
+  expect_named(res, c("com", "sp_t", "dist.t", "pool"))
   expect_is(res$com, "data.frame")
   expect_is(res$pool, "data.frame")
   expect_named(res$com, c("id", "sp", "trait"))
@@ -31,7 +31,7 @@ test_that("forward() works and returns desired result structure", {
   sink()
   
   expect_is(res_keep, "list")
-  expect_named(res_keep, c("com_t", "sp_t", "limit.sim.t", "pool"))
+  expect_named(res_keep, c("com_t", "sp_t", "dist.t", "pool"))
   expect_is(res_keep$com_t, "list")
   expect_is(res_keep$com_t[[1]], "data.frame")
   expect_is(res_keep$pool, "data.frame")
@@ -50,11 +50,11 @@ test_that("forward() works and returns desired result structure", {
   sink()
   
   expect_is(res_limit, "list")
-  expect_named(res_limit, c("com_t", "sp_t", "limit.sim.t", "pool"))
+  expect_named(res_limit, c("com_t", "sp_t", "dist.t", "pool"))
   expect_is(res_limit$com_t, "list")
   expect_is(res_limit$com_t[[1]], "data.frame")
   expect_is(res_limit$pool, "data.frame")
-  expect_is(res_limit$limit.sim.t, "numeric")
+  expect_is(res_limit$dist.t, "numeric")
   expect_named(res_limit$com_t[[1]], c("id", "sp", "trait"))
   expect_named(res_limit$pool, c("id", "sp", "trait"))
   expect_is(res_limit$com_t[[1]]$trait, "numeric")
@@ -62,5 +62,5 @@ test_that("forward() works and returns desired result structure", {
   expect_equal(dim(res_limit$com_t[[1]]), c(50, 3))
   expect_length(res_limit$com_t, 4)
   expect_equal(dim(res_limit$pool), dim(pool))
-  expect_length(res_limit$limit.sim.t, 4)
+  expect_length(res_limit$dist.t, 4)
 })
