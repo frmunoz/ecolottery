@@ -208,7 +208,7 @@ do.simul <- function(J, pool = NULL, multi = "none", nb.com = NULL,
                                            pool, filt.abc, f.sumstats, pkg))
   } else {
     models <- lapply(1:nb.samp, mkWorker(traits, nb.com, multi, prior, J, pool,
-                                         filt.abc, .sumstats, pkg))
+                                         filt.abc, f.sumstats, pkg))
   }
   
   if (parallel) {
