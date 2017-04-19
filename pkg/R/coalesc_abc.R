@@ -187,8 +187,7 @@ do.simul <- function(J, pool = NULL, multi = "none", nb.com = NULL,
       return(list(sum.stats = stats.samp, param = params.samp.all))
     }
     
-    worker <- function(j, multi, traits, nb.com, prior, J, pool, filt.abc,
-                       f.sumstats, pkg) {
+    worker <- function(j) {
       require(lottery)
       # Other required packages
       if (!is.null(pkg)) for (i in 1:length(pkg)) {
