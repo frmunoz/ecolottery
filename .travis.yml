@@ -1,1 +1,5 @@
-script: build.sh
+before_script: cd pkg
+
+language: r
+sudo: false
+cache: packages
