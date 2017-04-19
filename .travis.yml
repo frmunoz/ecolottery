@@ -1,4 +1,4 @@
-before_script: cd pkg
+before_install: cd pkg
 
 language: r
 sudo: false
