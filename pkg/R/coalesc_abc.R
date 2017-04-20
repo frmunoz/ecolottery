@@ -31,19 +31,30 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "none", traits = NULL,
   }
   
   # Community size
+  if (!(multi %in% c("none", "tab", "seqcom"))){
+    stop("multi parameter must be set at none, tab or seqcom.")
+  }
+  
   if (multi == "none") {
     J <- nrow(comm.obs)
     nb.com <- 1
   } else {
-    if (multi == "tab")
-    { 
-      if (var(rowSums(comm.obs)) == 0) {
-      J <- mean(rowSums(comm.obs))
+    if (multi == "tab") { 
+      if (ncol(comm.obs) < 3){
+        stop("When multi is set at tab, comm.obs must be a data.frame with at least three columns,
+             including number of communities, number of individuals, number of species and optionally
+             trait values.")
+      }
+      
+      if (var(table(comm.obs[, 1])) == 0) {
+        J <- mean(table(comm.obs[, 1]))
       } else {
         stop("multi option available with equal community sizes")
       }
       # nb.com is equal to number communities
-      nb.com <- nrow(comm.obs)
+      nb.com <- length(table(comm.obs[, 1]))
+      # Deletion of first column with community number, so the third one contains trait values
+      comm.obs <- comm.obs[, 2:ncol(comm.obs)]
     } else if (multi == "seqcom") stop("seqcom option not implemented yet")
   }
   
@@ -153,10 +164,10 @@ do.simul <- function(J, pool = NULL, multi = "none", nb.com = NULL,
       if (nb.com > 1) {
         
         pool.sp <- unique(pool$sp)
-        meta.samp <- array(0, c(multi, length(pool.sp)))
+        meta.samp <- array(0, c(nb.com, length(pool.sp)))
         colnames(meta.samp) <- pool.sp
                 
-        for (i in 1:multi) {
+        for (i in 1:nb.com) {
           
           try({
             comm.samp <- coalesc(J, m = params.samp[length(params.samp)],

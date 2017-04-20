@@ -61,7 +61,7 @@
     local community size.
   }
   \item{nb.com}{
-    TO BE COMPLETED
+    number of communities.
   }
 }
 \details{
@@ -105,12 +105,12 @@ nb.samp <- 10^6; # Should be large
 
 \dontrun{
 # Basic summary statistics
-f.sumstats <- function(com,t) array(dimnames=list(c("cwm","cwv","cws","cwk","S","Es")),c(mean(t),
-      var(t),
-      e1071::skewness(t),  
-      e1071::kurtosis(t),
-      vegan::specnumber(table(com)),
-      vegan::diversity(table(com))))
+f.sumstats <- function(com) array(dimnames=list(c("cwm", "cwv", "cws", "cwk", "S", "Es")),
+                                  c(mean(com[,3]), var(com[,3]), 
+                                    e1071::skewness(com[,3]),  
+                                    e1071::kurtosis(com[,3]),
+                                    vegan::specnumber(table(com[,2])),
+                                    vegan::diversity(table(com[,2]))))
 
 # An observed community is here simulated (known parameters)
 comm <- coalesc(J = 400, m = 0.5, theta = 50, filt = function(x) filt_gaussian(x,c(0.2,0.1)))
@@ -121,6 +121,11 @@ res <- coalesc_abc(comm$com, comm$pool, f.sumstats=f.sumstats, filt.abc=filt_gau
                    params=params, nb.samp = nb.samp, parallel = TRUE, pkg =c("e1071","vegan"))
 plot(res$abc,param=res$par)
 hist(res$abc)
+
+# Cross validation
+## Warning: this function is slow
+res$cv <- abc::cv4abc(param=res$par, sumstat=res$ss, nval=1000, tols=c(0.01, 0.1, 1), method = "neuralnet")
+plot(res$cv)
 
 # Multiple community option
 comm.obs <- c();
