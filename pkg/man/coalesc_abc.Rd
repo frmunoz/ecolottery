@@ -40,7 +40,7 @@
     a matrix of the bounds of the parameters used in \code{filt.abc}. The row names of \code{params} provide the parameter names used in ABC calculation and output.
   }
   \item{theta.max}{
-    TO BE COMPLETED
+    if \code{pool=NULL}, regional abundances will be simulated following a log-series distribution. The function will estimate the \code{theta} parameter of this distribution. \code{theta.max} then provides the upper bound for this estimation.
   }
   \item{nb.samp}{
    the number of parameter values to be sampled in ABC calculation. Random values of parameters of environmental filtering (see filt.abc and params) and of migration (denoted as m) are drawn from a uniform distribution between minimum and maximum values provided in params (and between 0 and 1 for m).
@@ -74,8 +74,14 @@
   \item{par}{
     parameter values used in simulations.
   }
-  \item{par}{
-    summary statistics of the communities simulated with parameter values listed in \code{par}.
+  \item{obs}{
+    observed summary statistics.
+  }
+  \item{obs.scaled}{
+    observed summary statistics standardized according to the mean and standard deviation of simulated values.
+  }
+  \item{ss}{
+    standardized summary statistics of the communities simulated with parameter values listed in \code{par}.
   }
   \item{abc}{
     a single (if \code{multi = FALSE}, default) or a list of abc objects including ABC estimation information for each community provided in input (\code{comm.obs}).
@@ -84,9 +90,9 @@
 \references{
   Jabot, F., and J. Chave. 2009. Inferring the parameters of the neutral theory of biodiversity using phylogenetic information and implications for tropical forests. Ecology Letters 12:239-248.
 
-  Csilléry, K., M. G. B. Blum, O. E. Gaggiotti, and O. François. 2010. Approximate Bayesian computation (ABC) in practice. Trends in Ecology & Evolution 25:410-418.
+  Csillery, K., M. G. B. Blum, O. E. Gaggiotti, and O. Francois. 2010. Approximate Bayesian computation (ABC) in practice. Trends in Ecology & Evolution 25:410-418.
 
-  Csilléry, K., O. François, and M. G. Blum. 2012. abc: an R package for Approximate Bayesian Computation (ABC). Methods in Ecology and Evolution 3:475–479.
+  Csillery, K., O. Francois, and M. G. Blum. 2012. abc: an R package for Approximate Bayesian Computation (ABC). Methods in Ecology and Evolution 3:475–479.
 
 }
 \author{
@@ -118,7 +124,7 @@ comm <- coalesc(J = 400, m = 0.5, theta = 50, filt = function(x) filt_gaussian(x
 # ABC estimation of the parameters based on observed community composition 
 ## Warning: this function may take a while
 res <- coalesc_abc(comm$com, comm$pool, f.sumstats=f.sumstats, filt.abc=filt_gaussian, 
-                   params=params, nb.samp = nb.samp, parallel = TRUE, pkg =c("e1071","vegan"))
+                   params=params, nb.samp = nb.samp, parallel = TRUE, pkg =c("e1071","vegan"), method = "neuralnet")
 plot(res$abc,param=res$par)
 hist(res$abc)
 
