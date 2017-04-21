@@ -1,14 +1,9 @@
-before_install: cd pkg
+before_install:
+  - cd pkg
+  - sudo apt-get install libgmp3-dev
 
 language: r
 sudo: false
 
 sudo: required
-addons:
-  apt:
-    sources:
-      - debian-sid
-    packages:
-      - libgmp3-dev
-
 cache: packages
