@@ -3,7 +3,12 @@ before_install: cd pkg
 language: r
 sudo: false
 
-apt_packages:
-  - libgmp3-dev
+sudo: required
+addons:
+  apt:
+    sources:
+      - debian-sid
+    packages:
+      - libgmp3-dev
 
 cache: packages
