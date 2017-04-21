@@ -1,4 +1,5 @@
 # lottery
+[![Build Status](https://travis-ci.org/frmunoz/lottery.svg?branch=master)](https://travis-ci.org/frmunoz/lottery)
 R package Lottery
 Coalescent-based simulation of ecological communities
 
