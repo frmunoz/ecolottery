@@ -1,8 +1,13 @@
-coalesc_abc <- function(comm.obs, pool = NULL, multi = "none", traits = NULL,
+coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
                         f.sumstats, filt.abc = NULL, params, theta.max = NULL,
-                        nb.samp = 10^6, parallel = TRUE, tol = 1*10^-4, 
-                        pkg = NULL, method = "neuralnet")
+                        nb.samp = 10^6, parallel = TRUE, tol = NULL, 
+                        pkg = NULL, method = "rejection")
 {
+  
+  if (is.null(tol)){
+    warning("You must provide a tolerance value for ABC computation. The function
+            will only provide simulations and will not perform ABC.")
+  }
   
   if (is.character(comm.obs)) {
       comm.obs <- data.frame(id = 1:length(comm.obs),
@@ -31,42 +36,37 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "none", traits = NULL,
   }
   
   # Community size
-  if (!(multi %in% c("none", "tab", "seqcom"))){
-    stop("multi parameter must be set at none, tab or seqcom.")
+  if (!(multi %in% c("single", "tab", "seqcom"))){
+    stop("multi parameter must be either single, tab or seqcom.")
   }
   
-  if (multi == "none") {
+  if (multi == "single") {
     J <- nrow(comm.obs)
     nb.com <- 1
   } else {
-    if (multi == "tab") { 
-      if (ncol(comm.obs) < 3){
-        stop("When multi is set at tab, comm.obs must be a data.frame with at least three columns,
-             including number of communities, number of individuals, number of species and optionally
-             trait values.")
+    if (multi == "tab") {
+      # comm.obs is a species-by-site matrix/data.frame
+      J <- apply(comm.obs, 1, function(x) sum(x, na.rm = TRUE))
+      nb.com <- nrow(comm.obs)
+    } else if (multi == "seqcom") 
+      {
+          # comm.obs is a list of communities with individuals on rows in each community
+          J <- lapply(comm.obs, nrow)
+          nb.com <- length(comm.obs)
       }
-      
-      if (var(table(comm.obs[, 1])) == 0) {
-        J <- mean(table(comm.obs[, 1]))
-      } else {
-        stop("multi option available with equal community sizes")
-      }
-      # nb.com is equal to number communities
-      nb.com <- length(table(comm.obs[, 1]))
-      # Deletion of first column with community number, so the third one contains trait values
-      comm.obs <- comm.obs[, 2:ncol(comm.obs)]
-    } else if (multi == "seqcom") stop("seqcom option not implemented yet")
   }
   
   # Trait values can be provided with community composition
   # Mean trait values of pool are stored in traits in absence of
   # trait information in local community
-  if (!is.null(pool) & ncol(comm.obs) < 3 & ncol(pool) >= 3) {
+  if (!is.null(pool)) if(ncol(pool) >= 3) {
       traits <- data.frame(apply(data.frame(pool[, -(1:2)]), 2,
                                  function(x) tapply(x, pool[, 2], mean)))
   }
-  if (is.null(traits) & ncol(comm.obs) < 3) {
-    warning("Trait information is not provided")
+  if(multi == "single") {
+    if (is.null(traits) & ncol(comm.obs) < 3) {
+      warning("Trait information is not provided")
+    }
   }
   
   if (is.null(traits)) {
@@ -90,16 +90,28 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "none", traits = NULL,
   
   # ABC estimation
   sel <- which(rowSums(is.na(sim$stats.scaled)) == 0)
-  res.abc <- abc::abc(target = stats.obs.scaled,
-                      param = sim$params.sim[sel,],
-                      sumstat = sim$stats.scaled[sel,],
-                      tol = tol,
-                      method = method)
+  
+  if (is.null(tol)){
+    res.abc <- NA
+  } else {
+    res.abc <- tryCatch(
+      abc::abc(target = stats.obs.scaled,
+               param = sim$params.sim[sel,],
+               sumstat = sim$stats.scaled[sel,],
+               tol = tol,
+               method = method),
+      error = function(x) warning("ABC computation failed with the requested method.")
+    )
+    if (is.character(res.abc)){
+      res.abc <- NA
+    }
+  }
     
-  return(list(par = sim$params.sim, ss = sim$stats.scaled, abc = res.abc))
+  return(list(par = sim$params.sim, obs = stats.obs, obs.scaled = stats.obs.scaled,
+              ss = sim$stats.scaled, abc = res.abc))
 }
 
-do.simul <- function(J, pool = NULL, multi = "none", nb.com = NULL,
+do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
                      traits = NULL, f.sumstats = NULL, filt.abc = NULL, params,
                      theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
                      tol = 1*10^-4, pkg = NULL, method = "neuralnet") {
@@ -117,7 +129,7 @@ do.simul <- function(J, pool = NULL, multi = "none", nb.com = NULL,
   
   # Uniform prior distributions of parameters
   prior <- c()
-  for (i in 1:nrow(params)) {
+  if(!is.null(params)) for (i in 1:nrow(params)) {
     prior[[i]] <- runif(nb.samp, min = params[i, 1], max = params[i, 2])
   }              
   names(prior) <- rownames(params)
@@ -151,7 +163,7 @@ do.simul <- function(J, pool = NULL, multi = "none", nb.com = NULL,
       names(params.samp.all) <- names(prior)
         
       if (is.null(pool)) {
-        pool <- coalesc(J*100, theta = params.samp[length(params.samp)])$pool
+        pool <- coalesc(mean(J)*100, theta = params.samp[length(params.samp)])$pool
         params.samp <- params.samp[-length(params.samp)]
       }
       
@@ -163,25 +175,44 @@ do.simul <- function(J, pool = NULL, multi = "none", nb.com = NULL,
       
       if (nb.com > 1) {
         
-        pool.sp <- unique(pool$sp)
-        meta.samp <- array(0, c(nb.com, length(pool.sp)))
-        colnames(meta.samp) <- pool.sp
-                
-        for (i in 1:nb.com) {
+        if(multi == "tab")
+        {
+          pool.sp <- unique(pool$sp)
+          meta.samp <- array(0, c(nb.com, length(pool.sp)))
+          colnames(meta.samp) <- pool.sp
           
-          try({
-            comm.samp <- coalesc(J, m = params.samp[length(params.samp)],
-                                 filt = filt,
-                                 pool = pool, traits = traits)
-            tab <- table(comm.samp$com[,2])
-            meta.samp[i,names(tab)] <- tab
-          })
-        }
-        
-        if (is.null(traits)) {
-          stats.samp <- f.sumstats(meta.samp)
-        } else {
-          stats.samp <- f.sumstats(meta.samp, traits)
+          for (i in 1:nb.com) {
+            try({
+              comm.samp <- coalesc(J[i], m = params.samp[length(params.samp)],
+                                   filt = filt,
+                                   pool = pool, traits = traits)
+              tab <- table(comm.samp$com[,2])
+              meta.samp[i,names(tab)] <- tab
+            })
+          }
+          
+          if (is.null(traits)) {
+            stats.samp <- f.sumstats(meta.samp)
+          } else {
+            stats.samp <- f.sumstats(meta.samp, traits)
+            }
+        } else if(multi == "seqcom")
+        {
+          seqcom.samp <- c()
+          
+          for (i in 1:nb.com) {
+            
+            try({
+              seqcom.samp[[i]] <- coalesc(J, m = params.samp[length(params.samp)],
+                                   filt = filt,
+                                   pool = pool, traits = traits)
+            })
+          }
+          if (is.null(traits)) {
+            stats.samp <- f.sumstats(seqcom.samp)
+          } else {
+            stats.samp <- f.sumstats(seqcom.samp, traits)
+          }
         }
       
       } else {
