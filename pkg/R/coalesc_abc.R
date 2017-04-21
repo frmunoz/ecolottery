@@ -122,7 +122,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
 do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
                      traits = NULL, f.sumstats = NULL, filt.abc = NULL, params,
                      theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
-                     tol = 1*10^-4, pkg = NULL, method = "neuralnet") {
+                     tol = NULL, pkg = NULL, method = "rejection") {
   
   if (!requireNamespace("parallel", quietly = TRUE) & parallel) {
     warning(paste0("parallel = TRUE requires package 'parallel' to be ",

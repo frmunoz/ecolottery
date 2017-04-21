@@ -12,7 +12,7 @@
   coalesc_abc(comm.obs, pool = NULL, multi = "single", traits = NULL, f.sumstats,
               filt.abc = NULL, params, theta.max = NULL, nb.samp = 10^6,
               parallel = TRUE, tol = NULL, pkg = NULL, method="rejection")
-  do.simul(J, pool = NULL, multi = "none", nb.com = NULL, traits = NULL,
+  do.simul(J, pool = NULL, multi = "single", nb.com = NULL, traits = NULL,
            f.sumstats = NULL, filt.abc = NULL, params, theta.max = NULL,
            nb.samp = 10^6, parallel = TRUE, tol = NULL, pkg = NULL,
            method = "rejection")
@@ -129,13 +129,15 @@ filt = function(x) filt_gaussian(x,c(0.2,0.1)))
 # ABC estimation of the parameters based on observed community composition 
 ## Warning: this function may take a while
 res <- coalesc_abc(comm$com, comm$pool, f.sumstats=f.sumstats, filt.abc=filt_gaussian, 
-                   params=params, nb.samp = nb.samp, parallel = TRUE, pkg =c("e1071","vegan"), method = "neuralnet")
+                   params=params, nb.samp = nb.samp, parallel = TRUE,
+                   pkg =c("e1071","vegan"), method = "neuralnet")
 plot(res$abc,param=res$par)
 hist(res$abc)
 
 # Cross validation
 ## Warning: this function is slow
-res$cv <- abc::cv4abc(param=res$par, sumstat=res$ss, nval=1000, tols=c(0.01, 0.1, 1), method = "neuralnet")
+res$cv <- abc::cv4abc(param=res$par, sumstat=res$ss, nval=1000, tols=c(0.01, 0.1, 1),
+method = "neuralnet")
 plot(res$cv)
 
 # Multiple community option
@@ -152,7 +154,8 @@ comm.obs[[2]] <- cbind(rep(2,400),as.matrix(coalesc(J = 400, m = 0.5, filt = fun
 comm.obs[[3]] <- cbind(rep(3,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) 
   filt_gaussian(x,c(0.8,0.1)),pool=comm$pool)$com))
   
-res <- coalesc_abc(comm.obs, comm$pool, multi="seqcom", f.sumstats=f.sumstats, filt.abc=filt_gaussian,
+res <- coalesc_abc(comm.obs, comm$pool, multi="seqcom", f.sumstats=f.sumstats,
+filt.abc=filt_gaussian,
                    params=params, nb.samp = nb.samp, parallel = TRUE, pkg =c("e1071","vegan"),
                    tol = 0.1, method = "neuralnet")
                    
