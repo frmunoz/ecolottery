@@ -137,16 +137,23 @@ res$cv <- abc::cv4abc(param=res$par, sumstat=res$ss, nval=1000, tols=c(0.01, 0.1
 plot(res$cv)
 
 # Multiple community option
-comm.obs <- c();
-comm.obs <- rbind(comm.obs,cbind(rep(1,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) 
-  filt_gaussian(x,c(0.2,0.1)),pool=comm$pool)$com)))
-comm.obs <- rbind(comm.obs,cbind(rep(2,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) 
-  filt_gaussian(x,c(0.5,0.1)),pool=comm$pool)$com)))
-comm.obs <- rbind(comm.obs,cbind(rep(3,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) 
-  filt_gaussian(x,c(0.8,0.1)),pool=comm$pool)$com)))
-res <- coalesc_abc(comm.obs, comm$pool, multi=TRUE, f.sumstats=f.sumstats, filt.abc=filt_gaussian,
+# When the input is a site-species matrix, use argument multi="tab"
+# See vignette Barro_Colorado for more details
+
+# When the input is a list of communities, use argument multi="seqcom"
+comm.obs <- list()
+
+comm.obs[[1]] <- cbind(rep(1,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) 
+  filt_gaussian(x,c(0.2,0.1)),pool=comm$pool)$com))
+comm.obs[[2]] <- cbind(rep(2,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) 
+  filt_gaussian(x,c(0.5,0.1)),pool=comm$pool)$com))
+comm.obs[[3]] <- cbind(rep(3,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) 
+  filt_gaussian(x,c(0.8,0.1)),pool=comm$pool)$com))
+  
+res <- coalesc_abc(comm.obs, comm$pool, multi="seqcom", f.sumstats=f.sumstats, filt.abc=filt_gaussian,
                    params=params, nb.samp = nb.samp, parallel = TRUE, pkg =c("e1071","vegan"),
                    tol = 0.1, method = "neuralnet")
+                   
 summary(res$abc[[1]])
 summary(res$abc[[2]])
 summary(res$abc[[3]])

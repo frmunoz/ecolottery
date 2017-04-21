@@ -69,10 +69,18 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
     }
   }
   
-  if (is.null(traits)) {
-    stats.obs <- f.sumstats(comm.obs)
-  } else {
-    stats.obs <- f.sumstats(comm.obs, traits)
+  if(multi == "seqcom"){
+    if (is.null(traits)) {
+      stats.obs <- lapply(comm.obs, f.sumstats)
+    } else {
+      stats.obs <- lapply(comm.obs, function(x) f.sumstats(x, traits))
+    }
+  }else {
+    if (is.null(traits)) {
+      stats.obs <- f.sumstats(comm.obs)
+    } else {
+      stats.obs <- f.sumstats(comm.obs, traits)
+    }
   }
   
   # Community simulation
