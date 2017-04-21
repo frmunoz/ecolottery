@@ -22,10 +22,13 @@
     the observed community composition. If multi = \code{FALSE} (default), should be a matrix of individuals on rows with their individual id (first column), and species id (second column).
   }
   \item{pool}{
-    composition of the regional pool to which the local community is hypothesized to be related through migration dynamics with possible environmental filtering. Should be a matrix of individuals on rows with their individual id (first column), species id (second column), and (optionnally) the trait values of the individuals.
+    composition of the regional pool to which the local community is hypothesized to be related through migration dynamics with possible environmental filtering. Should be a matrix of individuals on rows with their individual id (first column), species id (second column), and (optionally) the trait values of the individuals.
   }
   \item{multi}{
-  if \code{TRUE}, the user provides in comm.obs multiple community data, i.e., the first column of comm.obs includes community number, the second column the individual id and the third the species id.
+  structure of the community inputs
+  if \code{single}, comm.obs contains a single community
+  if \code{tab}, the user provides a site-species matrix (sites in rows and species in columns)
+  if \code{seqcom}, comm.obs contains a list of communities
   }
   \item{traits}{
     the trait values of species in the regional pool. It is used if trait information is not provided in pool. In this case, intraspecific trait variation is assumed to be null.
@@ -142,7 +145,8 @@ comm.obs <- rbind(comm.obs,cbind(rep(2,400),as.matrix(coalesc(J = 400, m = 0.5, 
 comm.obs <- rbind(comm.obs,cbind(rep(3,400),as.matrix(coalesc(J = 400, m = 0.5, filt = function(x) 
   filt_gaussian(x,c(0.8,0.1)),pool=comm$pool)$com)))
 res <- coalesc_abc(comm.obs, comm$pool, multi=TRUE, f.sumstats=f.sumstats, filt.abc=filt_gaussian,
-                   params=params, nb.samp = nb.samp, parallel = TRUE, pkg =c("e1071","vegan"))
+                   params=params, nb.samp = nb.samp, parallel = TRUE, pkg =c("e1071","vegan"),
+                   tol = 0.1, method = "neuralnet")
 summary(res$abc[[1]])
 summary(res$abc[[2]])
 summary(res$abc[[3]])
