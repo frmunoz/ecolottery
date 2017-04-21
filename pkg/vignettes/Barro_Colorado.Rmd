@@ -1,0 +1,228 @@
+---
+title: "`coalesc_abc` function with a site-species matrix: example with Barro-Colorado dataset."
+author: "Pierre DENELLE"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Basic Use of `lottery`}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette corresponds to the latest version of the Appendix 3 of F.Munoz et al. paper.
+
+
+# Appendix 3: ABC estimation of neutral parameters in Barro Colorado Island rainforest, using coalescent-based simulation 
+We illustrate here how to use coalescent-based simulation to estimate neutral parameters of regional biodiversity,
+theta, and local migration rate, m, from observed patterns of taxonomic diversity within and between
+communities.
+Neutral theory proved successful to predict patterns of species diversity in tropical forests (Hubbell 2001),
+while other studies also emphasized the influence of niche-based processes (Baraloto et al. 2012).
+With coalescent-based modelling, it is possible to address the relative ability of purely neutral and environmental filtering models to explain patterns of biodiversity, using the Approximate Bayesian Computation
+(ABC) approach implemented in lottery.
+Barro Colorado Island is a 50ha lowland rainforest plot established in Panama. It has become a flagship case
+study to test competing theories of community assembly in tropical forests. The dataset
+
+```{r, eval = FALSE}
+
+library(lottery)
+
+require(vegan)
+data(BCI)
+# Size (= number of individual trees) of subplots
+comm.size <- rowSums(BCI)
+# Minimum subplot size
+comm.size.min <- min(comm.size)
+
+```
+
+For sake of simplicity in joint analyses of diversity patterns across subplots, we first subsample the subplots
+to have the same minimum subplot size.
+
+```{r, eval = FALSE}
+
+# Rarefy to minimum sample size
+bci.res <- rrarefy(BCI, sample = comm.size.min)
+
+```
+
+We consider a set of summary statistics representing for each subplot the local richness, local Shannon
+diversity, and the average Bray-Curtis beta diversity with other subplots.
+
+```{r, eval = FALSE}
+
+library(betapart)
+# Compute diversity indices
+rich.obs <- apply(bci.res, 1, function(x) sum(x!=0))
+shan.obs <- apply(bci.res, 1, function(x) diversity(x, index = "shannon"))
+beta.obs <- lapply(beta.pair.abund(bci.res), function(x) {
+  X = rowMeans(as.matrix(x), na.rm=T)
+})$beta.bray
+stats.obs <- c(rich.obs, shan.obs, beta.obs)
+names(stats.obs) <- paste0(rep(c("rich", "shan", "beta"), each = 50), 1:50)
+
+```
+
+To estimate the theta and m parameters of neutral dynamics, we consider a vector of 2.10^5 values drawn from a
+prior uniform distribution.
+
+```{r, eval = FALSE}
+
+m.samp <- runif(2*10^5, min = 0, max = 1)
+theta.samp <- runif(2*10^5, min = 0, max = 100)
+
+```
+
+Parallel computing can be used to perform the simulations, by using multiple cores in desktops, or multiple
+clusters. The parallel package allows handling parallel computing.
+
+```{r, eval = FALSE}
+
+
+library(parallel)
+# Start up a parallel cluster
+parallelCluster <- makeCluster(parallel::detectCores())
+print(parallelCluster)
+# Function to perform simulations
+mkWorker <- function(m.samp, theta.samp, J)
+{
+  require(lottery)
+  require(untb)
+  force(J)
+  force(m.samp)
+  force(theta.samp)
+  summCalc <- function(j, m.samp, theta.samp, J)
+  {
+    pool.samp <- lottery::coalesc(100*J, theta = theta.samp[j])$pool
+    meta.samp <- array(0, c(50,length(unique(pool.samp$sp))))
+    colnames(meta.samp) <- unique(pool.samp$sp)
+    for(i in 1:50)
+    {
+      comm.samp <- lottery::coalesc(J, m.samp[j], pool = pool.samp);
+      tab <- table(comm.samp$com[,2])
+      meta.samp[i, names(tab)] <- tab
+    }
+    rich.samp <- apply(meta.samp, 1, function(x) sum(x != 0))
+    shan.samp <- apply(meta.samp, 1, function(x) vegan::diversity(x, index = "shannon"))
+    beta.samp <- lapply(betapart::beta.pair.abund(meta.samp),
+                        function(x) rowMeans(as.matrix(x), na.rm=T)
+    )$beta.bray
+    return(list(sum.stats = c(rich.samp, shan.samp, beta.samp),
+                param = c(m.samp[j], theta.samp[j])))
+  }
+  worker <- function(j) {
+    summCalc(j, m.samp, theta.samp, J)
+  }
+  return(worker)
+}
+
+```
+
+The function mkWorker will be used in parallel instances of R to perform the simulations. For each values of
+m and theta the summary statistics are calculated and returned.
+The overall set of statistics and corresponding parameter values are stored in a list.
+
+```{r, eval = FALSE}
+
+modelbci <- parLapply(parallelCluster, 2:10^5, mkWorker(m.samp, theta.samp, comm.size.min))
+# IMPORTANT
+# Shutdown cluster after calculation
+if(!is.null(parallelCluster)) {
+  stopCluster(parallelCluster)
+  parallelCluster <- c()
+}
+# Summary statistics and parameter values are extracted
+# and stored in matrices
+stats <- t(sapply(modelbci, function(x) x$sum.stats))
+stats.sd <- apply(stats, 2, sd)
+stats.mean <- apply(stats, 2, mean)
+stats <- t(apply(stats, 1, function(x) (x - stats.mean)/stats.sd))
+colnames(stats) <- paste0(rep(c("rich", "shan", "beta"), each = 50), 1:50)
+
+stats.obs <- (stats.obs-stats.mean)/stats.sd
+param <- t(sapply(modelbci, function(x) x$param))
+colnames(param) <- c("m", "theta")
+
+```
+
+Then we use the abc function from package abc to estimate the parameters in observed rainforest subplots.
+
+```{r, eval = FALSE}
+
+require(abc)
+bci.abc <- abc(target = stats.obs, param = param, sumstat = stats, tol = 0.01, method = "neuralnet")
+
+```
+
+The function \code{coalesc_abc} encompasses the steps of simulation and ABC analysis.
+The previous calculations can thus be performed using the following command.
+
+```{r, eval = FALSE}
+
+# Define the function providing the summary statistics
+f.sumstats <- function(tab)
+{
+  rich <- apply(tab, 1, function(x) sum(x!=0))
+  shan <- apply(tab, 1, function(x) vegan::diversity(x, index="shannon"))
+  beta <- lapply(betapart::beta.pair.abund(tab),
+                 function(x) rowMeans(as.matrix(x), na.rm=T))$beta.bray
+  stats <- c(rich, shan, beta)
+  names(stats) <- paste0(rep(c("rich", "shan", "beta"), each = 50), 1:50)
+  return(stats)
+}
+
+# Perform the simulations and the ABC analysis
+bci.abc <- coalesc_abc(bci.res, multi = "tab", traits = NULL,
+                       f.sumstats = f.sumstats, params = NULL,
+                       theta.max = 100, nb.samp = 100, tol = 0.01,
+                       pkg = c("vegan","betapart"), parallel = T)
+
+```
+
+bci.abc then includes the matrix of parameter values (par output), the matrix of simulated statistics values
+(ss output) and an abc object including the results of ABC analysis.
+To test if we can correctly infer m and  from the chosen set of summary statistics, we can perform cross
+validation.
+
+```{r, eval=F}
+
+cv <- cv4abc(param = bci.abc$par, sumstat = bci.abc$ss,
+             nval = 500, tols = c(10^-2, 10^-1, 1), method="neuralnet")
+plot(cv)
+
+```
+
+
+```{r, eval = FALSE}
+
+plot(bci.abc$abc, param=bci.abc$par)
+
+```
+
+Three colors, yellow, orange and red, represent results of cross-validation for different tolerance levels in ABC
+analysis, 1, 10???1 and 10???2, respectively.
+The plot indicates that good estimation of the parameters can be obtained with the selected tolerance levels
+We can then reliably estimate the parameters from observed diversity patterns at Barro Colorado Island.
+
+```{r, eval = FALSE}
+
+summary(bci.abc$abc)
+
+```
+
+We found 95% confidence interval of [52; 54] for theta, compared to thheta = 50 in (Hubbell 2001). We found an
+interval of [0.22; 0.24] for m. While it is somewhat larger that the estimated m = 0.1 in (Hubbell 2001), it is
+close to the estimation of (Etienne & Olff 2004), m = 0.2, and still lower than the estimation of (Condit et al.
+2012), m = 0.38, which acknowledged the census of smaller trees. While previous studies mostly addressed
+migration-drift in the whole 50-ha plot compared to a regional background, our summary statistics here
+quantifies species turnover and variation of local diversity among the 1-ha subplots. A larger estimate of m
+can then reflect the fact that  diversity is lower than expected with m = 0.1, possibly under the influence of
+greater replacement dynamics within the plot than between the plot and its regional background.
+A next step of analysis could be to incorporate in simulations the influence of environmental variation across
+subplots on community assembly, depending on the species' ecological properties. For this purpose, the
+previous ABC analysis can be reproduced with additional environmental filtering and variation of the linkage
+of environmental filtering to functional traits, as shown in the example in main text. Comparison of the
+results of the two ABC analyses, one with purely neutral dynamics and one incorporating the influence of
+environmental filtering, can then allow testing the influence of niche-based dynamics in the dynamics of the
+rainforest.
+
