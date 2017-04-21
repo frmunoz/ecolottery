@@ -9,13 +9,13 @@
   Estimates parameters of neutral migration-drift dynamics (through migration rate m and parameters of environmental filtering (through a filtering function filt.abc) from the composition of a local community and the related regional pool. 
 }
 \usage{
-  coalesc_abc(comm.obs, pool = NULL, multi = "none", traits = NULL, f.sumstats,
+  coalesc_abc(comm.obs, pool = NULL, multi = "single", traits = NULL, f.sumstats,
               filt.abc = NULL, params, theta.max = NULL, nb.samp = 10^6,
-              parallel = TRUE, tol = 1*10^-4, pkg = NULL, method="neuralnet")
+              parallel = TRUE, tol = NULL, pkg = NULL, method="rejection")
   do.simul(J, pool = NULL, multi = "none", nb.com = NULL, traits = NULL,
            f.sumstats = NULL, filt.abc = NULL, params, theta.max = NULL,
-           nb.samp = 10^6, parallel = TRUE, tol = 1*10^-4, pkg = NULL,
-           method = "neuralnet")
+           nb.samp = 10^6, parallel = TRUE, tol = NULL, pkg = NULL,
+           method = "rejection")
 }
 \arguments{
   \item{comm.obs}{
@@ -95,7 +95,7 @@
 
   Csillery, K., M. G. B. Blum, O. E. Gaggiotti, and O. Francois. 2010. Approximate Bayesian computation (ABC) in practice. Trends in Ecology & Evolution 25:410-418.
 
-  Csillery, K., O. Francois, and M. G. Blum. 2012. abc: an R package for Approximate Bayesian Computation (ABC). Methods in Ecology and Evolution 3:475–479.
+  Csillery, K., O. Francois, and M. G. Blum. 2012. abc: an R package for Approximate Bayesian Computation (ABC). Methods in Ecology and Evolution 3:475-479.
 
 }
 \author{
@@ -114,7 +114,8 @@ nb.samp <- 10^6; # Should be large
 
 \dontrun{
 # Basic summary statistics
-f.sumstats <- function(com) array(dimnames=list(c("cwm", "cwv", "cws", "cwk", "S", "Es")),
+f.sumstats <- function(com) array(dimnames=list(c("cwm", "cwv", "cws",
+"cwk", "S", "Es")),
                                   c(mean(com[,3]), var(com[,3]), 
                                     e1071::skewness(com[,3]),  
                                     e1071::kurtosis(com[,3]),
@@ -122,7 +123,8 @@ f.sumstats <- function(com) array(dimnames=list(c("cwm", "cwv", "cws", "cwk", "S
                                     vegan::diversity(table(com[,2]))))
 
 # An observed community is here simulated (known parameters)
-comm <- coalesc(J = 400, m = 0.5, theta = 50, filt = function(x) filt_gaussian(x,c(0.2,0.1)))
+comm <- coalesc(J = 400, m = 0.5, theta = 50,
+filt = function(x) filt_gaussian(x,c(0.2,0.1)))
 
 # ABC estimation of the parameters based on observed community composition 
 ## Warning: this function may take a while
