@@ -361,7 +361,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
   
   # Traits distances used to simulate limiting similarity
   if (limit.sim) {
-   tr.dist <- as.matrix(dist(com[, 3], method = method.dist))
+   tr.dist <- as.matrix(dist(com[, -(1:2)], method = method.dist))
    colnames(tr.dist) <- com[, 1]
    rownames(tr.dist) <- com[, 1]
    diag(tr.dist) <- NA
@@ -418,12 +418,12 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     }
     # Habitat filtering also influences the individual death probability
     if (!is.null(filt)) {
-      if (any(is.na(hab_filter(com[, 3])))) {
+      if (any(is.na(hab_filter(com[, -(1:2)])))) {
         stop("Error: NA values in habitat filter")
       }
  
-      prob.death <- prob.death * (1 - hab_filter(com[, 3]) /
-                                    sum(hab_filter(com[, 3])))
+      prob.death <- prob.death * (1 - hab_filter(com[, -(1:2)]) /
+                                    sum(hab_filter(com[, -(1:2)])))
       
       # Giving names to prob.death
       names(prob.death) <- com[, 1]      
