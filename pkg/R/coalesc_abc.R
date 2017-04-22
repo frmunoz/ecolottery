@@ -57,8 +57,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
       # comm.obs is a species-by-site matrix/data.frame
       J <- apply(comm.obs, 1, function(x) sum(x, na.rm = TRUE))
       nb.com <- nrow(comm.obs)
-    } else if (multi == "seqcom") 
-      {
+    } else if (multi == "seqcom") {
           # comm.obs is a list of communities with individuals on rows in each community
           J <- lapply(comm.obs, nrow)
           nb.com <- length(comm.obs)
@@ -66,16 +65,20 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
   }
   
   # Trait values can be provided with community composition
-  # Mean trait values of pool are stored in traits in absence of
-  # trait information in local community
-  if (!is.null(pool)) if(ncol(pool) >= 3) {
-      traits <- data.frame(apply(data.frame(pool[, -(1:2)]), 2,
-                                 function(x) tapply(x, pool[, 2], mean)))
-  }
-  if(multi == "single") {
-    if (is.null(traits) & ncol(comm.obs) < 3) {
-      warning("Trait information is not provided")
+  # Mean trait values of pool are stored in traits in absence of trait
+  # information in local community
+  if (!is.null(pool)){
+    if(ncol(pool) >= 3) {
+      traits <- data.frame(apply(data.frame(pool[, -(1:2)]),
+                                 2,
+                                 function(x) tapply(x, pool[, 2],
+                                                    function (y) mean(y,
+                                                                      na.rm = TRUE))))
     }
+  }
+  
+  if (is.null(traits)){
+    warning("Trait information is not provided")
   }
   
   if(multi == "seqcom"){
@@ -96,17 +99,16 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
   sim <- do.simul(J, pool, multi, nb.com, traits, f.sumstats, filt.abc, params,
                   theta.max, nb.samp, parallel, tol, pkg, method)
   
+  # Scaling f.sumstats criterions for simulations
   stats.mean <- apply(sim$stats, 2, function(x) mean(x, na.rm = T))
   stats.sd <- apply(sim$stats, 2, function(x) sd(x, na.rm = T))
   sim$stats.scaled <- t(apply(sim$stats, 1,
                               function(x) (x - stats.mean)/stats.sd))
-  
   colnames(sim$stats.scaled) <- colnames(sim$stats)
   
   if (is.null(params)){
     res.abc <- NA
   } else {
-    
     if(multi == "seqcom"){
       stats.obs.scaled <- lapply(stats.obs, function(x) (x - stats.mean)/stats.sd)
     } else {
@@ -131,7 +133,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
                                       param = sim$params.sim[sel,],
                                       sumstat = sim$stats.scaled[sel,],
                                       tol = tol,
-                                      method = method))
+                                      method = method)),
+          error = function(x) warning("ABC computation failed with the requested method.")
         )
       } else {
         res.abc <- tryCatch(
@@ -261,7 +264,7 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
           }
         }
       
-      } else {
+      } else { # single community
         comm.samp <- coalesc(J, m = params.samp[length(params.samp)],
                              filt = filt,
                              pool = pool, traits = traits)

@@ -41,6 +41,7 @@
   }
   \item{params}{
     a matrix of the bounds of the parameters used in \code{filt.abc}. The row names of \code{params} provide the parameter names used in ABC calculation and output.
+    First column contains minimum values and second column contains maximum values.
   }
   \item{theta.max}{
     if \code{pool=NULL}, regional abundances will be simulated following a log-series distribution. The function will estimate the \code{theta} parameter of this distribution. \code{theta.max} then provides the upper bound for this estimation.
