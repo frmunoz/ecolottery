@@ -171,7 +171,11 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
       names(params.samp.all) <- names(prior)
         
       if (is.null(pool)) {
-        pool <- coalesc(mean(J)*100, theta = params.samp[length(params.samp)])$pool
+        if (multi == "seqcom"){
+          pool <- coalesc(mean(unlist(J))*100, theta = params.samp[length(params.samp)])$pool
+        } else {
+          pool <- coalesc(mean(J)*100, theta = params.samp[length(params.samp)])$pool
+        }
         params.samp <- params.samp[-length(params.samp)]
       }
       
@@ -182,9 +186,7 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
       }
       
       if (nb.com > 1) {
-        
-        if(multi == "tab")
-        {
+        if(multi == "tab") {
           pool.sp <- unique(pool$sp)
           meta.samp <- array(0, c(nb.com, length(pool.sp)))
           colnames(meta.samp) <- pool.sp
@@ -204,22 +206,22 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
           } else {
             stats.samp <- f.sumstats(meta.samp, traits)
             }
-        } else if(multi == "seqcom")
-        {
-          seqcom.samp <- c()
+        } else if(multi == "seqcom") {
+          seqcom.samp <- list()
           
           for (i in 1:nb.com) {
-            
             try({
-              seqcom.samp[[i]] <- coalesc(J, m = params.samp[length(params.samp)],
+              seqcom.samp[[i]] <- coalesc(J[[i]], m = params.samp[length(params.samp)],
                                    filt = filt,
                                    pool = pool, traits = traits)
             })
           }
           if (is.null(traits)) {
-            stats.samp <- f.sumstats(seqcom.samp)
+            seqcom.samp.com <- lapply(seqcom.samp, function(l) l[[1]])
+            stats.samp <- lapply(seqcom.samp.com, f.sumstats)
           } else {
-            stats.samp <- f.sumstats(seqcom.samp, traits)
+            seqcom.samp.com <- lapply(seqcom.samp, function(l) l[[1]])
+            stats.samp <- lapply(seqcom.samp.com, function(x) f.sumstats(x, traits))
           }
         }
       
