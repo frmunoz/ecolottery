@@ -1,8 +1,17 @@
 coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
-                        f.sumstats, filt.abc = NULL, params, theta.max = NULL,
+                        f.sumstats, filt.abc = NULL, params = NULL, theta.max = NULL,
                         nb.samp = 10^6, parallel = TRUE, tol = NULL, 
                         pkg = NULL, method = "rejection")
 {
+  
+  if(!is.function(f.sumstats)){
+    stop("You must provide a function to calculate summary statistics (f.sumstats)")
+  }
+  
+  if(is.null(params)){
+    warning("No value provided for params argument. Only m and theta will be
+            estimated.")
+  }
   
   if (is.null(tol)){
     warning("You must provide a tolerance value for ABC computation. The function
@@ -86,52 +95,57 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
   # Community simulation
   sim <- do.simul(J, pool, multi, nb.com, traits, f.sumstats, filt.abc, params,
                   theta.max, nb.samp, parallel, tol, pkg, method)
-   
+  
   stats.mean <- apply(sim$stats, 2, function(x) mean(x, na.rm = T))
   stats.sd <- apply(sim$stats, 2, function(x) sd(x, na.rm = T))
   sim$stats.scaled <- t(apply(sim$stats, 1,
                               function(x) (x - stats.mean)/stats.sd))
   
   colnames(sim$stats.scaled) <- colnames(sim$stats)
- 
-  if(multi == "seqcom"){
-    stats.obs.scaled <- lapply(stats.obs, function(x) (x - stats.mean)/stats.sd)
-  } else {
-    stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
-  }
   
-  # ABC estimation
-  sel <- which(rowSums(is.na(sim$stats.scaled)) == 0)
-  
-  if (is.null(tol)){
+  if (is.null(params)){
     res.abc <- NA
   } else {
-    if (multi == "seqcom"){
-      res.abc <- list()
-      
-      # Only nb.samp rows for sim$params.sim => nb.com repetitions
-      sim$params.sim <- sim$params.sim[rep(seq_len(nrow(sim$params.sim)), nb.com), ]
-      
-      res.abc <- tryCatch(
-        lapply(stats.obs.scaled,
-               function(x) abc::abc(target = x,
-                                    param = sim$params.sim[sel,],
-                                    sumstat = sim$stats.scaled[sel,],
-                                    tol = tol,
-                                    method = method))
-      )
+    
+    if(multi == "seqcom"){
+      stats.obs.scaled <- lapply(stats.obs, function(x) (x - stats.mean)/stats.sd)
     } else {
-      res.abc <- tryCatch(
-        abc::abc(target = stats.obs.scaled,
-                 param = sim$params.sim[sel,],
-                 sumstat = sim$stats.scaled[sel,],
-                 tol = tol,
-                 method = method),
-        error = function(x) warning("ABC computation failed with the requested method.")
-      )
+      stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
     }
-    if (is.character(res.abc)){
+    
+    # ABC estimation
+    sel <- which(rowSums(is.na(sim$stats.scaled)) == 0)
+    
+    if (is.null(tol)){
       res.abc <- NA
+    } else {
+      if (multi == "seqcom"){
+        res.abc <- list()
+        
+        # Only nb.samp rows for sim$params.sim => nb.com repetitions
+        sim$params.sim <- sim$params.sim[rep(seq_len(nrow(sim$params.sim)), nb.com), ]
+        
+        res.abc <- tryCatch(
+          lapply(stats.obs.scaled,
+                 function(x) abc::abc(target = x,
+                                      param = sim$params.sim[sel,],
+                                      sumstat = sim$stats.scaled[sel,],
+                                      tol = tol,
+                                      method = method))
+        )
+      } else {
+        res.abc <- tryCatch(
+          abc::abc(target = stats.obs.scaled,
+                   param = sim$params.sim[sel,],
+                   sumstat = sim$stats.scaled[sel,],
+                   tol = tol,
+                   method = method),
+          error = function(x) warning("ABC computation failed with the requested method.")
+        )
+      }
+      if (is.character(res.abc)){
+        res.abc <- NA
+      }
     }
   }
   
@@ -157,9 +171,11 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
   
   # Uniform prior distributions of parameters
   prior <- c()
-  if(!is.null(params)) for (i in 1:nrow(params)) {
-    prior[[i]] <- runif(nb.samp, min = params[i, 1], max = params[i, 2])
-  }              
+  if(!is.null(params)) {
+    for (i in 1:nrow(params)) {
+      prior[[i]] <- runif(nb.samp, min = params[i, 1], max = params[i, 2])
+    }
+  }
   names(prior) <- rownames(params)
   
   prior[[length(prior) + 1]] <- runif(nb.samp, min = 0, max = 1)

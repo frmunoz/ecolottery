@@ -10,7 +10,7 @@
 }
 \usage{
   coalesc_abc(comm.obs, pool = NULL, multi = "single", traits = NULL, f.sumstats,
-              filt.abc = NULL, params, theta.max = NULL, nb.samp = 10^6,
+              filt.abc = NULL, params = NULL, theta.max = NULL, nb.samp = 10^6,
               parallel = TRUE, tol = NULL, pkg = NULL, method="rejection")
   do.simul(J, pool = NULL, multi = "single", nb.com = NULL, traits = NULL,
            f.sumstats = NULL, filt.abc = NULL, params, theta.max = NULL,
