@@ -94,7 +94,11 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
   
   colnames(sim$stats.scaled) <- colnames(sim$stats)
  
-  stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
+  if(multi == "seqcom"){
+    stats.obs.scaled <- lapply(stats.obs, function(x) (x - stats.mean)/stats.sd)
+  } else {
+    stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
+  }
   
   # ABC estimation
   sel <- which(rowSums(is.na(sim$stats.scaled)) == 0)
@@ -102,19 +106,35 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
   if (is.null(tol)){
     res.abc <- NA
   } else {
-    res.abc <- tryCatch(
-      abc::abc(target = stats.obs.scaled,
-               param = sim$params.sim[sel,],
-               sumstat = sim$stats.scaled[sel,],
-               tol = tol,
-               method = method),
-      error = function(x) warning("ABC computation failed with the requested method.")
-    )
+    if (multi == "seqcom"){
+      res.abc <- list()
+      
+      # Only nb.samp rows for sim$params.sim => nb.com repetitions
+      sim$params.sim <- sim$params.sim[rep(seq_len(nrow(sim$params.sim)), nb.com), ]
+      
+      res.abc <- tryCatch(
+        lapply(stats.obs.scaled,
+               function(x) abc::abc(target = x,
+                                    param = sim$params.sim[sel,],
+                                    sumstat = sim$stats.scaled[sel,],
+                                    tol = tol,
+                                    method = method))
+      )
+    } else {
+      res.abc <- tryCatch(
+        abc::abc(target = stats.obs.scaled,
+                 param = sim$params.sim[sel,],
+                 sumstat = sim$stats.scaled[sel,],
+                 tol = tol,
+                 method = method),
+        error = function(x) warning("ABC computation failed with the requested method.")
+      )
+    }
     if (is.character(res.abc)){
       res.abc <- NA
     }
   }
-    
+  
   return(list(par = sim$params.sim, obs = stats.obs, obs.scaled = stats.obs.scaled,
               ss = sim$stats.scaled, abc = res.abc))
 }
