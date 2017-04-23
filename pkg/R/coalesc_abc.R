@@ -223,6 +223,7 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
     force(prior)
     force(nb.com)
     force(pkg)
+    force(multi)
     
     summCalc <- function(j, multi, traits, nb.com, prior, J, pool, filt.abc,
                          f.sumstats) {
