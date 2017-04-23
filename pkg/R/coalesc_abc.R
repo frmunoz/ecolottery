@@ -121,7 +121,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
   colnames(sim$stats.scaled) <- colnames(sim$stats)
   }
   
-  if (is.null(params)){
+  if (is.null(tol)){
     res.abc <- NA
   } else {
     if(multi == "seqcom"){
