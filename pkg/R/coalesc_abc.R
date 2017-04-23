@@ -100,43 +100,62 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
                   theta.max, nb.samp, parallel, tol, pkg, method)
   
   # Scaling f.sumstats criterions for simulations
+  if (multi == "seqcom"){
+    stats.mean <- lapply(sim$stats, function(x) {apply(x, 2,
+                                                         function(y) mean(y, na.rm = T))})
+    stats.sd <- lapply(sim$stats, function(x) apply(x, 2,
+                                                       function(y) sd(y, na.rm = T)))
+    sim$stats.scaled <- list()
+    for (i in 1:length(sim$stats)){
+      sim$stats.scaled[[i]] <- t(apply(sim$stats[[i]], 1,
+                                       function(x) (x - stats.mean[[i]])/stats.sd[[i]]))
+      colnames(sim$stats.scaled[[i]]) <- colnames(sim$stats[[i]])
+    }
+  } else {
   stats.mean <- apply(sim$stats, 2, function(x) mean(x, na.rm = T))
   stats.sd <- apply(sim$stats, 2, function(x) sd(x, na.rm = T))
   sim$stats.scaled <- t(apply(sim$stats, 1,
                               function(x) (x - stats.mean)/stats.sd))
   colnames(sim$stats.scaled) <- colnames(sim$stats)
+  }
   
   if (is.null(params)){
     res.abc <- NA
   } else {
     if(multi == "seqcom"){
-      stats.obs.scaled <- lapply(stats.obs, function(x) (x - stats.mean)/stats.sd)
+      stats.obs.scaled <- list()
+      for (i in 1:length(sim$stats)){
+        stats.obs.scaled[[i]] <- (stats.obs[[i]] - stats.mean[[i]])/stats.sd[[i]]
+      }
     } else {
       stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
     }
-    
-    # ABC estimation
-    sel <- which(rowSums(is.na(sim$stats.scaled)) == 0)
     
     if (is.null(tol)){
       res.abc <- NA
     } else {
       if (multi == "seqcom"){
+        # ABC estimation
+        sel <- lapply(sim$stats.scaled, function(x) which(rowSums(is.na(x)) == 0))
+        
         res.abc <- list()
-        
-        # Only nb.samp rows for sim$params.sim => nb.com repetitions
-        sim$params.sim <- sim$params.sim[rep(seq_len(nrow(sim$params.sim)), nb.com), ]
-        
-        res.abc <- tryCatch(
-          lapply(stats.obs.scaled,
-                 function(x) abc::abc(target = x,
-                                      param = sim$params.sim[sel,],
-                                      sumstat = sim$stats.scaled[sel,],
-                                      tol = tol,
-                                      method = method)),
-          error = function(x) warning("ABC computation failed with the requested method.")
-        )
+        for(i in 1:length(stats.obs.scaled)){
+          res.abc[[i]] <- tryCatch(abc::abc(target = stats.obs.scaled[[i]],
+                                            param = sim$params.sim[[i]][sel[[i]],],
+                                            sumstat = sim$stats.scaled[[i]][sel[[i]],],
+                                            tol = tol,
+                                            method = method),
+                                   error = function(x) warning("ABC computation failed with the requested method.")
+        )}
+          for(i in 1:length(res.abc)){
+            if (is.character(res.abc[[i]])){
+              res.abc <- NA
+            }
+          }
       } else {
+        # ABC estimation
+        sel <- which(rowSums(is.na(sim$stats.scaled)) == 0)
+        
         res.abc <- tryCatch(
           abc::abc(target = stats.obs.scaled,
                    param = sim$params.sim[sel,],
@@ -145,9 +164,9 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
                    method = method),
           error = function(x) warning("ABC computation failed with the requested method.")
         )
-      }
-      if (is.character(res.abc)){
-        res.abc <- NA
+        if (is.character(res.abc)){
+          res.abc <- NA
+        }
       }
     }
   }
@@ -309,11 +328,27 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
     }
   }
   
-  stats <- t(data.frame(lapply(models, function(x) x$sum.stats)))
-  rownames(stats) <- NULL
-  params.sim <- t(data.frame(lapply(models, function(x) x$param)))
-  rownames(params.sim) <- NULL
-  colnames(params.sim) <- names(prior)
+  if (multi == "seqcom"){ # Results stored in a list
+    stats <- list()
+    params.sim <- list()
+    for (i in 1:nb.com){
+      stats[[i]] <- lapply(models, function(x) x$sum.stats[[i]])
+      params.sim[[i]] <- lapply(models, function(x) x$param)
+    }
+    stats <- lapply(stats, function(x) t(data.frame(x)))
+    stats<- lapply(stats, function(x) {rownames(x) = NULL; x})
+    
+    params.sim <- lapply(params.sim, function(x) t(data.frame(x)))
+    params.sim <- lapply(params.sim, function(x) {rownames(x) = NULL; x})
+    params.sim <- lapply(params.sim, function(x) {colnames(x) = names(prior); x})
+  }
+  else {
+    stats <- t(data.frame(lapply(models, function(x) x$sum.stats)))
+    rownames(stats) <- NULL
+    params.sim <- t(data.frame(lapply(models, function(x) x$param)))
+    rownames(params.sim) <- NULL
+    colnames(params.sim) <- names(prior)
+  }
   
   return(list(stats = stats, params.sim = params.sim))
 }

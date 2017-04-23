@@ -160,9 +160,8 @@ filt.abc=filt_gaussian,
                    params=params, nb.samp = nb.samp, parallel = TRUE, pkg =c("e1071","vegan"),
                    tol = 0.1, method = "neuralnet")
                    
-summary(res$abc[[1]])
-summary(res$abc[[2]])
-summary(res$abc[[3]])
+lapply(res$abc, summary)
+
 }
 }
 
