@@ -12,14 +12,12 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
     stop("f.sumstats must be a function of up to two arguments")
   }
   
-  if(is.null(params)){
-    warning("No value provided for params argument. Only m and theta will be
-            estimated.")
-  }
-  
   if (is.null(tol)){
     warning("You must provide a tolerance value for ABC computation. The function
-            will only provide simulations and will not perform ABC.")
+            will only provide simulations and will not perform ABC analysis.")
+  } else if(is.null(params)){
+    warning("No value provided for params argument. Only m and theta will be
+            estimated.")
   }
   
   if (is.character(comm.obs)) {
