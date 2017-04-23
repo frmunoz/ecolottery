@@ -8,6 +8,10 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
     stop("You must provide a function to calculate summary statistics (f.sumstats)")
   }
   
+  if (length(formals(f.sumstats))>2) {
+    stop("f.sumstats must be a function of up to two arguments")
+  }
+  
   if(is.null(params)){
     warning("No value provided for params argument. Only m and theta will be
             estimated.")
@@ -82,13 +86,13 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
   }
   
   if(multi == "seqcom"){
-    if (is.null(traits)) {
+    if (length(formals(f.sumstats))==1) {
       stats.obs <- lapply(comm.obs, f.sumstats)
     } else {
       stats.obs <- lapply(comm.obs, function(x) f.sumstats(x, traits))
     }
   }else {
-    if (is.null(traits)) {
+    if (length(formals(f.sumstats))==1) {
       stats.obs <- f.sumstats(comm.obs)
     } else {
       stats.obs <- f.sumstats(comm.obs, traits)
@@ -259,7 +263,7 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
             })
           }
           
-          if (is.null(traits)) {
+          if (length(formals(f.sumstats))==1) {
             stats.samp <- f.sumstats(meta.samp)
           } else {
             stats.samp <- f.sumstats(meta.samp, traits)
@@ -274,7 +278,7 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
                                    pool = pool, traits = traits)
             })
           }
-          if (is.null(traits)) {
+          if (length(formals(f.sumstats))==1) {
             seqcom.samp.com <- lapply(seqcom.samp, function(l) l[[1]])
             stats.samp <- lapply(seqcom.samp.com, f.sumstats)
           } else {
@@ -287,7 +291,7 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
         comm.samp <- coalesc(J, m = params.samp[length(params.samp)],
                              filt = filt,
                              pool = pool, traits = traits)
-        if (is.null(traits)) {
+        if (length(formals(f.sumstats))==1) {
           stats.samp <- f.sumstats(comm.samp$com)
         } else {
           stats.samp <- f.sumstats(comm.samp$com, traits)
