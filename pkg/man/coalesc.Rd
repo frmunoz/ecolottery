@@ -1,7 +1,5 @@
 \name{coalesc}
 \alias{coalesc}
-\alias{coalesc_simp}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Coalescent-based simulation of ecological communities undergoing both neutral and niche-base dynamics
 }
@@ -40,7 +38,6 @@ if \code{verbose = TRUE}, functions returns a lot of outputs about parameters, s
 }
 \details{
 Coalescent-based simulation of a community of size J. This generic function can simulate a neutral community (if \code{filt=NULL}) or a community undergoing both neutral and niche-based dynamics. In the later case, \code{filt(t)} represents the relative ability of immigrants with trait values t in the regional pool to enter the community.
-\code{coalesc_simp} is a simplified version of coalesc to increase speed in intensive calculations.
 }
 \value{
 \item{com}{
