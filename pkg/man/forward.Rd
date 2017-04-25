@@ -33,10 +33,15 @@ pick.immigrate(com, d = 1, prob.of.immigrate = 0, pool,
 
 \arguments{
  \item{com, initial}{
-starting community. It is in principle a three-column matrix or data frame including individual ID, species names and trait values. For strictly neutral dynamics, can be a vector of individual species names.
+starting community. It is in principle a three (or more) column matrix or
+data.frame including individual ID, species names and trait values. For strictly
+neutral dynamics, it can be a vector of individual species names.
 }
  \item{prob, prob.of.immigrate, prob.of.mutate}{
-probability of an individual establishing in the community not being a descendant of an existing individual. If descendant from a new ancestor, can be either through immigration (in pick.immigrate) or through mutation (in pick.mutate).
+probability of an individual establishing in the community not being a
+descendant of an existing individual. If descendant from a new ancestor, can be
+either through immigration (in \code{pick.immigrate()}) or through mutation
+(in \code{pick.mutate()}).
 }
  \item{d}{
 number of individuals that die in each time-step.
@@ -45,9 +50,9 @@ number of individuals that die in each time-step.
 number of generations to simulate.
 }
  \item{keep}{
-boolean value. If \code{FALSE} (default) the function output only the community composition 
-at the end of the simulation. If \code{TRUE} the function output a list of community 
-composition at successive time steps (see Value section).
+boolean value. If \code{FALSE} (default) the function output only the community
+composition at the end of the simulation. If \code{TRUE} the function output a
+list of community composition at successive time steps (see Value section).
 }
  \item{pool}{
 the regional pool of species providing immigrants to the local community. It is
@@ -58,25 +63,29 @@ If \code{NULL}, the pool is simulated as a metacommunity at speciation-drift
 equilibrium, based on \code{prob} for speciation rate.
 }
  \item{given_size}{
-size of the community you want to have an estimate of the number of generations needed to reach stationarity in species richness.
+size of the community you want to have an estimate of the number of generations
+needed to reach stationarity in species richness.
 }
 \item{nbrep}{
-number of replicates from which you want to estimate the number of generations needed to reach stationarity in species richness.
+number of replicates from which you want to estimate the number of generations
+needed to reach stationarity in species richness.
 }
  \item{limit.sim}{
-if \code{TRUE,} limiting similarity will be simulated, based on species trait distances
-(computed with the method given by \code{method.dist}) and a Gaussian overlapping function. 
+if \code{TRUE,} limiting similarity will be simulated, based on species trait
+distances (computed with the method given by \code{method.dist}) and a Gaussian
+overlapping function. 
 }
  \item{coeff.lim.sim}{
 adjust the intensity of limiting similarity. 
 }
  \item{sigm}{
-adjust the variance of the overlap function used to calculate limiting similarity.
+adjust the variance of the overlap function used to calculate limiting
+similarity.
 }
  \item{filt}{
-the function used to represent habitat filtering. For a given trait value, t,
-\code{filt(t)} represents the probability that an individual with trait t enters
-the local community.
+the function used to represent habitat filtering. For a given trait value
+\code{t}, \code{filt(t)} represents the probability that an individual with
+trait \code{t} enters the local community.
 }
  \item{prob.death}{
 provides a baseline probability of death that is homogeneous across species. It
@@ -85,46 +94,67 @@ niche-dependent mortality.
 }
  \item{method.dist}{
 provide the method to compute trait distances between individuals (syntax of
-function \code{\link[stats]{dist}}, can be in the list \code{c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski")}).
+function \code{\link[stats]{dist}}, can be in the list \code{c("euclidean",
+"maximum", "manhattan", "canberra", "binary", "minkowski")}).
 }
  \item{new.index}{
-used to give a new species name when speciation occurs.
+prefix used to give a new species name when speciation occurs.
 }
  \item{plot_gens}{
 plot the number of unique individuals and species over generations.
 }
 }
 \details{
-It is a zero-sum game, so that the number of individuals of the community is fixed to the number of individuals in initial community.
+It is a zero-sum game, so that the number of individuals of the community is
+fixed to the number of individuals in initial community.
 
-When niche-based dynamics are simulated, the niche-based constraints influence both immigration and mortality.
+When niche-based dynamics are simulated, the niche-based constraints influence
+both immigration and mortality.
 
-Function \code{get_number_of_gen()} allows determining the number of generations needed to reach stationary richness for given parameterization of \code{forward()}. The target number of generation is based on assessing the change point in species richness change over time for replicate simulated communities with random initial composition. A conservative measure is proposed as the maximum time to reach stationary richness over the replicate simulated communities.
+Function \code{get_number_of_gen()} allows determining the number of generations
+needed to reach stationary richness for given parameterization of
+\code{forward()}. The target number of generation is based on assessing the
+change point in species richness change over time for replicate simulated
+communities with random initial composition. A conservative measure is proposed
+as the maximum time to reach stationary richness over the replicate simulated
+communities.
 
-Functions \code{pick.immigrate()} and \code{pick.mutate()} are used to simulate immigration and speciation events within a time step. They are embedded in forward and are not really intended for the end user. 
+Functions \code{pick.immigrate()} and \code{pick.mutate()} are used to simulate
+immigration and speciation events within a time step. They are embedded in
+forward and are not really intended for the end user. 
 }
 \value{
 \item{com}{
-a matrix of individual in the final community, with individual ID in first column, species name in second column, and trait value in the third column.
+if \code{keep = FALSE}, a data.frame of simulated individuals, with the label
+of ancestor individual in the regional pool on first column (as in the first
+column of the pool), species label on second column (as in the second column of
+the pool), and species trait (as in the third column of the pool).
 }
 \item{pool}{
-the regional pool of species used in simulation. Includes label of individual on first column, its species on second column, and a trait attribute on the third column.
+a data.frame of the individuals of the regional source pool, with the label of
+ancestor individual in the regional pool on first column (as in first column of
+input \code{pool}), species label on second column (as in second column of input
+\code{pool}), and species trait (as in third column of input \code{pool}).
 }
 \item{sp_t}{
 a vector of species richness at each time step.
 }
 \item{com_t}{
-if \code{keep = T}, a list of community composition for each time step (a matrix as in com).
+if \code{keep = TRUE}, a list of community composition for each time step 
+(a data.frame as in \code{com}).
 }
-\item{limit.sim.t}{
-if \code{limit.sim = T}, the average value of the limiting similarity function over time.
+\item{dist.t}{
+if \code{limit.sim = TRUE}, the average value of the limiting similarity
+function over time.
 }
 \item{new.index}{
-for \code{pick.mutate()}, return the new index to be used for species name at a next speciation event.
+for \code{pick.mutate()}, return the new index to be used for species name at a
+next speciation event.
 }
 }
 \references{
-For neutral dynamics, S. P. Hubbell 2001. "The Unified Neutral Theory of Biodiversity". Princeton University Press. 
+For neutral dynamics, S. P. Hubbell 2001. "The Unified Neutral Theory of
+Biodiversity". Princeton University Press. 
 }
 \author{
 F. Munoz, derived from the \code{untb} function of R. Hankin.
@@ -136,7 +166,7 @@ initial1 <- rep(as.character(1:10), each = 10)
 
 # Simulation of speciation and drift dynamics over 100 time steps
 final1 <- forward(initial = initial1, prob = 0.1, gens = 1000)
-# The final community includes new species (by default their name begins with "new")
+# The final community includes new species (by default names begins with "new")
 final1$com$sp # includes new species generated by speciation events
 
 # A regional pool including 100 species each including 10 individuals
@@ -152,7 +182,7 @@ final2$com$sp # includes new species that immigrated from the pool
 initial2 <- data.frame(sp = rep(as.character(1:10), each = 10), 
                       trait = runif(100))
 
-# Simulation of stabilizing habitat filtering around t = 0.5, over 1000 time steps
+# Simulation of stabilizing hab. filtering around t = 0.5, over 1000 time steps
 sigm <- 0.1
 filt_gaussian <- function(t,x) exp(-(x-t)^2/(2*sigm^2))
 final3 <- forward(initial = initial2, prob = 0.1, gens = 1000, pool = pool, 
