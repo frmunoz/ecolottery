@@ -10,7 +10,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   # the initial community
   
   # Checking basic parameters
-
+  
   if (!is.numeric(prob) | prob < 0) {
     stop("Probability of migration or mutation must be a number belonging to ",
          "[0; 1] interval.")
@@ -41,10 +41,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     stop("sigm parameter must be a positive number.")
   }
   
-  if (!is.null(filt)){
-    if (!is.function(filt)) {
-      stop("filt must be a function.")
-    }
+  if (!is.null(filt) & !is.function(filt)) {
+    stop("filt() must be a function.")
   }    
   
   if ((method.dist %in% c("euclidean", "maximum", "manhattan", "canberra",
@@ -56,7 +54,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     stop("plot_gens parameter must be a boolean.")
   }
   
-   # Stops if only a vector of species name is given as initial community with
+  # Stops if only a vector of species name is given as initial community with
   # environmental filtering or limiting similarity
   if ((is.character(initial) | is.vector(initial)) &
       (limit.sim | !is.null(filt))) {
@@ -85,9 +83,9 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
                        sp = pool,
                        trait = rep(NA, length(pool)),
                        stringsAsFactors = FALSE)
-  
+    
     if (limit.sim | !is.null(filt)) {
-      message("No trait information provided in the regional pool\n")
+      message("No trait information provided in the regional pool")
       pool[, 3] <- runif(nrow(pool))
       message("Random trait values attributed to individuals of the regional",
               " pool")
@@ -101,15 +99,15 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
       stop("The regional pool is misdefined (at least two columns ",
            "required when a matrix or data frame is provided)")
     } else if (ncol(pool) == 2) {
-      message("No trait information provided in the regional pool\n")
+      message("No trait information provided in the regional pool")
     }
     if ((!limit.sim | !is.null(filt)) & ncol(pool) < 3) {
       pool[, 3] <- runif(nrow(pool))
       
       message("Random (uniform) trait values attributed to individuals of ",
-              "the regional pool\n")
+              "the regional pool")
     }
-      colnames(pool) <- c("id", "sp", "trait")
+    colnames(pool) <- c("id", "sp", "trait")
   }
   
   # "init_comm" is a 3 columns matrix of individuals in the initial community,
@@ -118,24 +116,24 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   if (is.character(initial)) {  # If only list of species names provided
     J <- length(initial)
     # The ids of individuals present in the initial community begi with "init"
-  init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
-                          sp = initial,
-                          trait = rep(NA, J),
-                          stringsAsFactors = FALSE) 
+    init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
+                            sp = initial,
+                            trait = rep(NA, J),
+                            stringsAsFactors = FALSE) 
   } else {
     
     if (ncol(initial) < 3) {
       message("Two-column initial community: assumed to represent species ",
-               "and trait information; individual ids will be generated")
-    J <- nrow(initial)
-    init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
-                            sp = initial[, 1],
-                            trait = initial[, 2],
-                            stringsAsFactors = FALSE)
-	    } else
-	    {
-	    	init_comm <- initial
-	    }
+              "and trait information; individual ids will be generated")
+      J <- nrow(initial)
+      init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
+                              sp = initial[, 1],
+                              trait = initial[, 2],
+                              stringsAsFactors = FALSE)
+    } else
+    {
+      init_comm <- initial
+    }
   }
   
   if ((limit.sim | !is.null(filt)) & any(is.na(init_comm[, 3]))) {
@@ -146,88 +144,89 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   colnames(init_comm) <- c("id", "sp", "trait")
   
   new.index <- 0
-   
+  
   ## Forward simulation with community
   
   # Begins with the initial community
   next_comm <- init_comm
   
   # Richness of initial community is not included
-  #sp_t <- length(unique(init_comm$sp))
   sp_t <- c()
-	
+  
   ind_t <- c()	
   dist.t <- c()
-	
+  
   if (keep) {  # If the user asked to keep all the communities at each timestep
     comm_through_time <- c()
-    }
-  
-   # Simulate the community for the given number of generations
-   for (i in 1:gens) {
-      if(keep)
-	      comm_through_time[[i]] <- next_comm  # Store the community at time i
-      
-      # Simulate community dynamics
-      next_comm <- pick(next_comm, d = d, prob = prob, pool = pool,
-                        prob.death = prob.death, limit.sim = limit.sim,
-                        coeff.lim.sim = coeff.lim.sim, sigm = sigm,
-                        filt = filt, new.index = new.index,
-                        method.dist = "euclidean")
-      
-      sp_t <- c(sp_t, length(unique(next_comm$com$sp)))
-      ind_t <- c(ind_t, length(unique(next_comm$com$ind)))
-	      
-      # Store average trait distance among coexisting individuals
-      if (!is.null(limit.sim)) {
-        dist.t <- c(dist.t, next_comm$dist.t)
-      }
-      new.index <- next_comm$new.index
-      next_comm <- next_comm$com
   }
-	
+  
+  # Simulate the community for the given number of generations
+  for (i in 1:gens) {
+    if (keep) {
+      # Store the community at time i
+      comm_through_time[[i]] <- next_comm
+    }  
+    
+    # Simulate community dynamics
+    next_comm <- pick(next_comm, d = d, prob = prob, pool = pool,
+                      prob.death = prob.death, limit.sim = limit.sim,
+                      coeff.lim.sim = coeff.lim.sim, sigm = sigm,
+                      filt = filt, new.index = new.index,
+                      method.dist = "euclidean")
+    
+    sp_t <- c(sp_t, length(unique(next_comm$com$sp)))
+    ind_t <- c(ind_t, length(unique(next_comm$com$ind)))
+    
+    # Store average trait distance among coexisting individuals
+    if (!is.null(limit.sim)) {
+      dist.t <- c(dist.t, next_comm$dist.t)
+    }
+    new.index <- next_comm$new.index
+    next_comm <- next_comm$com
+  }
+  
   if (plot_gens) { # Plotting number of individuals and species over generations
+    
+    uniq_df <- data.frame(gens = 1:gens, ind_t = ind_t, sp_t = sp_t,
+                          stringsAsFactors = FALSE)
+    
+    if (requireNamespace("ggplot2", quietly = TRUE)) {
       
-      uniq_df <- data.frame(gens = 1:gens, ind_t = ind_t, sp_t = sp_t,
-                            stringsAsFactors = FALSE)
-	      
-      if (requireNamespace("ggplot2", quietly = TRUE)) {
-        
-        # Plot the number of individuals through all the generations
-        plot_individuals <- ggplot(uniq_df, aes_string("gens", "ind_t")) +
-                geom_line() +
-                geom_line(aes_string("gens", "ind_t"),
-                                   size = 1) +
-                labs(x = "Number of generations",
-                              y = "Number of distinct ancestors")
-        
-        # Plot the number of species through all the generations
-        plot_species <- ggplot(uniq_df,
-                                       aes_string("gens", "sp_t")) +
-                geom_line(size = 1) +
-                labs(x = "Number of generations",
-                     y = "Number of species")
-        
-        print(plot_individuals)
-        print(plot_species)
-      }
+      # Plot the number of individuals through all the generations
+      plot_individuals <- ggplot(uniq_df, aes_string("gens", "ind_t")) +
+        geom_line() +
+        geom_line(aes_string("gens", "ind_t"),
+                  size = 1) +
+        labs(x = "Number of generations",
+             y = "Number of distinct ancestors")
+      
+      # Plot the number of species through all the generations
+      plot_species <- ggplot(uniq_df,
+                             aes_string("gens", "sp_t")) +
+        geom_line(size = 1) +
+        labs(x = "Number of generations",
+             y = "Number of species")
+      
+      print(plot_individuals)
+      print(plot_species)
     }
-					    
-    if (!is.null(limit.sim))
-    {
-        if(keep) return(list(com_t = comm_through_time,
-	sp_t = sp_t,
-	dist.t = dist.t,
-        pool = pool))
-	else return(list(com = next_comm, sp_t = sp_t, 
-			 dist.t = dist.t, pool = pool))
-    } else
-    {
-	if(keep) return(list(com_t = comm_through_time,
-	sp_t = sp_t,
-        pool = pool))
-	else return(list(com = next_comm, sp_t = sp_t, pool = pool))
-    }
+  }
+  
+  if (!is.null(limit.sim))
+  {
+    if (keep) return(list(com_t = comm_through_time,
+                          sp_t = sp_t,
+                          dist.t = dist.t,
+                          pool = pool))
+    else return(list(com = next_comm, sp_t = sp_t, 
+                     dist.t = dist.t, pool = pool))
+  } else
+  {
+    if (keep) return(list(com_t = comm_through_time,
+                          sp_t = sp_t,
+                          pool = pool))
+    else return(list(com = next_comm, sp_t = sp_t, pool = pool))
+  }
 }
 
 # Precise function to simulate a single timestep by picking an individual in
@@ -398,13 +397,19 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
         stop("tr.dist: mismatch of species names")
       }
       
-      # For each species: compute death probability depending on limiting similarity
-      # Individual death probability is the sum of the influence of each other individuals 
-      # (Gaussian function of pairwise trait distance), plus a baseline individual death probability
-      # coeff.lim.sim modulates the strength of limiting similarity compared to the baseline mortality
+      # For each species: compute death probability depending on limiting
+      # similarity
+      # Individual death probability is the sum of the influence of each other
+      # individuals  (Gaussian function of pairwise trait distance), plus a
+      # baseline individual death probability coeff.lim.sim modulates the
+      # strength of limiting similarity compared to the baseline mortality
+      
+      lim_sim_function <- function(x) {
+        coeff.lim.sim * (sum(exp( -x^2 / (2 * (sigm^2))), na.rm = TRUE))
+      }
+      
       prob.death <- apply(tr.dist[com[, 1], com[, 1]], 2,
-                           function(x) coeff.lim.sim*(sum(exp( -x^2 / (2*(sigm^2))),
-                                            na.rm = TRUE)))
+                           function(x) lim_sim_function(x))
       # Add baseline probability
       prob.death <- prob.death + 1/J
       # Scaling prob.death
