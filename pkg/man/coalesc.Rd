@@ -1,5 +1,6 @@
 \name{coalesc}
 \alias{coalesc}
+% -
 \title{
 Coalescent-based simulation of ecological communities undergoing both neutral and niche-base dynamics
 }
@@ -15,38 +16,36 @@ coalesc(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = NULL, Jpool =
 number of individuals in the local community.
 }
  \item{m}{
-migration rate (if m=1 the community is a subsample of the regional pool).
+migration rate (if \code{m = 1} the community is a subsample of the regional pool).
 }
  \item{theta}{
-parameter of neutral dynamics in the regional pool (used only if \code{pool=NULL}).
+parameter of neutral dynamics in the regional pool (used only if \code{pool=NULL}), it is the \dQuote{fundamental biodiversity number} (\eqn{\theta}).
 }
  \item{filt}{
-a function representing the effect of local habitat filtering. For a given trait value, t,\code{filt(t)} represents the probability that an individual with trait t enters the local community. If \code{filt=NULL},  \code{coalesc} provides a neutral community.
+a function representing the effect of local habitat filtering. For a given trait value \code{t}, \code{filt(t)} represents the probability that an individual with trait \code{t} enters the local community. If \code{filt = NULL},  \code{coalesc()} provides a neutral community.
 }
  \item{pool}{
-the regional pool of species providing immigrants to the local community. It should include the label of individual on first column, and of its species on second column. If \code{pool=NULL}, the pool is simulated as a metacommunity at speciation-drift equilibrium, based on parameter \code{theta}.
+the regional pool of species providing immigrants to the local community. It should include the label of individual on first column, and of its species on second column. If \code{pool = NULL}, the pool is simulated as a metacommunity at speciation-drift equilibrium, based on parameter \code{theta}. The provided \code{pool} can contain trait values for each individuals in a third column.
 }
  \item{traits}{
-a matrix or data.frame including one or several traits on columns. A unique trait value is assigned to each species un the regional pool. If \code{traits=NULL}, a random trait value is given to species of the regional pool, from a uniform distribution between 0 and 1.
+a matrix or data.frame including one or several traits on columns. A unique trait value is assigned to each species un the regional pool. If \code{traits = NULL}, a random trait value is given to species of the regional pool, from a uniform distribution between 0 and 1.
 }
  \item{Jpool}{
-if \code{pool = NULL}, represents the number of individuals to be simulated in the regional pool.
+if \code{pool = NULL}, it is the number of individuals to be simulated in the regional pool.
 }
  \item{verbose}{
 if \code{verbose = TRUE}, functions returns a lot of outputs about parameters, species pool and environmental filter.
 }
 }
 \details{
-Coalescent-based simulation of a community of size J. This generic function can simulate a neutral community (if \code{filt=NULL}) or a community undergoing both neutral and niche-based dynamics. In the later case, \code{filt(t)} represents the relative ability of immigrants with trait values t in the regional pool to enter the community.
+Coalescent-based simulation of a community of size \code{J}. This generic function can simulate a neutral community (if \code{filt = NULL}) or a community undergoing both neutral and niche-based dynamics. In the latter case, \code{filt(t)} represents the relative ability of immigrants with trait values \code{t} in the regional pool to enter the community.
 }
 \value{
-\item{com}{
-a matrix of simulated individuals, with the label of ancestor individual in the regional pool on first column (as in first column of pool), species label on second column (as in second column of pool), and species trait (as in third column of pool).
-Not provided if \code{m=1} and \code{filt=NULL}: in this case the function provides a sample of the regional pool.
-}
-\item{pool}{
-a matrix of the individuals of the regional source pool, with the label of ancestor individual in the regional pool on first column (as in first column of \code{pool}), species label on second column (as in second column of \code{pool}), and species trait (as in third column of \code{pool}).
-}
+  \item{com}{
+a data.frame of simulated individuals, with the label of ancestor individual in the regional pool on first column (as in first column of pool), species label on second column (as in second column of pool), and species trait (as in third column of pool).
+\strong{Not provided if \code{m = 1} and \code{filt = NULL}: in this case the function provides a sample of the regional pool.}}
+  \item{pool}{
+a data.frame of the individuals of the regional source pool, with the label of ancestor individual in the regional pool on first column (as in first column of input \code{pool}), species label on second column (as in second column of input \code{pool}), and species trait (as in third column of input \code{pool}).}
 }
 \references{
 Hurtt, G. C. and S. W. Pacala (1995). "The consequences of recruitment limitation: reconciling chance, history and competitive differences between plants." Journal of Theoretical Biology 176(1): 1-12.
