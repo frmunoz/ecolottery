@@ -5,7 +5,9 @@
   Generates Correlated Traits
 }
 \description{
-Create two random vectors of traits correlated between each other or a vector of traits correlated to an existing one. The strength of the correlation is defined by the parameter \code{rho}.
+Create two random vectors of traits correlated between each other or a vector
+of traits correlated to an existing one. The strength of the correlation is
+defined by the parameter \code{rho}.
 }
 \usage{
 tcor(n, rho = 0.5, mar.fun = rnorm, x = NULL, ...)
@@ -15,29 +17,30 @@ tcor(n, rho = 0.5, mar.fun = rnorm, x = NULL, ...)
  a numeric parameter describing the number of value to generated.
 }
  \item{rho}{
- a numeric parameter defining the strength of correlation between the two traits (Default = 0.5).
- It has to belong strictly to the [0; 1] interval.
+ a numeric parameter defining the strength of correlation between the two
+ traits (Default = 0.5).
+ It has to belong strictly to the [0, 1] interval.
 }
  \item{x}{
  a vector which describe an existing trait vector. Default to NULL. 
 }
  \item{mar.fun}{
- a function giving the random generation of the trait distribution, uses \code{rnorm}
- by default.
+ a function giving the random generation of the trait distribution, uses
+ \code{rnorm} by default.
  }
  \item{...}{
-  other arguments needed by \code{mar.fun} function.
+  other arguments needed by \code{mar.fun()} function.
  }
 }
 \details{
-  rho parameter is set to 0.5 by default. x is NULL by default.
+  rho parameter is set to 0.5 by default. \code{x = NULL} by default.
   Code adapted from: \url{http://stats.stackexchange.com/questions/15011/generate-a-random-variable-with-a-defined-correlation-to-an-existing-variable}
 }
 \value{
  Return a data.frame with two numeric columns, each column defining a trait.
 }
 \author{
- Pierre Denelle
+ P. Denelle
 }
 
 \examples{

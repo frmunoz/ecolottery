@@ -2,10 +2,10 @@
 \alias{abund}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Calculation of local and regional abundances and relative abundances
+Compute of local and regional abundances and relative abundances
 }
 \description{
-Calculate the abundances and relative abundances of species in simulated
+Compute the abundances and relative abundances of species in simulated
 communities and in the corresponding species pools. Input has to be an output of
 either \code{\link{coalesc}} or the \code{\link{forward}} functions.
 }
