@@ -1,5 +1,6 @@
 language: r
 sudo: required
+dist: trusty
 
 before_install:
   - cd pkg
