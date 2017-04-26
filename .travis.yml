@@ -1,9 +1,9 @@
+language: r
+
 before_install:
   - cd pkg
-  - sudo apt-get install libgmp3-dev
 
-language: r
-sudo: false
+apt_packages:
+  - libgmp3-dev
 
-sudo: required
 cache: packages
