@@ -1,8 +1,8 @@
-# From an object output by 'forward()' or 'coalesc()' computes vector of
+# From an output object of 'forward()' or 'coalesc()', computes vector of
 # abundances per species
 abund <- function(x) {
   if (!is.list(x)) {
-    stop("Provided argument needs to be a list of communities")
+    stop("The input argument must be a list of communities")
   }
   
     rel_abund_list <-  lapply(x, function(y) {
