@@ -3,25 +3,25 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
   
   # Check parameters
   if (is.null(theta) & is.null(pool)) {
-    stop("You must either provide regional pool composition or theta value")
+    stop("You must provide either regional pool composition or a theta value")
   }
   
   if (m < 0 | m > 1) {
-    stop("Migration parameter must belongs to [0; 1] interval.")
+    stop("The migration parameter takes values between 0 and 1")
   }
   
   if (!is.null(theta)) {
     if (theta <= 0) {
-      stop("Fundamental parameter of biodiversity theta must be positive.")
+      stop("The theta parameter must be positive")
     } else if (theta > 0 & !is.null(pool)) {
       if (verbose) {
-        warning("Both theta and regional pool provided, discarding theta")
+        warning("Both a theta value and a regional pool provided, discarding theta")
       }
     }
   }
   
   if (J <= 0) {
-    stop("J must be positive.")
+    stop("J must be positive")
   }
   
   if (is.null(traits) & (is.null(pool) | NCOL(pool) < 3)) {
@@ -53,21 +53,20 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
       ind_pool_traits <- array(NA, c(pool_size, ncol(traits)))
     }
     
+    ## Determining species identity in the pool
     Y <- runif(pool_size)  # Generate a vector to determine species
-    
-    ## Vector to determine species
-    # Probability that new species arrives in the regional pool
+      
+    # Probability that new species are sampled in the regional pool
     R_pool <- theta / (theta + (1:pool_size) - 1) 
-    # Get all individuals with different species
+    # Sampled individuals belonging to new species
     assign_pool <- which(Y <= R_pool)
-    
-    # All individuals that are reassigned to previous species
+    # Other individuals are assigned to already sampled species
     unassign_pool <- which(Y > R_pool)
     
     ind_pool_sp[assign_pool] <- 1:length(assign_pool)  # Set species number
     
     if (is.null(traits)) {
-      # Give random trait values
+      # Assign random trait values
       ind_pool_traits[assign_pool,1] <- runif(length(assign_pool))  
     } else {
       ind_pool_traits[assign_pool,] <- traits[1:length(assign_pool),]
