@@ -18,9 +18,6 @@ a list including the species pool composition (\code{x$pool}) and the local
 community composition (\code{x$com})
 }
 }
-\details{
-This generic function should be improved in the future for additional options.
-}
 \value{
 \item{pool}{
 species abundances and relative abundances in the reference pool
