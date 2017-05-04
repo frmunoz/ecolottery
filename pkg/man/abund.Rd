@@ -2,11 +2,11 @@
 \alias{abund}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Compute absolute and relative abundances of local community and regional pool
+Compute absolute and relative abundances in the local community and the reference pool
 }
 \description{
 Compute the abundances and relative abundances of species in simulated
-communities and in the corresponding species pools. Input has to be an output of
+communities and in the corresponding species pools. The input must be an output of
 either \code{\link{coalesc}} or the \code{\link{forward}} functions.
 }
 \usage{
@@ -23,14 +23,14 @@ This generic function should be improved in the future for additional options.
 }
 \value{
 \item{pool}{
-species abundances and relative abundances in the regional pool
+species abundances and relative abundances in the reference pool
 }
 \item{com}{
 species abundances and relative abundances in the local community
 }
 }
 \author{
-F. Munoz
+F. Munoz and P. Denelle
 }
 
 \examples{
