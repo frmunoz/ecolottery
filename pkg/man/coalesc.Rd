@@ -110,7 +110,7 @@ plot_comm(comm5)
 # Multi-modal habitat filtering 
 t.sp <- rnorm(500)
 pool[, 3] <- t.sp[pool[,2]]
-comm6 <- colaesc(J, m, filt = function(x) sin(3*x) + 1, pool = pool)
+comm6 <- coalesc(J, m, filt = function(x) sin(3*x) + 1, pool = pool)
 plot_comm(comm6)
 
 }
