@@ -2,7 +2,7 @@
 \alias{abund}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Compute of local and regional abundances and relative abundances
+Compute absolute and relative abundances of local community and regional pool
 }
 \description{
 Compute the abundances and relative abundances of species in simulated
@@ -42,19 +42,25 @@ abund1a <- abund(comm1a)
 # Log-series distribution of regional abundances
 fit <- vegan::fisherfit(abund1a$pool$ab)
 freq <- as.numeric(names(fit$fisher))
-plot(log(freq), fit$fisher, xlab = "Frequency (log)", ylab = "Species", type="n")
-rect(log(freq-0.5),0,log(freq+0.5),fit$fisher, col="skyblue")
-alpha <- fit$estimate; k <- fit$nuisance
-curve(alpha*k^exp(x)/exp(x), log(0.5), max(log(freq)), col="red", lwd=2, add=TRUE)
+plot(log(freq), fit$fisher,
+     xlab = "Frequency (log)",
+     ylab = "Species", type = "n")
+rect(log(freq - 0.5), 0, log(freq + 0.5), fit$fisher, col="skyblue")
+
+alpha <- fit$estimate
+k <- fit$nuisance
+
+curve(alpha * k^exp(x) / exp(x), log(0.5), max(log(freq)),
+      col = "red", lwd = 2, add = TRUE)
 
 # Relationship between local and regional abundances
-par(mfrow=c(1,2))
-plot(abund1a$pool[rownames(abund1a$com),"relab"],
+par(mfrow=c(1, 2))
+plot(abund1a$pool[rownames(abund1a$com), "relab"],
   abund1a$com$relab,
   main = "m = 0.05",
   xlab = "Regional abundance",
-  ylab="Local abundance",
-  log="xy")
+  ylab = "Local abundance",
+  log = "xy")
 abline(0,1)
 
 # With higher immigration rate
@@ -63,11 +69,10 @@ comm1b <- coalesc(J, m, theta)
 abund1b <- abund(comm1b) 
 plot(abund1b$pool[rownames(abund1b$com),"relab"],
   abund1b$com$relab,
-  main="m = 0.95",
-  xlab="Regional abundance",
-  ylab="Local abundance",
-  log="xy")
-
+  main = "m = 0.95",
+  xlab = "Regional abundance",
+  ylab = "Local abundance",
+  log = "xy")
 abline(0,1)
 }
 

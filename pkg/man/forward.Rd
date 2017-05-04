@@ -184,7 +184,7 @@ initial2 <- data.frame(sp = rep(as.character(1:10), each = 10),
 
 # Simulation of stabilizing hab. filtering around t = 0.5, over 1000 time steps
 sigm <- 0.1
-filt_gaussian <- function(t,x) exp(-(x-t)^2/(2*sigm^2))
+filt_gaussian <- function(t,x) exp(-(x - t)^2/(2*sigm^2))
 final3 <- forward(initial = initial2, prob = 0.1, gens = 1000, pool = pool, 
                  filt = function(x) filt_gaussian(0.5,x))
 plot_comm(final3) # trait distribution in final community

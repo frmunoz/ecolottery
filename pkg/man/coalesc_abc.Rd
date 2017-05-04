@@ -170,7 +170,7 @@ nb.samp <- 10^6 # Should be large
 \dontrun{
 # Basic summary statistics
 f.sumstats <- function(com) array(dimnames=list(c("cwm", "cwv", "cws",
-"cwk", "S", "Es")),
+                                                  "cwk", "S", "Es")),
                                   c(mean(com[,3]), var(com[,3]), 
                                     e1071::skewness(com[,3]),  
                                     e1071::kurtosis(com[,3]),
