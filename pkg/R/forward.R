@@ -132,10 +132,14 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
                               stringsAsFactors = FALSE)
     } else
     {
+      J <- nrow(initial)
       init_comm <- initial
     }
   }
-  
+	
+  if (J < d) stop("The number of dead individuals per time step ",
+		  "cannot be greater than community size")
+	  
   if ((limit.sim | !is.null(filt)) & any(is.na(init_comm[, 3]))) {
     stop("Trait information must be provided in initial community ",
          "composition for niche-based dynamics")
