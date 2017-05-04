@@ -44,30 +44,30 @@ test_that("coalesc() behaves well with extreme cases", {
   
   ## Invalid inputs (negative parameters)
   # Bad J values
-  expect_error(coalesc(J = -4, theta = 50), "J must be positive.",
+  expect_error(coalesc(J = -4, theta = 50), "J must be positive",
                fixed = TRUE)
-  expect_error(coalesc(0, theta = 50), "J must be positive.",
+  expect_error(coalesc(0, theta = 50), "J must be positive",
                fixed = TRUE)
   
   # Problematic m values
   # m too high
   expect_error(coalesc(10, m = 10, 40), fixed = TRUE,
-               "Migration parameter must belongs to [0; 1] interval.")
+               "The migration parameter takes values between 0 and 1")
   
   # negative m
   expect_error(coalesc(10, m = -1, 40), fixed = TRUE,
-               "Migration parameter must belongs to [0; 1] interval.")
+               "The migration parameter takes values between 0 and 1")
   
   # null m
   expect_silent(coalesc(10, m = 0, 40))
   
   # Bad theta values
   expect_error(coalesc(10, m = 0.1, -1), fixed = TRUE,
-               "Fundamental parameter of biodiversity theta must be positive.")
+               "The theta parameter must be positive")
   # Provide both pool and theta
   expect_warning(coalesc(10, 0.1, 40, pool = pool, verbose = TRUE),
                  fixed = TRUE,
-                 "Both theta and regional pool provided, discarding theta")
+                 "Both a theta value and a regional pool provided, discarding theta")
   
   # Extreme pool of species (one individual one species, individual
   # from a single species)
