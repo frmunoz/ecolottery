@@ -44,9 +44,9 @@ test_that("coalesc() behaves well with extreme cases", {
   
   ## Invalid inputs (negative parameters)
   # Bad J values
-  expect_error(coalesc(J = -4, theta = 50), "J must be positive.",
+  expect_error(coalesc(J = -4, theta = 50), "J must be positive",
                fixed = TRUE)
-  expect_error(coalesc(0, theta = 50), "J must be positive.",
+  expect_error(coalesc(0, theta = 50), "J must be positive",
                fixed = TRUE)
   
   # Problematic m values
