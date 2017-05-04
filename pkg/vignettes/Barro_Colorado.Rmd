@@ -181,7 +181,7 @@ bci.abc <- coalesc_abc(bci.res, multi = "tab", traits = NULL,
 
 bci.abc then includes the matrix of parameter values (par output), the matrix of simulated statistics values
 (ss output) and an abc object including the results of ABC analysis.
-To test if we can correctly infer m and  from the chosen set of summary statistics, we can perform cross
+To test if we can correctly infer *m* and *theta* from the chosen set of summary statistics, we can perform cross
 validation.
 
 ```{r, eval=F}
@@ -216,7 +216,7 @@ close to the estimation of (Etienne & Olff 2004), m = 0.2, and still lower than 
 2012), m = 0.38, which acknowledged the census of smaller trees. While previous studies mostly addressed
 migration-drift in the whole 50-ha plot compared to a regional background, our summary statistics here
 quantifies species turnover and variation of local diversity among the 1-ha subplots. A larger estimate of m
-can then reflect the fact that  diversity is lower than expected with m = 0.1, possibly under the influence of
+can then reflect the fact that *beta* diversity is lower than expected with m = 0.1, possibly under the influence of
 greater replacement dynamics within the plot than between the plot and its regional background.
 A next step of analysis could be to incorporate in simulations the influence of environmental variation across
 subplots on community assembly, depending on the species' ecological properties. For this purpose, the
