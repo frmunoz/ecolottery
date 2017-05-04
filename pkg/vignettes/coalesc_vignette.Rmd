@@ -1,6 +1,6 @@
 ---
 title: "Appendix 1: basic functions and examples"
-author: "Pierre DENELLE"
+author: "Francois MUNOZ and Pierre DENELLE"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -8,6 +8,8 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+This vignette corresponds to the latest version of the Appendix 1 of F.Munoz et al. paper.
 
 *coalesc* is the key function of the *lottery* package for coalescent-based simulation of local communities.
 The user can define parameters of community size, migration rate, and a custom function specifying environmental filtering, according to the situation he wants to model. He can also provide relative abundances and species trait values for the regional pool.
@@ -65,11 +67,11 @@ par(mfrow=c(1,2))
 plot_comm(tmpa,type="abund",main="m = 0.05")
 r_sqa <- summary(lm(abund(tmpa)$pool[rownames(abund(tmpa)$com),"relab"] ~ abund(tmpa)$com$relab))
 r_sqa <- signif(r_sqa$r.squared, 2)
-legend("bottomright", legend = paste0("R² for linear\n regression =\n", r_sqa), bty = "n")
+legend("bottomright", legend = paste0("R^2 for linear\n regression =\n", r_sqa), bty = "n")
 plot_comm(tmpb,type="abund",main="m = 0.95")
 r_sqb <- summary(lm(abund(tmpb)$pool[rownames(abund(tmpb)$com),"relab"] ~ abund(tmpb)$com$relab))
 r_sqb <- signif(r_sqb$r.squared, 2)
-legend("bottomright", legend = paste0("R² for linear\n regression =\n", r_sqb), bty = "n")
+legend("bottomright", legend = paste0("R^2 for linear\n regression =\n", r_sqb), bty = "n")
 
 ```
 
@@ -183,7 +185,7 @@ plot_comm(comm4c, main = "Stabilizing filtering around t = 0.9")
 
 ```
 
-When stabilizing filtering operates around different optimal values among communities, we expect corresponding changes in local mean trait values (Cornwell & Ackerly 2009).
+When stabilizing filtering operates around different optimal values among communities, we expect corresponding changes in local mean trait values (Cornwell and Ackerly 2009).
 
 ```{r, eval = FALSE}
 
@@ -236,7 +238,7 @@ plot(tapply(comm5$com[,3],comm5$com[,2],length)~tapply(apply(comm5$com[,3:5],1,f
 
 Species trait values are the legacy of evolutionary history. The processes that affect the distribution of trait values in the community can also affect the phylogenetic composition of the community depending, e.g, on the conservatism of traits among close relatives (Mouquet et al. 2012).
 
-We can simulate a phylogenetic tree of the species of the regional pool, and the evolution of their trait values under an assumption of niche conservatism (Wiens & Graham 2005). In this case, descendant species can retain characteristics of their ancestors, and the trait values of more closely related species are then more similar than trait values of distantly related species (phylogenetic signal, Blomberg & Garland 2002).
+We can simulate a phylogenetic tree of the species of the regional pool, and the evolution of their trait values under an assumption of niche conservatism (Wiens and Graham 2005). In this case, descendant species can retain characteristics of their ancestors, and the trait values of more closely related species are then more similar than trait values of distantly related species (phylogenetic signal, Blomberg and Garland 2002).
 
 ```{r, eval = FALSE}
 
