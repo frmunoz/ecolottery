@@ -15,10 +15,10 @@ knitr::opts_chunk$set(eval = TRUE, echo = TRUE, fig.width = 6,fig.height=5, cach
 
 ```
 
-This vignette corresponds to the latest version of the Appendix 1 of F.Munoz et al. paper.
+This vignette corresponds to the latest version of the Appendix 1 of F. Munoz et al. paper.
 
 *`coalesc()`* is the key function of the *`lottery`* package for coalescent-based simulation of local communities.
-The user can define parameters of community size, migration rate, and a custom function specifying environmental filtering, according to the situation she wants to model. She can also provide relative abundances and species trait values for the regional pool.
+The user can define parameters of community size, migration rate, and a custom function specifying environmental filtering, according to the situation he wants to model. He can also provide relative abundances and species trait values for the regional pool.
 
 ```{r}
 set.seed(1)
@@ -26,9 +26,7 @@ set.seed(1)
 
 # Neutral dynamics in species pool and communities
 
-We first consider the case of communities undergoing neutral migration-drift dynamics. In this case, all the species available in the regional pool have the same prospect of immigrating, persisting and reproducing in the local community. We can define such dynamics by setting the input argument `filt = NULL` in `coalesc()` (default value).
-
-Following Hubbell (2001), the evolutionary dynamics in the regional pool can also be neutral, i.e., speciation and extinction events occur randomly irrespective of species properties. We can define such dynamics by setting the input argument *theta* to a non-null value. Relative species abundances in the regional pool then follow a logseries distribution (Hubbell 2001). The correspondance of simulated regional pool composition to a logseries distribution can be estimated using the `fisherfit()` function of package `vegan`.
+Before simulating communities, we need first to define a reference pool from which immigrants are drawn. In the neutral theory (Hubbell 2001), speciation and extinction events occur randomly irrespective of species properties and drive the composition and species abundances in the reference pool (neutral speciation-drift dynamics). We can define such dynamics by setting the input argument *`theta`* in *`coalesc`* to a non-null value, and the composition of the pool can be simulated by setting $m = 1$. The simulated species abundances are then expected to follow a logseries distribution (Hubbell 2001). The fit of simulated pool composition to the logseries distribution can be estimated using the *fisherfit* function of package *vegan*.  
 
 ```{r}
 library(lottery)
