@@ -83,7 +83,7 @@ legend("bottomright", legend = bquote(R^2 ~ "=" ~. (r_sqb)), bty = "n")
 
 ```
 
-The first figure shows the relationship between local and regional species abundances in neutral communities with high immigration rate, and the second the relationship with a low immigration rate. Each point is averaged over 100 communities.
+The first figure shows the relationship between local and regional species abundances in neutral communities with low immigration rate, and the second the relationship with a high immigration rate. Each point is averaged over 100 communities.
 
 # User-defined species pool
 
