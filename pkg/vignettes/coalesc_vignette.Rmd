@@ -137,7 +137,7 @@ comm3c <- coalesc(J, m, pool = pool)
 # Environmental filtering
 
 The user can provide an environmental filtering function weighting the probability that individuals from the reference pool successfully immigrate in the community, depending on their trait value(s).
-In the following example, the filtering function is Gaussian with mean *t* and standard deviation 0.1 [stabilizing filtering, @L3851]. 
+In the following example, the filtering function is Gaussian with mean *t* and standard deviation 0.1 (stabilizing filtering, Shipley 2013). 
 
 ```{r}
 sigma <- 0.1
@@ -167,7 +167,7 @@ mean(comm4b$com[, 3])
 mean(comm4c$com[, 3])
 ```
 
-Different filtering functions can be designed to represent different types of environmental filtering. By analogy with selection regimes in evolutionary theory [@L3851], we can define the outcome of directional and disruptive filtering functions.
+Different filtering functions can be designed to represent different types of environmental filtering. By analogy with selection regimes in evolutionary theory (Shipley 2013), we can define the outcome of directional and disruptive filtering functions.
 ```{r}
 # Directional environmental filtering toward t = 0
 comm4d <- coalesc(J, m, filt = function(x) 1 - min(x,1), pool = pool)
