@@ -73,11 +73,10 @@ par(mfrow=c(1,2))
 plot_comm(tmpa,type="abund",main="m = 0.05")
 r_sqa <- summary(lm(abund(tmpa)$pool[rownames(abund(tmpa)$com),"relab"] ~ abund(tmpa)$com$relab))
 r_sqa <- signif(r_sqa$r.squared, 2)
-legend("bottomright", legend = paste0("R^2 for linear\n regression =\n", r_sqa), bty = "n")
-plot_comm(tmpb,type="abund",main="m = 0.95")
+legend("bottomright", legend = bquote(R^2 ~ "=" ~. (r_sqa)), bty = "n")plot_comm(tmpb,type="abund",main="m = 0.95")
 r_sqb <- summary(lm(abund(tmpb)$pool[rownames(abund(tmpb)$com),"relab"] ~ abund(tmpb)$com$relab))
 r_sqb <- signif(r_sqb$r.squared, 2)
-legend("bottomright", legend = paste0("R^2 for linear\n regression =\n", r_sqb), bty = "n")
+legend("bottomright", legend = bquote(R^2 ~ "=" ~. (r_sqb)), bty = "n")
 
 ```
 
