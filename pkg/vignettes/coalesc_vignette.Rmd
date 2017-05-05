@@ -59,7 +59,7 @@ tmpa <- data.frame()
 for (i in 1:100){
   tmpa <- rbind(tmpa, coalesc(J, m, theta, pool = comm1a$pool)$com)
 }
-tmpa <- list(pool = comm1b$pool, com = tmpa)
+tmpa <- list(pool = comm1a$pool, com = tmpa)
 
 m <- 0.95
 comm1b <- coalesc(J, m, theta) 
