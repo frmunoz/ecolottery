@@ -1,6 +1,6 @@
 Package: lottery
 Type: Package
-Title: Coalescent-based simulation of ecological communities
+Title: Coalescent-Based Simulation of Ecological Communities
 Version: 1.0.0
 Author: François Munoz, Matthias Grenié, Pierre Denelle, Adrien Taudière, Fabien Laroche, Caroline Tucker and Cyrille Violle
 Maintainer: François Munoz <francois.munoz@cirad.fr>
@@ -28,7 +28,7 @@ Suggests:
     testthat,
     untb,
     vegan
-Description: Coalescent-based simulation of ecological communities.
+Description: Coalescent-Based Simulation of Ecological Communities.
 License: GPL (>= 2)
 Encoding: latin1
 VignetteBuilder: knitr

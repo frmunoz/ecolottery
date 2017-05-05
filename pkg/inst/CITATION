@@ -1,13 +1,12 @@
 citHeader("To cite the lottery package:")
 
 citEntry(
-entry="Article",
-title = "lottery: a comprehensive toolbox for coalescent-based simulation of ecological communities",
+entry = "Article",
+title = "lottery: simulating and assessing neutral and niche-based community dynamics in R",
 journal= "-",
 year = "201-",
-author = "F. Munoz, A. Taudière, F. Laroche, M. Grenié, P. Denelle and C. Violle",
+author = "F. Munoz, M. GreniÃ©, P. Denelle, A. TaudiÃ¨re, F. Laroche, C. Tucker and C. Violle",
 volume = "-",
 pages = "-",
-doi = "-",
-textVersion = "Munoz et al. 201-. lottery: a comprehensive toolbox for coalescent-based simulation of ecological communities",
+textVersion = "Munoz et al. 201-. lottery: simulating and assessing neutral and niche-based community dynamics in R",
 )

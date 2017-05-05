@@ -161,6 +161,7 @@ F. Munoz, derived from the \code{untb} function of R. Hankin.
 }
 
 \examples{
+\dontrun{
 # Initial community composed of 10 species each including 10 individuals
 initial1 <- rep(as.character(1:10), each = 10)
 
@@ -214,6 +215,7 @@ plot(unlist(lapply(final7$com_t, function(x) length(unique(x[, 2])))),
 
 # Index of limiting similarity over time
 plot(final7$dist.t, xlab = "Time step", ylab = "Limiting similarity")
+}
 }
 
 \keyword{neutral dynamics}
