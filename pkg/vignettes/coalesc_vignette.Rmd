@@ -177,7 +177,7 @@ comm4e <- coalesc(J, m, filt = function(x) abs(0.5 - x), pool = pool)
 plot_comm(comm4e, main = "Disruptive filtering")
 ```
 
-Disruptive filtering here represents the greater success of species with trait values away from $t = 0.5$. It corresponds to a separation of ecological groups in the community, and represents a form of niche differentiation [@608].
+Disruptive filtering here represents the greater success of species with trait values away from $t = 0.5$. It corresponds to a separation of ecological groups in the community, and represents a form of niche differentiation (Vergnon et al. 2009).
 
 # Filtering of multiple traits
 
@@ -193,7 +193,7 @@ comm5 <- coalesc(J, m, pool = cbind(1:10000, rep(1:100, 100)),
                  filt = filt, traits = traits)
 ```
 
-The filtering function determines the success of immigrants depending on the combination of their trait values. It entails a correlation between the local species abundances and the species weights given by the filtering function [@936].
+The filtering function determines the success of immigrants depending on the combination of their trait values. It entails a correlation between the local species abundances and the species weights given by the filtering function (Shipley et al. 2006).
 
 ```{r}
 # Relationship between species weight in environmental filtering and local abundance
@@ -205,9 +205,9 @@ plot(tapply(comm5$com[,3], comm5$com[,2], length) ~
 
 # Investigating phylogenetic structure in communities
 
-Species trait values are the legacy of evolutionary history. The processes that affect the distribution of trait values in  the community can also affect the phylogenetic composition of the community depending, e.g, on the conservatism of traits among close relatives [@1544].  
+Species trait values are the legacy of evolutionary history. The processes that affect the distribution of trait values in  the community can also affect the phylogenetic composition of the community depending, e.g, on the conservatism of traits among close relatives (Mouquet et al. 2012).  
 
-We can simulate a phylogenetic tree of the species of the reference pool, and the distribution of species trait values under an assumption of niche conservatism [@838]. In this case, descendant species can retain characteristics of their ancestors, and the trait values of more closely related species are then more similar than trait values of distantly related species [phylogenetic signal, @434].
+We can simulate a phylogenetic tree of the species of the reference pool, and the distribution of species trait values under an assumption of niche conservatism (Wiens and Graham 2005). In this case, descendant species can retain characteristics of their ancestors, and the trait values of more closely related species are then more similar than trait values of distantly related species (phylogenetic signal, Blomberg and Garland 2002).
 
 ```{r}
 library(ape)
@@ -225,7 +225,7 @@ t.sp <- rTraitCont(n = 1, phy = tre, model = "BM", sigma = 0.2, root.value = 0.5
 pool$tra <- t.sp[pool$sp]
 ```
 
-*`phylosignal()`* measures the phylogenetic signal of the simulated trait values in the phylogenetic tree, using the Blomberg's *K* statistic [@434]. The p-value is calculated based on the null distribution of *K* when shuffling species trait values in the phylogeny. A small p-value indicates that trait variation among close relatives is smaller than expected by chance.  
+*`phylosignal()`* measures the phylogenetic signal of the simulated trait values in the phylogenetic tree, using the Blomberg's *K* statistic (Blomberg and Garland 2002). The p-value is calculated based on the null distribution of *K* when shuffling species trait values in the phylogeny. A small p-value indicates that trait variation among close relatives is smaller than expected by chance.  
 
 ```{r, eval = F}
 phylosignal(t.sp[tre$tip.label], phy = tre)
@@ -236,7 +236,7 @@ knitr::kable(phylosignal(t.sp[tre$tip.label], phy = tre))
 
 We then simulate two communities related to this reference pool, one undergoing neutral dynamics, the other undergoing stabilizing environmental filtering.
 In the first case, any species of the reference pool can perform as well in the local community, and then the phylogenetic structure of the community should not be different from the structure of a random sample with same size from the reference pool.
-In the second case, environmental filtering limits the range of trait values in the community around an optimal value. Because more closely related species are more likely to have similar trait values in the reference pool, we then expect that the Mean Nearest Taxon Distance (MNTD) among coexisting species of the community is smaller than the average distance in the reference pool [@793].
+In the second case, environmental filtering limits the range of trait values in the community around an optimal value. Because more closely related species are more likely to have similar trait values in the reference pool, we then expect that the Mean Nearest Taxon Distance (MNTD) among coexisting species of the community is smaller than the average distance in the reference pool (Webb et al. 2002).
 
 ```{r, message = F, eval = T}
 m <- 1
@@ -263,7 +263,7 @@ knitr::kable(ses.mntd(tab[, tre$tip.label], cophenetic(tre), null.model="taxa.la
              caption = "Standard Effect Size of Mean Nearest Taxon Distance")
 ```
 
-The first community does not depart from random phylogenetic structure, while the second shows phylogenetic structuring, i.e., smaller Mean Nearest Taxon Distance than expected by chance ($mpd.obs.p < 0.01$).
+The first community does not depart from random phylogenetic structure, while the second shows phylogenetic structuring, i.e., smaller Mean Nearest Taxon Distance than expected by chance ($mntd.obs.p < 0.01$).
 
 Alternatively, in the absence of niche conservatism in the phylogeny, environmental filtering in community assembly would not result in phylogenetic clustering.
 To illustrate this case, we shuffle the trait values of species in the reference pool, and simulate a new local community with stabilizing environmental filtering.
@@ -286,7 +286,7 @@ knitr::kable(ses.mntd(tab[,tre$tip.label], cophenetic(tre), null.model = "taxa.l
 ```
 
 In this case, neither the neutral community nor the community with environmental filtering shows phylogenetic clustering.
-Therefore, when the condition of niche conservatism is not met, the absence of phylogenetic clustering does not mean that environmental filtering does not play [@1544].
+Therefore, when the condition of niche conservatism is not met, the absence of phylogenetic clustering does not mean that environmental filtering does not play (Mouquet et al. 2012).
 
 # Forward-in-time simulation
 
