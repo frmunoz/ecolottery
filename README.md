@@ -18,4 +18,4 @@ devtools::install_github("frmunoz/lottery/pkg", build_vignettes = TRUE)
 
 The two main functions of the package are `coalesc()` and `forward()`. You can learn more on how to use them by looking at the [introduction vignette](pkg/vignettes/coalesc_vignette.Rmd).
 
-If you are interested in using ABC to estimate environmental filtering parameters have a look at the [Barro Colorado vignette](pkg/vignettes/Barro_Colorado.Rmd).
+If you want to see how `coalesc_abc()` allows estimating parameters of community assembly with the ABC approach, have a look at the [Barro Colorado vignette](pkg/vignettes/Barro_Colorado.Rmd).
