@@ -333,8 +333,7 @@ plot(final.limsim$sp_t, xlab = "Time", ylab = "Richness")
 abline(length(unique(initial$sp)), 0, col = "red")
 ```
 
-The left figure represents the temporal trajectory of the average distance of each individual to the other individuals of the community. The distance fluctuates and increases over time due to the influence of limiting similarity. The right figure shows the variation of richness, basically decreasing due to limiting similarity, until reaching stationarity.
-
+The first figure represents the temporal trajectory of the average distance of each individual to the other individuals of the community. The distance fluctuates and increases over time due to the influence of limiting similarity. The second figure shows the variation of richness, basically decreasing due to limiting similarity, until reaching stationarity.
 
 # References
 
