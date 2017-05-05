@@ -103,7 +103,7 @@ summary(abund2$com$relab)
 
 Species relative abundances are then equal in the regional pool, but local species abundances fluctuate due to migration-drift dynamics.
 
-```{r}
+```{r, eval = FALSE}
 
 # Figure: local SAD vs regional SAD
 require(cowplot)
@@ -116,7 +116,7 @@ regSAD <- ggplot(abund2$pool, aes(relab)) +
   geom_histogram(colour = "black", fill = "white") +
   xlab("Regional relative abundance distribution")
 
-cowplot::plot_grid(locSAD, regSAD, nrow = 2)
+plot_grid(locSAD, regSAD, nrow = 2)
 
 ```
 
