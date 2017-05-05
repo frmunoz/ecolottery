@@ -171,7 +171,7 @@ We simulate a community undergoing stabilizing environmental filtering around $t
 
 sigma <- 0.1
 filt_gaussian <- function(t,x) exp(-(x-t)^2/(2*sigma^2))
-We simulate a community undergoing stabilizing environmental filtering around t=0.5.
+#We simulate a community undergoing stabilizing environmental filtering around t=0.5.
 J <- 500; m <- 0.5; 
 comm4a <- coalesc(J, m, filt = function(x) filt_gaussian(0.5,x), pool=pool)
 plot_comm(comm4a, main = "Stabilizing filtering around t = 0.5")
