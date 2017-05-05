@@ -259,7 +259,6 @@ We can simulate a phylogenetic tree of the species of the regional pool, and the
 
 ```{r}
 library(ape)
-library(phylolm)
 library(picante)
 
 tre <- rcoal(200)

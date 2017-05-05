@@ -22,7 +22,6 @@ Suggests:
     changepoint,
     cowplot,
     knitr,
-    phylolm,
     picante,
     rmarkdown,
     testthat,
