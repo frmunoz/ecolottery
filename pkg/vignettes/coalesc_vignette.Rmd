@@ -9,6 +9,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
+
+```
+
 This vignette corresponds to the latest version of the Appendix 1 of F.Munoz et al. paper.
 
 *coalesc* is the key function of the *lottery* package for coalescent-based simulation of local communities.
@@ -20,7 +26,7 @@ We first consider the case of communities undergoing neutral migration-drift dyn
 
 Following Hubbell (2001), the evolutionary dynamics in the regional pool can also be neutral, i.e., speciation and extinction events occur randomly irrespective of species properties. We can define such dynamics by setting the input argument *theta* to a non-null value. Relative species abundances in the regional pool then follow a logseries distribution (Hubbell 2001). The correspondance of simulated regional pool composition to a logseries distribution can be estimated using the \code{fisherfit} function of package \code{vegan}.
 
-```{r, eval = FALSE}
+```{r}
 
 library(lottery)
 
@@ -43,7 +49,7 @@ curve(alpha*k^exp(x)/exp(x), log(0.5), max(log(freq)), col="red", lwd=2, add=TRU
 
 We then generate another neutral community with higher migration rate $m=0.95$. The migration rate *m* determines migration-drift dynamics in a local community. The smaller is *m* the more local species abundances fluctuate due to stochastic demographic variations. Where m gets close to 1, most of the dead individuals are replaced by immigrants, and local species abundances are then more closely related to regional abundances.
 
-```{r, eval = FALSE}
+```{r}
 
 # Relationship between local and regional abundances
 # Local abundances averages over 100 replicate communities
@@ -83,7 +89,7 @@ In the previous case, the user did not provide the composition of the regional p
 
 In the following example, the user provides a species pool including 500 species with equal abundances.
 
-```{r, eval=FALSE}
+```{r}
   
 Jpool <- 50*J
 pool <- cbind(1:Jpool,rep(1:500,Jpool/500))
@@ -97,7 +103,7 @@ summary(abund2$com$relab)
 
 Species relative abundances are then equal in the regional pool, but local species abundances fluctuate due to migration-drift dynamics.
 
-```{r,eval=F,echo=F}
+```{r}
 
 # Figure: local SAD vs regional SAD
 require(cowplot)
@@ -121,7 +127,7 @@ Species abundance distribution in a regional pool where all species have the sam
 We can also examine the trait composition of simulated communities. By default the values of a unique trait are randomly assigned to the species of the regional pool following a uniform distribution between 0 and 1.
 It is also possible to include in *pool* the values of one or several traits for each individual of the species pool, or to provide a separate *traits* data frame including the values of one or several traits for each species.
 
-```{r, eval = FALSE}
+```{r}
 
 m <- 0.95
 # With uniform trait values in the species pool
@@ -139,7 +145,7 @@ plot_comm(comm3b,type="trait")
 \code{plot_comm} with \code{type = trait} here displays the trait distributions in species pool (red) and local community (blue). With high migration probability \code{m = 0.95}, the local and regional distributions are quite similar.
 The user may also simulate a distribution of mean species trait values, and consider additional intraspecific variation of these values around the mean.
 
-```{r, eval = FALSE}
+```{r}
 
 pool <- cbind(1:Jpool,rep(1:500,Jpool/500),NA)
 # Distribution of the mean species trait values
@@ -161,7 +167,7 @@ The user can provide an environmental filtering function weighting the probabili
 
 We simulate a community undergoing stabilizing environmental filtering around $t = 0.5$.
 
-```{r, eval = FALSE}
+```{r}
 
 sigma <- 0.1
 filt_gaussian <- function(t,x) exp(-(x-t)^2/(2*sigma^2))
@@ -174,7 +180,7 @@ plot_comm(comm4a, main = "Stabilizing filtering around t = 0.5")
 
 We can also simulate stabilizing environmental filtering around t=0.1 and t=0.9.
 
-```{r, eval = FALSE}
+```{r}
 
 J <- 500; m <- 0.5; 
 comm4b <- coalesc(J, m, filt = function(x) filt_gaussian(0.1,x), pool=pool)
@@ -187,7 +193,7 @@ plot_comm(comm4c, main = "Stabilizing filtering around t = 0.9")
 
 When stabilizing filtering operates around different optimal values among communities, we expect corresponding changes in local mean trait values (Cornwell and Ackerly 2009).
 
-```{r, eval = FALSE}
+```{r}
 
 mean(comm4b$com[, 3])
 mean(comm4c$com[, 3])
@@ -196,7 +202,7 @@ mean(comm4c$com[, 3])
 
 Different filtering functions can be designed to represent different types of environmental filtering. By analogy with selection regimes in evolutionary theory (Shipley 2013), we can define the outcome of directional and disruptive filtering functions.
 
-```{r, eval = FALSE}
+```{r}
 
 # Directional environmental filtering toward t = 0
 comm4d <- coalesc(J, m, filt = function(x) 1 - min(x,1), pool=pool)
@@ -215,7 +221,7 @@ Disruptive filtering here represents the greater success of species around two d
 Previous examples represented environmental filtering depending on the values of a single trait. It is also possible to define environmental filtering operating on multiple traits.
 In the following example, three traits have values uniformly distributed between 0 and 1 in the regional pool, and undergo stabilizing filtering in the local community with distinct optimal values, 0.5, 0.25 and 0.75.
 
-```{r, eval = FALSE}
+```{r}
 
 # An example with 3 traits
 traits <- cbind(runif(Jpool),runif(Jpool),runif(Jpool)) 
@@ -226,7 +232,7 @@ comm5 <- coalesc(J, m, pool=cbind(1:10000,rep(1:100,100)), filt = filt,traits=tr
 
 The filtering function determines the success of immigrants depending on the combination of their trait values. It entails a correlation between the local species abundances and the species weights given by the filtering function (Shipley et al. 2006).
 
-```{r, eval = FALSE}
+```{r}
 
 # Relationship between species weight in environmental filtering and local abundance
 plot(tapply(comm5$com[,3],comm5$com[,2],length)~tapply(apply(comm5$com[,3:5],1,function(x)
@@ -240,7 +246,7 @@ Species trait values are the legacy of evolutionary history. The processes that 
 
 We can simulate a phylogenetic tree of the species of the regional pool, and the evolution of their trait values under an assumption of niche conservatism (Wiens and Graham 2005). In this case, descendant species can retain characteristics of their ancestors, and the trait values of more closely related species are then more similar than trait values of distantly related species (phylogenetic signal, Blomberg and Garland 2002).
 
-```{r, eval = FALSE}
+```{r}
 
 require(ape)
 require(phylolm)
@@ -265,7 +271,7 @@ We then simulate two communities related to this regional pool, one undergoing n
 In the first case, any species of the regional pool can perform as well in the local community, and then the average phylogenetic distance among species of the community (MPD) should not be different from the average distance among species of the regional pool.
 In the second case, environmental filtering limits the range of trait values in the community around 0. Because more closely related species are more likely to have similar trait values in the regional pool, we then expect that the phylogenetic distance among coexisting species of the community is smaller than the average distance in the regional pool. 
 
-```{r, eval = FALSE}
+```{r}
 
 m <- 1
 tab <- array(0, c(2,200)); colnames(tab) <- tre$tip.label
@@ -283,7 +289,7 @@ tab[2, com$sp] <- com$ab
 
 These patterns can be tested against a null model of random sampling in the phylogeny. The standard effect size (SES) quantifies the departure of observed phylogenetic structure from the null distribution.
 
-```{r, eval = FALSE}
+```{r}
 
 ses.mpd(tab[, tre$tip.label], cophenetic(tre), null.model="taxa.labels")
 
@@ -295,7 +301,7 @@ The first community does not depart from random phylogenetic structure, while th
 
 Alternatively, in the absence of niche conservatism in the phylogeny, environmental filtering in community assembly would not result in phylogenetic clustering. To illustrate this case, we can shuffle trait values in the regional pool.
 
-```{r, eval = FALSE}
+```{r}
 
 names(t.sp) <- sample(names(t.sp))
 pool$tra <- t.sp[pool$sp]
@@ -320,7 +326,7 @@ As for \code{coalesc}, the user can define the composition of the species pool f
 
 We can for instance simulate stabilizing environmental filtering in a way analogous to the previous example with \code{coalesc}. \code{d = 10} represents the number of individuals that die in the community at each time step, \code{prob = 0.5} represent the migration rate at each time step. The number of simulated time steps is \code{gens = 500}.
 
-```{r, eval=FALSE}
+```{r}
 
 pool <- data.frame(ind=1:Jpool, sp=rep(as.character(1:500),Jpool/500), 
                    tra=rep(NA,Jpool), stringsAsFactors=F)
@@ -342,7 +348,7 @@ A specific advantage of \code{forward} is to simulate the sequence of community 
 
 In the following example, community dynamics with limiting similarity are simulated. In this case, the probability of individual death depends on the similarity of trait values of each individual to the other individuals of the community.
 
-```{r, eval=FALSE}
+```{r}
 
 final.limsim <- forward(initial = initial, prob = 0.25, d = 10, gens = 1000,
                  pool = pool, keep = F, limit.sim = T, coeff.lim.sim = 0.5)
