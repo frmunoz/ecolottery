@@ -18,13 +18,16 @@ Imports:
     parallel,
     quantreg
 Suggests:
-    vegan,
+    ape,
+    changepoint,
+    cowplot,
     knitr,
+    phylolm,
+    picante,
+    rmarkdown,
     testthat,
     untb,
-    ape,
-    rmarkdown,
-    changepoint
+    vegan
 Description: Coalescent-based simulation of ecological communities.
 License: GPL (>= 2)
 URL: https://github.com/adrientaudiere/lottery
