@@ -264,7 +264,7 @@ ses.mntd(tab[, tre$tip.label], cophenetic(tre), null.model = "taxa.labels")
 knitr::kable(ses.mntd(tab[, tre$tip.label], cophenetic(tre), null.model="taxa.labels"), caption = "Standard Effect Size of Mean Nearest Taxon Distance")
 ```
 
-The first community does not depart from random phylogenetic structure, while the second shows phylogenetic structuring, i.e., smaller average phylogenetic distance than expected by chance ($mpd.obs.p < 0.01$).
+The first community does not depart from random phylogenetic structure, while the second shows phylogenetic structuring, i.e., smaller Mean Nearest Taxon Distance than expected by chance ($mpd.obs.p < 0.01$).
 
 Alternatively, in the absence of niche conservatism in the phylogeny, environmental filtering in community assembly would not result in phylogenetic clustering.
 To illustrate this case, we shuffle the trait values of species in the reference pool, and simulate a new local community with stabilizing environmental filtering.
