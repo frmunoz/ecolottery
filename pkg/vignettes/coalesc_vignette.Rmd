@@ -116,7 +116,7 @@ regSAD <- ggplot(abund2$pool, aes(relab)) +
   geom_histogram(colour = "black", fill = "white") +
   xlab("Regional relative abundance distribution")
 
-plot_grid(locSAD, regSAD, nrow = 2)
+cowplot::plot_grid(locSAD, regSAD, nrow = 2)
 
 ```
 
