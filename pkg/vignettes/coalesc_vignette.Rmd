@@ -26,7 +26,7 @@ set.seed(1)
 
 # Neutral dynamics in species pool and communities
 
-Before simulating communities, we need first to define a reference pool from which immigrants are drawn. In the neutral theory (Hubbell 2001), speciation and extinction events occur randomly irrespective of species properties and drive the composition and species abundances in the reference pool (neutral speciation-drift dynamics). We can define such dynamics by setting the input argument *`theta`* in *`coalesc`* to a non-null value, and the composition of the pool can be simulated by setting $m = 1$. The simulated species abundances are then expected to follow a logseries distribution (Hubbell 2001). The fit of simulated pool composition to the logseries distribution can be estimated using the *fisherfit* function of package *vegan*.  
+Before simulating communities, we need first to define a reference pool from which immigrants are drawn. In the neutral theory (Hubbell 2001), speciation and extinction events occur randomly irrespective of species properties and drive the composition and species abundances in the reference pool (neutral speciation-drift dynamics). We can define such dynamics by setting the input argument *`theta`* in *`coalesc`* to a non-null value, and the composition of the pool can be simulated by setting *m = 1*. The simulated species abundances are then expected to follow a logseries distribution (Hubbell 2001). The fit of simulated pool composition to the logseries distribution can be estimated using the *`fisherfit`* function of package *`vegan`*.  
 
 ```{r}
 library(lottery)
@@ -48,8 +48,8 @@ curve(alpha * k^exp(x)/exp(x), log(0.5), max(log(freq)), col = "red", lwd = 2,
 
 ```
 
-We now simulate neutral communities of size $J = 500$ in which immigrants from the pool establish at rate either $m = 0.01$ or $m = 0.95$. In this case, all the species available in the reference pool have the same prospect of immigrating, persisting and reproducing in the local community. We can define such dynamics by setting the input argument `filt = NULL` in `coalesc()` (default value).  
-The smaller is $m$ the more local species abundances fluctuate due to stochastic demographic variations. Where $m$ is close to 1, most of the dead individuals are replaced by immigrants, and local species abundances are then more closely related to regional abundances.
+We now simulate neutral communities of size *J = 500* in which immigrants from the pool establish at rate either *m = 0.01* or *m = 0.95*. In this case, all the species available in the reference pool have the same prospect of immigrating, persisting and reproducing in the local community. We can define such dynamics by setting the input argument *`filt = NULL`* in *`coalesc()`* (default value).  
+The smaller is *m* the more local species abundances fluctuate due to stochastic demographic variations. Where *m* is close to 1, most of the dead individuals are replaced by immigrants, and local species abundances are then more closely related to regional abundances.
 
 ```{r}
 
@@ -119,7 +119,7 @@ comm3b <- coalesc(J, m, pool = pool)
 plot_comm(comm3b, type="trait")
 ```
 
-`plot_comm` with `type = "trait"` here displays the trait distributions in species pool (red) and local community (blue). With high migration probability $m = 0.95$, the local and regional distributions are quite similar.
+*`plot_comm`* with *`type = "trait"`* here displays the trait distributions in species pool (red) and local community (blue). With high migration probability *m = 0.95*, the local and regional distributions are quite similar.
 The user may also simulate a distribution of mean species trait values, and consider additional intraspecific variation of these values around the mean.
 
 ```{r}
@@ -144,7 +144,7 @@ sigma <- 0.1
 filt_gaussian <- function(t,x) exp(-(x-t)^2/(2*sigma^2))
 ```
 
-We simulate a community undergoing stabilizing environmental filtering around $t = 0.5$.  
+We simulate a community undergoing stabilizing environmental filtering around *t = 0.5*.  
 
 ```{r}
 J <- 500; m <- 0.5; 
@@ -152,7 +152,7 @@ comm4a <- coalesc(J, m, filt = function(x) filt_gaussian(0.5, x), pool = pool)
 plot_comm(comm4a, main = "Stabilizing filtering around t = 0.5")
 ```
 
-We can also simulate stabilizing environmental filtering around $t = 0.1$ and $t = 0.9$.
+We can also simulate stabilizing environmental filtering around *t = 0.1* and *t = 0.9*.
 ```{r}
 J <- 500; m <- 0.5; 
 comm4b <- coalesc(J, m, filt = function(x) filt_gaussian(0.1, x), pool = pool)
@@ -161,7 +161,7 @@ comm4c <- coalesc(J, m, filt = function(x) filt_gaussian(0.9, x), pool = pool)
 plot_comm(comm4c, main = "Stabilizing filtering around t = 0.9")
 ```
 
-When stabilizing filtering operates around different optimal values among communities, we expect corresponding changes in the local mean trait values [@1096].
+When stabilizing filtering operates around different optimal values among communities, we expect corresponding changes in the local mean trait values (Cornwell and Ackerly 2009).
 ```{r}
 mean(comm4b$com[, 3])
 mean(comm4c$com[, 3])
@@ -177,7 +177,7 @@ comm4e <- coalesc(J, m, filt = function(x) abs(0.5 - x), pool = pool)
 plot_comm(comm4e, main = "Disruptive filtering")
 ```
 
-Disruptive filtering here represents the greater success of species with trait values away from $t = 0.5$. It corresponds to a separation of ecological groups in the community, and represents a form of niche differentiation (Vergnon et al. 2009).
+Disruptive filtering here represents the greater success of species with trait values away from *t = 0.5*. It corresponds to a separation of ecological groups in the community, and represents a form of niche differentiation (Vergnon et al. 2009).
 
 # Filtering of multiple traits
 
@@ -263,7 +263,7 @@ knitr::kable(ses.mntd(tab[, tre$tip.label], cophenetic(tre), null.model="taxa.la
              caption = "Standard Effect Size of Mean Nearest Taxon Distance")
 ```
 
-The first community does not depart from random phylogenetic structure, while the second shows phylogenetic structuring, i.e., smaller Mean Nearest Taxon Distance than expected by chance ($mntd.obs.p < 0.01$).
+The first community does not depart from random phylogenetic structure, while the second shows phylogenetic structuring, i.e., smaller Mean Nearest Taxon Distance than expected by chance (*mntd.obs.p < 0.01*).
 
 Alternatively, in the absence of niche conservatism in the phylogeny, environmental filtering in community assembly would not result in phylogenetic clustering.
 To illustrate this case, we shuffle the trait values of species in the reference pool, and simulate a new local community with stabilizing environmental filtering.
@@ -293,7 +293,7 @@ Therefore, when the condition of niche conservatism is not met, the absence of p
 The *lottery* package also includes a function *forward* to perform simulation of community dynamics from an initial composition.
 As for *coalesc*, the user can define the composition of the species pool from which immigrants are drawn, and can specify environmental filtering based on one or several traits.
 
-We can for instance simulate stabilizing environmental filtering in a way analogous to the previous example with `coalesc()`. $d = 10$ represents the number of individuals that die in the community at each time step, $prob = 0.5$ represents the immigration rate at each time step. The number of simulated time steps is $gens = 500$.
+We can for instance simulate stabilizing environmental filtering in a way analogous to the previous example with *`coalesc()`*. *`d = 10`* represents the number of individuals that die in the community at each time step, *`prob = 0.5`* represents the immigration rate at each time step. The number of simulated time steps is *`gens = 500`*.
 
 ```{r, message = F, eval = T}
 pool <- data.frame(ind=1:Jpool, sp=rep(as.character(1:500),Jpool/500), 
