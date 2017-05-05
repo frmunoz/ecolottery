@@ -18,7 +18,7 @@ knitr::opts_chunk$set(eval = TRUE, echo = TRUE)
 This vignette corresponds to the latest version of the Appendix 1 of F.Munoz et al. paper.
 
 *`coalesc()`* is the key function of the *`lottery`* package for coalescent-based simulation of local communities.
-The user can define parameters of community size, migration rate, and a custom function specifying environmental filtering, according to the situation he wants to model. He can also provide relative abundances and species trait values for the regional pool.
+The user can define parameters of community size, migration rate, and a custom function specifying environmental filtering, according to the situation she wants to model. She can also provide relative abundances and species trait values for the regional pool.
 
 # Neutral dynamics in species pool and communities
 
@@ -381,4 +381,20 @@ abline(length(unique(initial$sp)), 0, col = "red")
 The left figure represents the temporal trajectory of the average distance of each individual to the other individuals of the community. The distance fluctuates and increases over time due to the influence of limiting similarity. The right figure shows the variation of richness, basically decreasing due to limiting similarity, until reaching stationarity.
 
 
+# References
 
+Blomberg, S. P., Garland Jr, T., & Ives, A. R. (2003). Testing for phylogenetic signal in comparative data: behavioral traits are more labile. **Evolution**, 57(4), 717-745.
+
+Cornwell, W. K., & Ackerly, D. D. (2009). Community assembly and shifts in plant trait distributions across an environmental gradient in coastal California. **Ecological Monographs**, 79(1), 109-126.
+
+Hubbell, S.P. (2001). **A Unified Neutral Theory of Biodiversity and Biogeography**. Princeton University Press, Princeton, NJ.
+
+Mouquet, N., Devictor, V., Meynard, C. N., Munoz, F., Bersier, L. F., Chave, J., ... & Hardy, O. J. (2012). Ecophylogenetics: advances and perspectives. **Biological reviews**, 87(4), 769-785.
+
+Shipley, B., Vile, D., & Garnier, É. (2006). From plant traits to plant communities: a statistical mechanistic approach to biodiversity. **Science**, 314(5800), 812-814.
+
+Shipley, B. (2013). **From plant traits to vegetation structure: chance and selection in the assembly of ecological communities**. Cambridge University Press.
+
+Vergnon, R., Dulvy, N.K. & Freckleton, R.P. (2009). Niches versus neutrality: Uncovering the drivers of diversity in a species-rich community. **Ecology Letters**, 12, 1079–1090.
+
+Wiens, J. J., & Graham, C. H. (2005). Niche conservatism: integrating evolution, ecology, and conservation biology. **Annu. Rev. Ecol. Evol. Syst.**, 36, 519-539.
