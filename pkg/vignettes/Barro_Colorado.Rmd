@@ -4,7 +4,7 @@ author: "Pierre DENELLE"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Basic Use of `lottery`}
+  %\VignetteIndexEntry{Example of coalesc_abc() use with Barro-Colorado dataset}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
