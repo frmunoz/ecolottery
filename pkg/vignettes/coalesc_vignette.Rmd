@@ -31,25 +31,26 @@ We first consider the case of communities undergoing neutral migration-drift dyn
 Following Hubbell (2001), the evolutionary dynamics in the regional pool can also be neutral, i.e., speciation and extinction events occur randomly irrespective of species properties. We can define such dynamics by setting the input argument *theta* to a non-null value. Relative species abundances in the regional pool then follow a logseries distribution (Hubbell 2001). The correspondance of simulated regional pool composition to a logseries distribution can be estimated using the `fisherfit()` function of package `vegan`.
 
 ```{r}
-
-require(lottery)
+library(lottery)
 
 Jpool <- 25000
 logser <- coalesc(Jpool, m = 1, theta = 50) 
 abund <- abund(logser) 
 
 # The expected distribution of abundances in the reference pool is log-series
-require(vegan)
+library(vegan)
 fit <- fisherfit(abund$pool$ab)
 freq <- as.numeric(names(fit$fisher))
-plot(log(freq), fit$fisher, xlab = "Frequency (log)", ylab = "Species", type="n")
-rect(log(freq-0.5),0,log(freq+0.5),fit$fisher, col="skyblue")
-alpha <- fit$estimate; k <- fit$nuisance
-curve(alpha*k^exp(x)/exp(x), log(0.5), max(log(freq)), col="red", lwd=2, add=TRUE)
+plot(log(freq), fit$fisher, xlab = "Frequency (log)", ylab = "Species", type = "n")
+rect(log(freq - 0.5), 0, log(freq + 0.5), fit$fisher, col = "skyblue")
+alpha <- fit$estimate
+k <- fit$nuisance
+curve(alpha * k^exp(x)/exp(x), log(0.5), max(log(freq)), col = "red", lwd = 2,
+      add = TRUE)
 
 ```
 
-We now simulate neutral communities of size $J = 500$ in which immigrants from the pool establish at rate either $m = 0.01$ or $m = 0.95$. In this case, all the species available in the reference pool have the same prospect of immigrating, persisting and reproducing in the local community. We can define such dynamics by setting the input argument *filt = NULL* in *coalesc* (default value).  
+We now simulate neutral communities of size $J = 500$ in which immigrants from the pool establish at rate either $m = 0.01$ or $m = 0.95$. In this case, all the species available in the reference pool have the same prospect of immigrating, persisting and reproducing in the local community. We can define such dynamics by setting the input argument `filt = NULL` in `coalesc()` (default value).  
 The smaller is $m$ the more local species abundances fluctuate due to stochastic demographic variations. Where $m$ is close to 1, most of the dead individuals are replaced by immigrants, and local species abundances are then more closely related to regional abundances.
 
 ```{r}
@@ -75,7 +76,7 @@ r_sqa <- summary(lm(abund(comm1a)$pool[rownames(abund(comm1a)$com), "relab"] ~
                       abund(comm1a)$com$relab))
 r_sqa <- signif(r_sqa$r.squared, 2)
 legend("bottomright", legend = bquote(R^2 ~ "=" ~. (r_sqa)), bty = "n")
-plot_comm(comm1b, type="abund", main = "m = 0.95")
+plot_comm(comm1b, type = "abund", main = "m = 0.95")
 r_sqb <- summary(lm(abund(comm1b)$pool[rownames(abund(comm1b)$com), "relab"] ~
                       abund(comm1b)$com$relab))
 r_sqb <- signif(r_sqb$r.squared, 2)
@@ -120,7 +121,7 @@ comm3b <- coalesc(J, m, pool = pool)
 plot_comm(comm3b, type="trait")
 ```
 
-`plot_comm` with `type = "trait"` here displays the trait distributions in species pool (red) and local community (blue). With high migration probability `m = 0.95`, the local and regional distributions are quite similar.
+`plot_comm` with `type = "trait"` here displays the trait distributions in species pool (red) and local community (blue). With high migration probability $m = 0.95$, the local and regional distributions are quite similar.
 The user may also simulate a distribution of mean species trait values, and consider additional intraspecific variation of these values around the mean.
 
 ```{r}
@@ -190,7 +191,8 @@ In the following example, three traits have values uniformly distributed between
 traits <- cbind(runif(Jpool), runif(Jpool), runif(Jpool)) 
 filt <- function(x) 
   filt_gaussian(0.5, x[1])*filt_gaussian(0.25, x[2])*filt_gaussian(0.75, x[3])
-comm5 <- coalesc(J, m, pool=cbind(1:10000, rep(1:100, 100)), filt = filt, traits = traits)
+comm5 <- coalesc(J, m, pool = cbind(1:10000, rep(1:100, 100)),
+                 filt = filt, traits = traits)
 ```
 
 The filtering function determines the success of immigrants depending on the combination of their trait values. It entails a correlation between the local species abundances and the species weights given by the filtering function [@936].
@@ -198,10 +200,9 @@ The filtering function determines the success of immigrants depending on the com
 ```{r}
 # Relationship between species weight in environmental filtering and local abundance
 par(mfrow = c(1, 1))
-plot(tapply(comm5$com[,3], comm5$com[,2], length)~tapply(apply(comm5$com[,3:5],
-                                                               1, function(x)
-  filt(x)), comm5$com[,2], mean), xlab = "Species filtering weight", 
-  ylab = "Species abundance", log = "xy")
+plot(tapply(comm5$com[,3], comm5$com[,2], length) ~ 
+       tapply(apply(comm5$com[,3:5], 1, function(x) filt(x)), comm5$com[,2], mean),
+     xlab = "Species filtering weight", ylab = "Species abundance", log = "xy")
 ```
 
 # Investigating phylogenetic structure in communities
@@ -211,9 +212,8 @@ Species trait values are the legacy of evolutionary history. The processes that 
 We can simulate a phylogenetic tree of the species of the reference pool, and the distribution of species trait values under an assumption of niche conservatism [@838]. In this case, descendant species can retain characteristics of their ancestors, and the trait values of more closely related species are then more similar than trait values of distantly related species [phylogenetic signal, @434].
 
 ```{r}
-require(ape)
-require(phylolm)
-require(picante)
+library(ape)
+library(picante)
 ```
 
 ```{r, message = F, eval = T}
@@ -223,16 +223,16 @@ J <- 500
 pool <- data.frame(ind=1:Jpool, sp=rep(tre$tip.label,Jpool/50), 
                    tra=rep(NA,Jpool), stringsAsFactors=F)
 # Brownian model of trait evolution
-t.sp = rTraitCont(n = 1, phy = tre, model = "BM", sigma = 0.2, root.value = 0.5)
+t.sp <- rTraitCont(n = 1, phy = tre, model = "BM", sigma = 0.2, root.value = 0.5)
 pool$tra <- t.sp[pool$sp]
 ```
 
-*phylosignal* measures the phylogenetic signal of the simulated trait values in the phylogenetic tree, using the Blomberg's *K* statistic [@434]. The p-value is calculated based on the null distribution of *K* when shuffling species trait values in the phylogeny. A small p-value indicates that trait variation among close relatives is smaller than expected by chance.  
+*`phylosignal()`* measures the phylogenetic signal of the simulated trait values in the phylogenetic tree, using the Blomberg's *K* statistic [@434]. The p-value is calculated based on the null distribution of *K* when shuffling species trait values in the phylogeny. A small p-value indicates that trait variation among close relatives is smaller than expected by chance.  
 
 ```{r, eval = F}
 phylosignal(t.sp[tre$tip.label], phy = tre)
 ```
-```{r, echo = F}
+```{r, echo = FALSE}
 knitr::kable(phylosignal(t.sp[tre$tip.label], phy = tre))
 ```
 
@@ -250,7 +250,7 @@ tab[1, com$sp] <- com$ab
 topt <- quantile(t.sp, 0.25)
 sigma <- 0.01
 com <- abund(coalesc(J, m, pool = pool, filt = function(x)
-                    exp(-(x-topt)^2/(2*sigma^2))))$com
+                    exp(-(x - topt)^2/(2*sigma^2))))$com
 tab[2, com$sp] <- com$ab
 ```
 
@@ -261,7 +261,8 @@ ses.mntd(tab[, tre$tip.label], cophenetic(tre), null.model = "taxa.labels")
 ```
 
 ```{r, echo = F}
-knitr::kable(ses.mntd(tab[, tre$tip.label], cophenetic(tre), null.model="taxa.labels"), caption = "Standard Effect Size of Mean Nearest Taxon Distance")
+knitr::kable(ses.mntd(tab[, tre$tip.label], cophenetic(tre), null.model="taxa.labels"),
+             caption = "Standard Effect Size of Mean Nearest Taxon Distance")
 ```
 
 The first community does not depart from random phylogenetic structure, while the second shows phylogenetic structuring, i.e., smaller Mean Nearest Taxon Distance than expected by chance ($mpd.obs.p < 0.01$).
@@ -274,7 +275,7 @@ names(t.sp) <- sample(names(t.sp))
 pool$tra <- t.sp[pool$sp]
 # Again simulating stabilizing environmental filtering
 com <- abund(coalesc(J, m, pool = pool, filt = function(x) 
-                        exp(-(x-topt)^2/(2*sigma^2))))$com
+                        exp(-(x - topt)^2/(2*sigma^2))))$com
 tab[2,com$sp] <- com$ab
 ```
 
@@ -294,7 +295,7 @@ Therefore, when the condition of niche conservatism is not met, the absence of p
 The *lottery* package also includes a function *forward* to perform simulation of community dynamics from an initial composition.
 As for *coalesc*, the user can define the composition of the species pool from which immigrants are drawn, and can specify environmental filtering based on one or several traits.
 
-We can for instance simulate stabilizing environmental filtering in a way analogous to the previous example with *coalesc*. $d = 10$ represents the number of individuals that die in the community at each time step, $prob = 0.5$ represents the immigration rate at each time step. The number of simulated time steps is $gens = 500$.
+We can for instance simulate stabilizing environmental filtering in a way analogous to the previous example with `coalesc()`. $d = 10$ represents the number of individuals that die in the community at each time step, $prob = 0.5$ represents the immigration rate at each time step. The number of simulated time steps is $gens = 500$.
 
 ```{r, message = F, eval = T}
 pool <- data.frame(ind=1:Jpool, sp=rep(as.character(1:500),Jpool/500), 
@@ -314,7 +315,7 @@ final.envfilt <- forward(initial = initial, prob = 0.25, d = 10, gens = 500,
 plot_comm(final.envfilt)
 ```
 
-A specific advantage of *forward* is to simulate the sequence of community assembly events over time. If the birth, death and immigration probabilities depend on community composition at a specific time, the coalescent-based approach may not be appropriate. 
+A specific advantage of `forward()` is to simulate the sequence of community assembly events over time. If the birth, death and immigration probabilities depend on community composition at a specific time, the coalescent-based approach may not be appropriate. 
 
 In the following example, community dynamics with limiting similarity are simulated.
 In this case, the probability of individual death depends on the similarity of trait values of each individual to the other individuals of the community.
@@ -329,8 +330,9 @@ plot(final.limsim$dist.t, xlab = "Time", ylab = "Average distance to other indiv
 init.dist <- matrix(dist(initial$tra))
 diag(init.dist) <- NA
 abline(mean(init.dist, na.rm=T), 0, col="red")
-plot(final.limsim$sp_t, xlab = "Time", ylab="Richness")
-abline(length(unique(initial$sp)), 0, col="red")
+
+plot(final.limsim$sp_t, xlab = "Time", ylab = "Richness")
+abline(length(unique(initial$sp)), 0, col = "red")
 ```
 
 The left figure represents the temporal trajectory of the average distance of each individual to the other individuals of the community. The distance fluctuates and increases over time due to the influence of limiting similarity. The right figure shows the variation of richness, basically decreasing due to limiting similarity, until reaching stationarity.
