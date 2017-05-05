@@ -4,7 +4,7 @@ author: "Francois MUNOZ and Pierre DENELLE"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Basic Use of `lottery`}
+  %\VignetteIndexEntry{Introductory vignette for use of `lottery`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
