@@ -28,8 +28,7 @@ Suggests:
     testthat,
     untb,
     vegan
-Description: Coalescent-Based Simulation of Ecological Communities
-    From Munoz, F., M. Grenié, P. Denelle, A. Taudière, F. Laroche, C. Tucker, and C. Violle. lottery: simulating and assessing neutral and niche-based community dynamics in R. In revision for Methods in Ecology and Evolution. DOI:10.13140/RG.2.2.31737.26728
+Description: Coalescent-Based Simulation of Ecological Communities as proposed by Munoz et al. (2017) <doi:10.13140/RG.2.2.31737.26728>. The package includes a tool for estimating parameters of community assembly by using Approximate Bayesian Computation.
 License: GPL (>= 2)
 Encoding: UTF-8
 VignetteBuilder: knitr
