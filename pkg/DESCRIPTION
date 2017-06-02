@@ -21,7 +21,6 @@ Imports:
 Suggests:
     ape,
     changepoint,
-    cowplot,
     knitr,
     picante,
     rmarkdown,
