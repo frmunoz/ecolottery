@@ -34,7 +34,8 @@ tcor(n, rho = 0.5, mar.fun = rnorm, x = NULL, ...)
 }
 \details{
   rho parameter is set to 0.5 by default. \code{x = NULL} by default.
-  Code adapted from: \url{http://stats.stackexchange.com/questions/15011/generate-a-random-variable-with-a-defined-correlation-to-an-existing-variable}
+  Code adapted from: \url{http://stats.stackexchange.com/questions/15011/generate-a-random-variable
+  -with-a-defined-correlation-to-an-existing-variable}
 }
 \value{
  Return a data.frame with two numeric columns, each column defining a trait.
