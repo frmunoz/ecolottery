@@ -13,13 +13,15 @@
   regional pool. 
 }
 \usage{
-  coalesc_abc(comm.obs, pool = NULL, multi = "single", traits = NULL, f.sumstats,
-              filt.abc = NULL, params = NULL, theta.max = NULL, nb.samp = 10^6,
-              parallel = TRUE, tol = NULL, pkg = NULL, method="rejection")
-  do.simul(J, pool = NULL, multi = "single", nb.com = NULL, traits = NULL,
-           f.sumstats = NULL, filt.abc = NULL, params, theta.max = NULL,
-           nb.samp = 10^6, parallel = TRUE, tol = NULL, pkg = NULL,
-           method = "rejection")
+  coalesc_abc(comm.obs, pool = NULL, multi = "single", traits = NULL,
+              f.sumstats, filt.abc = NULL, params = NULL, 
+              theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
+              tol = NULL, pkg = NULL, method="rejection")
+  do.simul(J, pool = NULL, multi = "single", nb.com = NULL, 
+              traits = NULL, f.sumstats = NULL, filt.abc = NULL,
+              params, theta.max = NULL, nb.samp = 10^6, 
+              parallel = TRUE, tol = NULL, pkg = NULL,
+              method = "rejection")
 }
 \arguments{
   \item{comm.obs}{
@@ -184,9 +186,9 @@ comm <- coalesc(J = 400, m = 0.5, theta = 50,
 # ABC estimation of the parameters based on observed community composition 
 ## Warning: this function may take a while
 res <- coalesc_abc(comm$com, comm$pool, f.sumstats = f.sumstats,
-                   filt.abc = filt_gaussian, params = params, nb.samp = nb.samp,
-                   parallel = TRUE, pkg = c("e1071","vegan"),
-                   method = "neuralnet")
+                   filt.abc = filt_gaussian, params = params, 
+                   nb.samp = nb.samp, parallel = TRUE, 
+                   pkg = c("e1071","vegan"), method = "neuralnet")
 plot(res$abc, param = res$par)
 hist(res$abc)
 
