@@ -26,9 +26,10 @@ set.seed(1)
 
 # Neutral dynamics in species pool and communities
 
-Before simulating communities, we need first to define a reference pool from which immigrants are drawn. In the neutral theory (Hubbell 2001), speciation and extinction events occur randomly irrespective of species properties and drive the composition and species abundances in the reference pool (neutral speciation-drift dynamics). We can define such dynamics by setting the input argument *`theta`* in *`coalesc`* to a non-null value, and the composition of the pool can be simulated by setting *m = 1*. The simulated species abundances are then expected to follow a logseries distribution (Hubbell 2001). The fit of simulated pool composition to the logseries distribution can be estimated using the *`fisherfit`* function of package *`vegan`*.  
+Before simulating communities, we need first to define a reference pool from which immigrants are drawn. In the neutral theory (Hubbell 2001), speciation and extinction events occur randomly irrespective of species properties and drive the composition and species abundances in the reference pool (neutral speciation-drift dynamics). We can define such dynamics by setting the input argument *`theta`* in *`coalesc`* to a non-null value, and the composition of the pool can be simulated by setting *m = 1*. The simulated species abundances are then expected to follow a logseries distribution (Hubbell 2001). The fit of simulated pool composition to the logseries distribution can be estimated using the *`fisherfit`* function of package *`vegan`*. 
 
 ```{r}
+
 library(lottery)
 
 Jpool <- 25000
@@ -345,10 +346,10 @@ Hubbell, S.P. (2001). **A Unified Neutral Theory of Biodiversity and Biogeograph
 
 Mouquet, N., Devictor, V., Meynard, C. N., Munoz, F., Bersier, L. F., Chave, J., ... & Hardy, O. J. (2012). Ecophylogenetics: advances and perspectives. **Biological reviews**, 87(4), 769-785.
 
-Shipley, B., Vile, D., & Garnier, É. (2006). From plant traits to plant communities: a statistical mechanistic approach to biodiversity. **Science**, 314(5800), 812-814.
+Shipley, B., Vile, D., & Garnier, E. (2006). From plant traits to plant communities: a statistical mechanistic approach to biodiversity. **Science**, 314(5800), 812-814.
 
 Shipley, B. (2013). **From plant traits to vegetation structure: chance and selection in the assembly of ecological communities**. Cambridge University Press.
 
-Vergnon, R., Dulvy, N.K. & Freckleton, R.P. (2009). Niches versus neutrality: Uncovering the drivers of diversity in a species-rich community. **Ecology Letters**, 12, 1079–1090.
+Vergnon, R., Dulvy, N.K. & Freckleton, R.P. (2009). Niches versus neutrality: Uncovering the drivers of diversity in a species-rich community. **Ecology Letters**, 12, 1079-1090.
 
 Wiens, J. J., & Graham, C. H. (2005). Niche conservatism: integrating evolution, ecology, and conservation biology. **Annu. Rev. Ecol. Evol. Syst.**, 36, 519-539.
