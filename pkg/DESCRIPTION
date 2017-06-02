@@ -2,7 +2,8 @@ Package: lottery
 Type: Package
 Title: Coalescent-Based Simulation of Ecological Communities
 Version: 1.0.2
-Author: François Munoz, Matthias Grenié, Pierre Denelle, Adrien Taudière, Fabien Laroche, Caroline Tucker and Cyrille Violle
+Author: François Munoz, Matthias Grenié, Pierre Denelle, Adrien Taudière,
+Fabien Laroche, Caroline Tucker and Cyrille Violle
 Maintainer: François Munoz <francois.munoz@cirad.fr>
 URL: https://github.com/frmunoz/lottery
 BugReports: https://github.com/frmunoz/lottery/issues
@@ -27,7 +28,10 @@ Suggests:
     testthat,
     untb,
     vegan
-Description: Coalescent-Based Simulation of Ecological Communities as proposed by Munoz et al. (2017) <doi:10.13140/RG.2.2.31737.26728>. The package includes a tool for estimating parameters of community assembly by using Approximate Bayesian Computation.
+Description: Coalescent-Based Simulation of Ecological Communities as proposed
+by Munoz et al. (2017) <doi:10.13140/RG.2.2.31737.26728>. The package includes
+a tool for estimating parameters of community assembly by using Approximate 
+Bayesian Computation.
 License: GPL (>= 2)
 Encoding: UTF-8
 VignetteBuilder: knitr
