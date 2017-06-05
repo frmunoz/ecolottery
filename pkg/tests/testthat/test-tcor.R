@@ -19,11 +19,11 @@ test_that("tcor() function works", {
   # Extreme correlation values
   expect_silent(tcor(10, rho = 0))
   expect_silent(tcor(10, rho = 1))
-  expect_error(tcor(10, rho = 4), "rho must belong to [0; 1] interval",
+  expect_error(tcor(10, rho = 4), "rho must belong to [-1; 1] interval",
                fixed = TRUE)
-  expect_error(tcor(10, rho = -4), "rho must belong to [0; 1] interval",
+  expect_error(tcor(10, rho = -4), "rho must belong to [-1; 1] interval",
                fixed = TRUE)
-  expect_error(tcor(10, rho = NA), "rho must belong to [0; 1] interval",
+  expect_error(tcor(10, rho = NA), "rho must belong to [-1; 1] interval",
                fixed = TRUE)
   
   # When providing trait vector
