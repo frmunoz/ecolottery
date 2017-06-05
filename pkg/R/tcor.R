@@ -18,9 +18,9 @@ tcor <- function(n, rho = 0.5, mar.fun = rnorm, x = NULL, ...) {
     warning("Provided trait vector x does not have length n!")
   }
   
-  # correlation needs to be between 0 and 1 
-  if (!is.numeric(rho) | rho > 1 | rho < 0) {
-    stop("rho must belong to [0; 1] interval")
+  # correlation needs to be between -1 and 1 
+  if (!is.numeric(rho) | rho > 1 | rho < -1) {
+    stop("rho must belong to [-1; 1] interval")
   }
   
   if (rho != 1) {
@@ -30,7 +30,7 @@ tcor <- function(n, rho = 0.5, mar.fun = rnorm, x = NULL, ...) {
     
     corr_mat <- chol(corr_mat)
     
-    second_trait <- mar.fun(n)
+    second_trait <- mar.fun(n, ...)
     trait_mat <- cbind(first_trait, second_trait)
     
     # Induces correlation (does not change first_trait)
