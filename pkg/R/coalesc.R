@@ -6,6 +6,10 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
     stop("You must provide either regional pool composition or a theta value")
   }
   
+  if(length(m)>1 | length(theta)>1) {
+    stop("m and theta cannot be vectors of length greater than 1")
+  }
+  
   if (m < 0 | m > 1) {
     stop("The migration parameter takes values between 0 and 1")
   }
