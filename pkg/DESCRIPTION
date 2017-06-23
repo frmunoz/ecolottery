@@ -16,14 +16,11 @@ Depends:
     R (>= 3.0.2)
 Imports:
     abc,
-    abc.data,
-    locfit,
     stats,
     graphics,
     ggplot2,
     grDevices,
-    parallel,
-    quantreg
+    parallel
 Suggests:
     ape,
     changepoint,
