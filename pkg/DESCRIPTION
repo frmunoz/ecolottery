@@ -1,14 +1,19 @@
 Package: lottery
 Type: Package
 Title: Coalescent-Based Simulation of Ecological Communities
-Version: 1.0.2
-Author: François Munoz, Matthias Grenié, Pierre Denelle, Adrien Taudière,
-    Fabien Laroche, Caroline Tucker and Cyrille Violle
-Maintainer: François Munoz <francois.munoz@cirad.fr>
+Version: 1.0.3
+Authors@R: c(person("François", "Munoz", role = c("aut", "cre"),
+                     email = "francois.munoz@hotmail.fr"),
+              person("Matthias", "Grenié", role = "aut"),
+              person("Pierre", "Denelle", role = "aut"),
+              person("Adrien", "Taudière", role = "ctb"),
+              person("Fabien", "Laroche", role = "ctb"),
+              person("Caroline", "Tucker", role = "ctb"),
+              person("Cyrille", "Violle", role = "ctb"))
 URL: https://github.com/frmunoz/lottery
 BugReports: https://github.com/frmunoz/lottery/issues
 Depends:
-    R (>= 3.0.2),
+    R (>= 3.0.2)
 Imports:
     abc,
     abc.data,

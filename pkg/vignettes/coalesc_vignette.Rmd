@@ -1,6 +1,6 @@
 ---
 title: "Appendix 1: basic functions and examples"
-author: "Francois MUNOZ and Pierre DENELLE"
+author: "François MUNOZ and Pierre DENELLE"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
