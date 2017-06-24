@@ -1,23 +1,25 @@
 coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
-                        f.sumstats, filt.abc = NULL, params = NULL, theta.max = NULL,
-                        nb.samp = 10^6, parallel = TRUE, tol = NULL, 
-                        pkg = NULL, method = "rejection")
+                        f.sumstats, filt.abc = NULL, params = NULL,
+                        theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
+                        tol = NULL, pkg = NULL, method = "rejection")
 {
   
-  if(!is.function(f.sumstats)){
-    stop("You must provide a function to calculate summary statistics (f.sumstats)")
+  if (!is.function(f.sumstats)) {
+    stop("You must provide a function to calculate summary statistics",
+         "(f.sumstats)")
   }
   
-  if (length(formals(f.sumstats))>2) {
+  if (length(formals(f.sumstats)) > 2) {
     stop("f.sumstats must be a function of up to two arguments")
   }
   
   if (is.null(tol)){
-    warning("You must provide a tolerance value for ABC computation. The function
-            will only provide simulations and will not perform ABC analysis.")
+    warning("You must provide a tolerance value for ABC computation.\n",
+            "The function will only provide simulations and will not perform ",
+            "ABC analysis.")
   } else if(is.null(params)){
-    warning("No value provided for params argument. Only m and theta will be
-            estimated.")
+    warning("No value provided for params argument. Only m and theta will be ",
+            "estimated.")
   }
   
   if (is.character(comm.obs)) {
@@ -60,10 +62,11 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
       J <- apply(comm.obs, 1, function(x) sum(x, na.rm = TRUE))
       nb.com <- nrow(comm.obs)
     } else if (multi == "seqcom") {
-          # comm.obs is a list of communities with individuals on rows in each community
-          J <- lapply(comm.obs, nrow)
-          nb.com <- length(comm.obs)
-      }
+      # comm.obs is a list of communities with individuals on rows in each
+      # community
+      J <- lapply(comm.obs, nrow)
+      nb.com <- length(comm.obs)
+    }
   }
   
   # Trait values can be provided with community composition
@@ -71,11 +74,12 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
   # information in local community
   if (!is.null(pool)){
     if(ncol(pool) >= 3) {
-      traits <- data.frame(apply(data.frame(pool[, -(1:2)]),
-                                 2,
-                                 function(x) tapply(x, pool[, 2],
-                                                    function (y) mean(y,
-                                                                      na.rm = TRUE))))
+      traits <- data.frame(apply(data.frame(pool[,-(1:2)]), 2,
+                                 function(x) {
+                                   tapply(x, pool[, 2],
+                                          function(y)
+                                            mean(y, na.rm = TRUE)
+                                   )}))
     }
   }
   
@@ -89,7 +93,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
     } else {
       stats.obs <- lapply(comm.obs, function(x) f.sumstats(x, traits))
     }
-  }else {
+  } else {
     if (length(formals(f.sumstats))==1) {
       stats.obs <- f.sumstats(comm.obs)
     } else {
@@ -103,31 +107,37 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
   
   # Scaling f.sumstats criterions for simulations
   if (multi == "seqcom"){
-    stats.mean <- lapply(sim$stats, function(x) {apply(x, 2,
-                                                         function(y) mean(y, na.rm = T))})
-    stats.sd <- lapply(sim$stats, function(x) apply(x, 2,
-                                                       function(y) sd(y, na.rm = T)))
+    stats.mean <- lapply(sim$stats, function(x) {
+      apply(x, 2, function(y) mean(y, na.rm = TRUE))
+    })
+    
+    stats.sd <- lapply(sim$stats, function(x) {
+      apply(x, 2, function(y) sd(y, na.rm = TRUE))
+    })
+    
     sim$stats.scaled <- list()
-    for (i in 1:length(sim$stats)){
-      sim$stats.scaled[[i]] <- t(apply(sim$stats[[i]], 1,
-                                       function(x) (x - stats.mean[[i]])/stats.sd[[i]]))
+    for (i in 1:length(sim$stats)) {
+      sim$stats.scaled[[i]] <- t(apply(sim$stats[[i]], 1, function(x) {
+        (x - stats.mean[[i]])/stats.sd[[i]]
+      }))
       colnames(sim$stats.scaled[[i]]) <- colnames(sim$stats[[i]])
     }
   } else {
-  stats.mean <- apply(sim$stats, 2, function(x) mean(x, na.rm = T))
-  stats.sd <- apply(sim$stats, 2, function(x) sd(x, na.rm = T))
-  sim$stats.scaled <- t(apply(sim$stats, 1,
-                              function(x) (x - stats.mean)/stats.sd))
-  colnames(sim$stats.scaled) <- colnames(sim$stats)
+    stats.mean <- apply(sim$stats, 2, function(x) mean(x, na.rm = TRUE))
+    stats.sd <- apply(sim$stats, 2, function(x) sd(x, na.rm = TRUE))
+    sim$stats.scaled <- t(apply(sim$stats, 1,
+                                function(x) (x - stats.mean)/stats.sd))
+    colnames(sim$stats.scaled) <- colnames(sim$stats)
   }
   
   if (is.null(tol)){
     res.abc <- NA
   } else {
-    if(multi == "seqcom"){
+    if (multi == "seqcom") {
       stats.obs.scaled <- list()
       for (i in 1:length(sim$stats)){
-        stats.obs.scaled[[i]] <- (stats.obs[[i]] - stats.mean[[i]])/stats.sd[[i]]
+        stats.obs.scaled[[i]] <- (stats.obs[[i]] - stats.mean[[i]])/
+          stats.sd[[i]]
       }
     } else {
       stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
@@ -138,16 +148,21 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
     } else {
       if (multi == "seqcom"){
         # ABC estimation
-        sel <- lapply(sim$stats.scaled, function(x) which(rowSums(is.na(x)) == 0))
+        sel <- lapply(sim$stats.scaled, function(x) {
+          which(rowSums(is.na(x)) == 0)
+        })
         
         res.abc <- list()
         for(i in 1:length(stats.obs.scaled)){
-          res.abc[[i]] <- tryCatch(abc::abc(target = stats.obs.scaled[[i]],
-                                            param = sim$params.sim[[i]][sel[[i]],],
-                                            sumstat = sim$stats.scaled[[i]][sel[[i]],],
-                                            tol = tol,
-                                            method = method),
-                                   error = function(x) warning("ABC computation failed with the requested method.")
+          res.abc[[i]] <- tryCatch(
+            abc::abc(target = stats.obs.scaled[[i]],
+                     param = sim$params.sim[[i]][sel[[i]],],
+                     sumstat = sim$stats.scaled[[i]][sel[[i]],],
+                     tol = tol,
+                     method = method),
+            error = function(x) {
+              warning("ABC computation failed with the requested method.")
+            }
         )}
           for(i in 1:length(res.abc)){
             if (is.character(res.abc[[i]])){
@@ -164,7 +179,9 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
                    sumstat = sim$stats.scaled[sel,],
                    tol = tol,
                    method = method),
-          error = function(x) warning("ABC computation failed with the requested method.")
+          error = function(x) {
+            warning("ABC computation failed with the requested method.")
+          }
         )
         if (is.character(res.abc)){
           res.abc <- NA
@@ -173,8 +190,9 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
     }
   }
   
-  return(list(par = sim$params.sim, obs = stats.obs, obs.scaled = stats.obs.scaled,
-              ss = sim$stats.scaled, abc = res.abc))
+  return(list(par = sim$params.sim, obs = stats.obs,
+              obs.scaled = stats.obs.scaled, ss = sim$stats.scaled,
+              abc = res.abc))
 }
 
 do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
@@ -183,8 +201,8 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
                      tol = NULL, pkg = NULL, method = "rejection") {
   
   if (!requireNamespace("parallel", quietly = TRUE) & parallel) {
-    warning(paste0("parallel = TRUE requires package 'parallel' to be ",
-                   " installed\nchanged to parallel = FALSE"))
+    warning("parallel = TRUE requires package 'parallel' to be installed\n",
+            "changed to parallel = FALSE")
     parallel <- FALSE
   }
   
@@ -233,9 +251,11 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
         
       if (is.null(pool)) {
         if (multi == "seqcom"){
-          pool <- coalesc(mean(unlist(J))*100, theta = params.samp[length(params.samp)])$pool
+          pool <- coalesc(mean(unlist(J))*100,
+                          theta = params.samp[length(params.samp)])$pool
         } else {
-          pool <- coalesc(mean(J)*100, theta = params.samp[length(params.samp)])$pool
+          pool <- coalesc(mean(J)*100,
+                          theta = params.samp[length(params.samp)])$pool
         }
         params.samp <- params.samp[-length(params.samp)]
       }
@@ -272,22 +292,26 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
           
           for (i in 1:nb.com) {
             try({
-              seqcom.samp[[i]] <- coalesc(J[[i]], m = params.samp[length(params.samp)],
-                                   filt = filt,
-                                   pool = pool, traits = traits)
+              seqcom.samp[[i]] <- coalesc(J[[i]],
+                                          m = params.samp[length(params.samp)],
+                                          filt = filt,
+                                          pool = pool, traits = traits)
             })
           }
-          if (length(formals(f.sumstats))==1) {
+          if (length(formals(f.sumstats)) == 1) {
             seqcom.samp.com <- lapply(seqcom.samp, function(l) l[[1]])
             stats.samp <- lapply(seqcom.samp.com, f.sumstats)
           } else {
             seqcom.samp.com <- lapply(seqcom.samp, function(l) l[[1]])
-            stats.samp <- lapply(seqcom.samp.com, function(x) f.sumstats(x, traits))
+            stats.samp <- lapply(seqcom.samp.com, function(x) {
+              f.sumstats(x, traits)
+            })
           }
         }
       
       } else { # single community
-        comm.samp <- coalesc(J, m = params.samp[length(params.samp)],
+        comm.samp <- coalesc(J,
+                             m = params.samp[length(params.samp)],
                              filt = filt,
                              pool = pool, traits = traits)
         if (length(formals(f.sumstats))==1) {
@@ -339,11 +363,20 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
       params.sim[[i]] <- lapply(models, function(x) x$param)
     }
     stats <- lapply(stats, function(x) t(data.frame(x)))
-    stats<- lapply(stats, function(x) {rownames(x) = NULL; x})
+    stats<- lapply(stats, function(x) {
+      rownames(x) <- NULL
+      return(x)
+    })
     
     params.sim <- lapply(params.sim, function(x) t(data.frame(x)))
-    params.sim <- lapply(params.sim, function(x) {rownames(x) = NULL; x})
-    params.sim <- lapply(params.sim, function(x) {colnames(x) = names(prior); x})
+    params.sim <- lapply(params.sim, function(x) {
+      rownames(x) <- NULL
+      return(x)
+    })
+    params.sim <- lapply(params.sim, function(x, prior) {
+      colnames(x) <- names(prior)
+    return(x)
+    }, prior = prior)
   }
   else {
     stats <- t(data.frame(lapply(models, function(x) x$sum.stats)))

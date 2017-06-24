@@ -19,7 +19,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
       stop("The theta parameter must be positive")
     } else if (theta > 0 & !is.null(pool)) {
       if (verbose) {
-        warning("Both a theta value and a regional pool provided, discarding theta")
+        warning("Both a theta value and a regional pool provided, discarding ",
+                "theta")
       }
     }
   }

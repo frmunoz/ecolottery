@@ -67,7 +67,8 @@ test_that("coalesc() behaves well with extreme cases", {
   # Provide both pool and theta
   expect_warning(coalesc(10, 0.1, 40, pool = pool, verbose = TRUE),
                  fixed = TRUE,
-                 "Both a theta value and a regional pool provided, discarding theta")
+                 paste0("Both a theta value and a regional pool provided, ",
+                        "discarding theta"))
   
   # Extreme pool of species (one individual one species, individual
   # from a single species)

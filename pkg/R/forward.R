@@ -359,7 +359,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     hab_filter <- function(x) filt(x)
   } else {
     # If no function defined, dummy function returning one
-	  hab_filter <- function(x) sapply(x, function(x) 1)
+	  hab_filter <- function(x) vapply(x, function(x) 1, c(1))
   }
   
   # Traits distances used to simulate limiting similarity
