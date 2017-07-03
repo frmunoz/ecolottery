@@ -25,7 +25,7 @@ study to test competing theories of community assembly in tropical forests. The 
 
 ```{r, eval = FALSE}
 
-library(lottery)
+library(ecolottery)
 
 require(vegan)
 data(BCI)
@@ -86,7 +86,7 @@ print(parallelCluster)
 # Function to perform simulations
 mkWorker <- function(m.samp, theta.samp, J)
 {
-  require(lottery)
+  require(ecolottery)
   require(untb)
   force(J)
   force(m.samp)
