@@ -1,5 +1,5 @@
-# lottery
-[![Build Status](https://travis-ci.org/frmunoz/lottery.svg?branch=master)](https://travis-ci.org/frmunoz/lottery)
+# ecolottery
+[![Build Status](https://travis-ci.org/frmunoz/ecolottery.svg?branch=master)](https://travis-ci.org/frmunoz/ecolottery)
 
 Coalescent-Based Simulation of Ecological Communities
 
@@ -11,7 +11,7 @@ The package also includes a forward-in-time simulation algorithm to investigate 
 
 As the package is not yet on CRAN you can install the Github version using the `devtools` package:
 ```r
-devtools::install_github("frmunoz/lottery/pkg", build_vignettes = TRUE)
+devtools::install_github("frmunoz/ecolottery/pkg", build_vignettes = TRUE)
 ```
 
 ## How to use the package
