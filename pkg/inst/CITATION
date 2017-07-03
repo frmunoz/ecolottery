@@ -1,12 +1,12 @@
-citHeader("To cite the lottery package:")
+citHeader("To cite the ecolottery package:")
 
 citEntry(
 entry = "Article",
-title = "lottery: simulating and assessing neutral and niche-based community dynamics in R",
+title = "ecolottery: simulating and assessing neutral and niche-based community dynamics in R",
 journal= "-",
 year = "201-",
 author = "F. Munoz, M. Grenié, P. Denelle, A. Taudière, F. Laroche, C. Tucker and C. Violle",
 volume = "-",
 pages = "-",
-textVersion = "Munoz et al. 201-. lottery: simulating and assessing neutral and niche-based community dynamics in R",
+textVersion = "Munoz et al. 201-. ecolottery: simulating and assessing neutral and niche-based community dynamics in R",
 )

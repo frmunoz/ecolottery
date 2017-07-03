@@ -1,24 +1,24 @@
-\name{lottery-package}
-\alias{lottery-package}
-\alias{lottery}
+\name{ecolottery-package}
+\alias{ecolottery-package}
+\alias{ecolottery}
 \docType{package}
 \title{
-\packageTitle{lottery}
+\packageTitle{ecolottery}
 }
 \description{
-\packageDescription{lottery}
+\packageDescription{ecolottery}
 }
 \details{
 
 The DESCRIPTION file:
-\packageDESCRIPTION{lottery}
-\packageIndices{lottery}
+\packageDESCRIPTION{ecolottery}
+\packageIndices{ecolottery}
 Two basic functions: \code{coalesc} for coalescent-based simulation, and \code{forward} for forward-in-time simulation
 }
 \author{
-\packageAuthor{lottery}
+\packageAuthor{ecolottery}
 
-Maintainer: \packageMaintainer{lottery}
+Maintainer: \packageMaintainer{ecolottery}
 }
 \references{
 Hurtt, G. C. and S. W. Pacala (1995). "The consequences of recruitment limitation: reconciling chance, history and competitive differences between plants." Journal of Theoretical Biology 176(1): 1-12.

@@ -1,7 +1,7 @@
-Package: lottery
+Package: ecolottery
 Type: Package
 Title: Coalescent-Based Simulation of Ecological Communities
-Version: 1.0.3
+Version: 1.0.0
 Authors@R: c(person("François", "Munoz", role = c("aut", "cre"),
                      email = "francois.munoz@hotmail.fr"),
               person("Matthias", "Grenié", role = "aut"),
@@ -10,8 +10,8 @@ Authors@R: c(person("François", "Munoz", role = c("aut", "cre"),
               person("Fabien", "Laroche", role = "ctb"),
               person("Caroline", "Tucker", role = "ctb"),
               person("Cyrille", "Violle", role = "ctb"))
-URL: https://github.com/frmunoz/lottery
-BugReports: https://github.com/frmunoz/lottery/issues
+URL: https://github.com/frmunoz/ecolottery
+BugReports: https://github.com/frmunoz/ecolottery/issues
 Depends:
     R (>= 3.0.2)
 Imports:
