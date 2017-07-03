@@ -4,7 +4,7 @@ author: "François MUNOZ and Pierre DENELLE"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introductory vignette for use of `lottery`}
+  %\VignetteIndexEntry{Introductory vignette for use of `ecolottery`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,7 +17,7 @@ knitr::opts_chunk$set(eval = TRUE, echo = TRUE, fig.width = 6,fig.height=5, cach
 
 This vignette corresponds to the latest version of the Appendix 1 of F. Munoz et al. paper.
 
-*`coalesc()`* is the key function of the *`lottery`* package for coalescent-based simulation of local communities.
+*`coalesc()`* is the key function of the *`ecolottery`* package for coalescent-based simulation of local communities.
 The user can define parameters of community size, migration rate, and a custom function specifying environmental filtering, according to the situation he wants to model. He can also provide relative abundances and species trait values for the regional pool.
 
 ```{r}
@@ -30,7 +30,7 @@ Before simulating communities, we need first to define a reference pool from whi
 
 ```{r}
 
-library(lottery)
+library(ecolottery)
 
 Jpool <- 25000
 logser <- coalesc(Jpool, m = 1, theta = 50) 
@@ -291,7 +291,7 @@ Therefore, when the condition of niche conservatism is not met, the absence of p
 
 # Forward-in-time simulation
 
-The *lottery* package also includes a function *forward* to perform simulation of community dynamics from an initial composition.
+The *ecolottery* package also includes a function *forward* to perform simulation of community dynamics from an initial composition.
 As for *coalesc*, the user can define the composition of the species pool from which immigrants are drawn, and can specify environmental filtering based on one or several traits.
 
 We can for instance simulate stabilizing environmental filtering in a way analogous to the previous example with *`coalesc()`*. *`d = 10`* represents the number of individuals that die in the community at each time step, *`prob = 0.5`* represents the immigration rate at each time step. The number of simulated time steps is *`gens = 500`*.
