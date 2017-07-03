@@ -13,15 +13,13 @@ This vignette corresponds to the latest version of the Appendix 3 of F.Munoz et 
 
 
 # Appendix 3: ABC estimation of neutral parameters in Barro Colorado Island rainforest, using coalescent-based simulation 
-We illustrate here how to use coalescent-based simulation to estimate neutral parameters of regional biodiversity,
-theta, and local migration rate, m, from observed patterns of taxonomic diversity within and between
-communities.
-Neutral theory proved successful to predict patterns of species diversity in tropical forests (Hubbell 2001),
-while other studies also emphasized the influence of niche-based processes (Baraloto et al. 2012).
-With coalescent-based modelling, it is possible to address the relative ability of purely neutral and environmental filtering models to explain patterns of biodiversity, using the Approximate Bayesian Computation
-(ABC) approach implemented in lottery.
-Barro Colorado Island is a 50ha lowland rainforest plot established in Panama. It has become a flagship case
-study to test competing theories of community assembly in tropical forests. The dataset
+
+We illustrate here how to use coalescent-based simulation to estimate neutral parameters of regional biodiversity dynamics, $\theta$, and local migration rate, $m$, from observed patterns of taxonomic diversity within and between communities.  
+
+Neutral theory proved successful to predict patterns of species diversity in tropical forests [@L1528], while other studies also emphasized the influence of niche-based processes [@1643].  
+With coalescent-based modelling, it is possible to address the relative ability of purely neutral and environmental filtering models to explain patterns of biodiversity, using the Approximate Bayesian Computation (ABC) approach implemented in *lottery*.  
+
+Barro Colorado Island is a 50ha lowland rainforest plot established in Panama. It has become a flagship case study to test competing theories of community assembly in tropical forests. The dataset available in *vegan* package includes a census of tree species above 10 cm DBH in 1ha subplots.  
 
 ```{r, eval = FALSE}
 
@@ -36,8 +34,7 @@ comm.size.min <- min(comm.size)
 
 ```
 
-For sake of simplicity in joint analyses of diversity patterns across subplots, we first subsample the subplots
-to have the same minimum subplot size.
+For sake of simplicity in joint analyses of diversity patterns across subplots, we first subsample the subplots to have the same minimum subplot size.
 
 ```{r, eval = FALSE}
 
@@ -46,8 +43,7 @@ bci.res <- rrarefy(BCI, sample = comm.size.min)
 
 ```
 
-We consider a set of summary statistics representing for each subplot the local richness, local Shannon
-diversity, and the average Bray-Curtis beta diversity with other subplots.
+We consider a set of summary statistics representing for each subplot the local richness, local Shannon diversity, and the average Bray-Curtis beta diversity with other subplots.
 
 ```{r, eval = FALSE}
 
@@ -63,8 +59,7 @@ names(stats.obs) <- paste0(rep(c("rich", "shan", "beta"), each = 50), 1:50)
 
 ```
 
-To estimate the theta and m parameters of neutral dynamics, we consider a vector of 2.10^5 values drawn from a
-prior uniform distribution.
+To estimate the theta and m parameters of neutral dynamics, we consider a vector of 2.10^5 values drawn from a prior uniform distribution.
 
 ```{r, eval = FALSE}
 
@@ -73,11 +68,9 @@ theta.samp <- runif(2*10^5, min = 0, max = 100)
 
 ```
 
-Parallel computing can be used to perform the simulations, by using multiple cores in desktops, or multiple
-clusters. The parallel package allows handling parallel computing.
+Parallel computing can be used to perform the simulations, by using multiple cores in desktops, or multiple clusters. The parallel package allows handling parallel computing.
 
 ```{r, eval = FALSE}
-
 
 library(parallel)
 # Start up a parallel cluster
@@ -93,12 +86,12 @@ mkWorker <- function(m.samp, theta.samp, J)
   force(theta.samp)
   summCalc <- function(j, m.samp, theta.samp, J)
   {
-    pool.samp <- lottery::coalesc(100*J, theta = theta.samp[j])$pool
+    pool.samp <- ecolottery::coalesc(100*J, theta = theta.samp[j])$pool
     meta.samp <- array(0, c(50,length(unique(pool.samp$sp))))
     colnames(meta.samp) <- unique(pool.samp$sp)
     for(i in 1:50)
     {
-      comm.samp <- lottery::coalesc(J, m.samp[j], pool = pool.samp);
+      comm.samp <- ecolottery::coalesc(J, m.samp[j], pool = pool.samp);
       tab <- table(comm.samp$com[,2])
       meta.samp[i, names(tab)] <- tab
     }
@@ -118,8 +111,7 @@ mkWorker <- function(m.samp, theta.samp, J)
 
 ```
 
-The function mkWorker will be used in parallel instances of R to perform the simulations. For each values of
-m and theta the summary statistics are calculated and returned.
+The function mkWorker will be used in parallel instances of R to perform the simulations. For each values of m and theta the summary statistics are calculated and returned.
 The overall set of statistics and corresponding parameter values are stored in a list.
 
 ```{r, eval = FALSE}
@@ -179,10 +171,8 @@ bci.abc <- coalesc_abc(bci.res, multi = "tab", traits = NULL,
 
 ```
 
-bci.abc then includes the matrix of parameter values (par output), the matrix of simulated statistics values
-(ss output) and an abc object including the results of ABC analysis.
-To test if we can correctly infer *m* and *theta* from the chosen set of summary statistics, we can perform cross
-validation.
+bci.abc then includes the matrix of parameter values (par output), the matrix of simulated statistics values (ss output) and an abc object including the results of ABC analysis.
+To test if we can correctly infer *m* and *theta* from the chosen set of summary statistics, we can perform cross validation.
 
 ```{r, eval=F}
 
@@ -199,10 +189,8 @@ plot(bci.abc$abc, param=bci.abc$par)
 
 ```
 
-Three colors, yellow, orange and red, represent results of cross-validation for different tolerance levels in ABC
-analysis, 1, 10???1 and 10???2, respectively.
-The plot indicates that good estimation of the parameters can be obtained with the selected tolerance levels
-We can then reliably estimate the parameters from observed diversity patterns at Barro Colorado Island.
+Three colors, yellow, orange and red, represent results of cross-validation for different tolerance levels in ABC analysis, 1, 10^-1 and 10^-2, respectively.
+The plot indicates that good estimation of the parameters can be obtained with the selected tolerance levels We can then reliably estimate the parameters from observed diversity patterns at Barro Colorado Island.
 
 ```{r, eval = FALSE}
 
@@ -210,19 +198,6 @@ summary(bci.abc$abc)
 
 ```
 
-We found 95% confidence interval of [52; 54] for theta, compared to thheta = 50 in (Hubbell 2001). We found an
-interval of [0.22; 0.24] for m. While it is somewhat larger that the estimated m = 0.1 in (Hubbell 2001), it is
-close to the estimation of (Etienne & Olff 2004), m = 0.2, and still lower than the estimation of (Condit et al.
-2012), m = 0.38, which acknowledged the census of smaller trees. While previous studies mostly addressed
-migration-drift in the whole 50-ha plot compared to a regional background, our summary statistics here
-quantifies species turnover and variation of local diversity among the 1-ha subplots. A larger estimate of m
-can then reflect the fact that *beta* diversity is lower than expected with m = 0.1, possibly under the influence of
-greater replacement dynamics within the plot than between the plot and its regional background.
-A next step of analysis could be to incorporate in simulations the influence of environmental variation across
-subplots on community assembly, depending on the species' ecological properties. For this purpose, the
-previous ABC analysis can be reproduced with additional environmental filtering and variation of the linkage
-of environmental filtering to functional traits, as shown in the example in main text. Comparison of the
-results of the two ABC analyses, one with purely neutral dynamics and one incorporating the influence of
-environmental filtering, can then allow testing the influence of niche-based dynamics in the dynamics of the
-rainforest.
-
+We found 95% confidence interval of [52; 54] for theta, compared to thheta = 50 in (Hubbell 2001). We found an interval of [0.22; 0.24] for m. While it is somewhat larger that the estimated m = 0.1 in (Hubbell 2001), it is close to the estimation of (Etienne & Olff 2004), m = 0.2, and still lower than the estimation of (Condit et al. 2012), m = 0.38, which acknowledged the census of smaller trees. While previous studies mostly addressed
+migration-drift in the whole 50-ha plot compared to a regional background, our summary statistics here quantifies species turnover and variation of local diversity among the 1-ha subplots. A larger estimate of m can then reflect the fact that *beta* diversity is lower than expected with m = 0.1, possibly under the influence of greater replacement dynamics within the plot than between the plot and its regional background.
+A next step of analysis could be to incorporate in simulations the influence of environmental variation across subplots on community assembly, depending on the species' ecological properties. For this purpose, the previous ABC analysis can be reproduced with additional environmental filtering and variation of the linkage of environmental filtering to functional traits, as shown in the example in main text. Comparison of the results of the two ABC analyses, one with purely neutral dynamics and one incorporating the influence of environmental filtering, can then allow testing the influence of niche-based dynamics in the dynamics of the rainforest.
