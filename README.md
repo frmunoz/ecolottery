@@ -9,7 +9,13 @@ The package also includes a forward-in-time simulation algorithm to investigate 
 
 ## Installing the package
 
-As the package is not yet on CRAN you can install the Github version using the `devtools` package:
+The version 1.0.0 is available on CRAN,
+https://cran.r-project.org/web/packages/ecolottery/index.html
+```r
+install.packages("ecolottery")
+```
+
+The development version on Github can be installed using the `devtools` package:
 ```r
 devtools::install_github("frmunoz/ecolottery/pkg", build_vignettes = TRUE)
 ```
