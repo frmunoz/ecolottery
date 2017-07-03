@@ -17,7 +17,7 @@ This vignette corresponds to the latest version of the Appendix 3 of F.Munoz et 
 We illustrate here how to use coalescent-based simulation to estimate neutral parameters of regional biodiversity dynamics, $\theta$, and local migration rate, $m$, from observed patterns of taxonomic diversity within and between communities.  
 
 Neutral theory proved successful to predict patterns of species diversity in tropical forests [@L1528], while other studies also emphasized the influence of niche-based processes [@1643].  
-With coalescent-based modelling, it is possible to address the relative ability of purely neutral and environmental filtering models to explain patterns of biodiversity, using the Approximate Bayesian Computation (ABC) approach implemented in *lottery*.  
+With coalescent-based modelling, it is possible to address the relative ability of purely neutral and environmental filtering models to explain patterns of biodiversity, using the Approximate Bayesian Computation (ABC) approach implemented in *ecolottery*.  
 
 Barro Colorado Island is a 50ha lowland rainforest plot established in Panama. It has become a flagship case study to test competing theories of community assembly in tropical forests. The dataset available in *vegan* package includes a census of tree species above 10 cm DBH in 1ha subplots.  
 
