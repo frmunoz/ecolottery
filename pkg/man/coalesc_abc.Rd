@@ -132,6 +132,9 @@ and is not intended to be used directly.
     standardized summary statistics of the communities simulated with parameter
     values listed in \code{par}.
   }
+  \item{ss.scale}{
+    data frame including the mean and the standard deviation used for standardization of       observed and summary statistics.
+  }
   \item{abc}{
     a single (if \code{multi = FALSE}, default) or a list of abc objects
     including ABC estimation information for each community provided in input
