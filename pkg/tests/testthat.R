@@ -1,4 +1,4 @@
 library(testthat)
-library(lottery)
+library(ecolottery)
 
-test_check("lottery")
+test_check("ecolottery")
