@@ -325,7 +325,7 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
     }
     
     worker <- function(j) {
-      if (!requireNamespace(ecolottery, quietly = TRUE)) {
+      if (!requireNamespace("ecolottery", quietly = TRUE)) {
         stop(paste("Package ecolottery is not available", sep = ""))
       }
       # Other required packages
