@@ -192,6 +192,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
   
   return(list(par = sim$params.sim, obs = stats.obs,
               obs.scaled = stats.obs.scaled, ss = sim$stats.scaled,
+              ss.scale = data.frame(mean=stats.mean,sd=stats.sd),
               abc = res.abc))
 }
 
