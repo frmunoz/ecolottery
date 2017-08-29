@@ -155,12 +155,15 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
                 "different way!")
       }
       prob[prob < 0] <- 0
-      
-      if (all(prob < 0)) {
-        stop("Your filtering function does not allow any immigrant to enter ",
-             "the community")
-      }
   }  
+  
+  if(all(prob == 0)) {
+    if (verbose) {
+      warning("Your filtering function does not allow any immigrant to enter ",
+              "the community")
+    }
+    return(list(com = array(NA, c(J,3)), pool = pool))
+  }
 
   ## Community generation
   
@@ -199,8 +202,12 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
   
   # Number of individuals taken from the regional pool
   com_species <- length(assign_com) 
-  
-  migrants <- sample(1:nrow(pool), com_species, prob = prob)
+ 
+  if(com_species > sum(prob > 0)) {
+    warning("Sampling with replacement from the pool")
+    migrants <- sample(1:nrow(pool), com_species, replace = T, prob = prob)
+  } else 
+    migrants <- sample(1:nrow(pool), com_species, prob = prob)
   
   # Assign individuals
   ind_com_lab[assign_com] <- pool[migrants[1:com_species], 1] 
