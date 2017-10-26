@@ -221,6 +221,10 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
   }
   names(prior) <- rownames(params)
   
+  # Note - Defining a lower bound at 0 for m and theta can entail issues when species richness is 1
+  # in simulated community; we should allow the user to define the prior for m and theta in
+  # the future
+  
   prior[[length(prior) + 1]] <- runif(nb.samp, min = 0, max = 1)
   names(prior)[length(params) + 1] <- "m"
   
