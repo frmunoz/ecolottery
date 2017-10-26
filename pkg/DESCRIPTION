@@ -1,7 +1,7 @@
 Package: ecolottery
 Type: Package
 Title: Coalescent-Based Simulation of Ecological Communities
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: c(person("François", "Munoz", role = c("aut", "cre"),
                      email = "francois.munoz@hotmail.fr"),
               person("Matthias", "Grenié", role = "aut"),
@@ -20,7 +20,8 @@ Imports:
     graphics,
     ggplot2,
     grDevices,
-    parallel
+    parallel,
+    EasyABC
 Suggests:
     ape,
     changepoint,
@@ -31,7 +32,7 @@ Suggests:
     untb,
     vegan
 Description: Coalescent-Based Simulation of Ecological Communities as proposed
-    by Munoz et al. (2017) <doi:10.13140/RG.2.2.31737.26728>. The package includes
+    by Munoz et al. (2017) <doi:10.1111/2041-210X.12918>. The package includes
     a tool for estimating parameters of community assembly by using Approximate 
     Bayesian Computation.
 License: GPL (>= 2)
