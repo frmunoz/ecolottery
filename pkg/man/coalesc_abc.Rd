@@ -52,7 +52,8 @@
   \item{traits}{
     the trait values of species in the regional pool. It is used if trait
     information is not provided in \code{pool}. In this case, intraspecific
-    trait variation is assumed to be null.
+    trait variation is assumed to be null. Species names of \code{pool} must
+    be included in \code{traits}.
   }
   \item{f.sumstats}{
     a function allowing to calculate the summary statistics of local community

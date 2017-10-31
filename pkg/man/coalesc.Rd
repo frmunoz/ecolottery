@@ -28,7 +28,8 @@ a function representing the effect of local habitat filtering. For a given trait
 the regional pool of species providing immigrants to the local community. It should include the label of individual on first column, and of its species on second column. If \code{pool = NULL}, the pool is simulated as a metacommunity at speciation-drift equilibrium, based on parameter \code{theta}. The provided \code{pool} can contain trait values for each individuals in a third column.
 }
  \item{traits}{
-a matrix or data.frame including one or several traits on columns. A unique trait value is assigned to each species in the regional pool. If \code{traits = NULL}, a random trait value is given to species of the regional pool, from a uniform distribution between 0 and 1.
+a matrix or data.frame including one or several traits on columns. A unique trait value is assigned to each species in the regional pool. Species names of \code{pool} must be included in \code{traits}.
+If \code{traits = NULL}, a random trait value is given to species of the regional pool, from a uniform distribution between 0 and 1. 
 }
  \item{Jpool}{
 if \code{pool = NULL}, it is the number of individuals to be simulated in the regional pool.
