@@ -118,7 +118,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
       if (is.null(traits)) {
         traits <- data.frame("tra" = runif(max(pool[,2])))
       } else {
-        if(any(!ind_pool_sp %in% rownames(traits))) 
+        if(!is.null(rownames(traits)) & any(!ind_pool_sp %in% rownames(traits))) 
           stop("Species names in traits must match those in pool")
       }
       
