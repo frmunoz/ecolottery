@@ -99,7 +99,7 @@
   \item{method}{
     the method to be used in ABC estimation (see help on
     \code{\link[=abc]{abc()}} function  of package \code{abc} for further
-    information).
+    information). Can be "rejection" (default), "loclinear", "neuralnet" or "ridge".
   }
   \item{J}{
     local community size.

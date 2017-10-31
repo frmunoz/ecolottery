@@ -4,6 +4,9 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
                         tol = NULL, pkg = NULL, method = "rejection")
 {
   
+  if(!method%in%c("rejection", "loclinear", "neuralnet", "ridge"))
+    stop("method.abc should be either rejection, loclinear, neuralnet or ridge")
+  
   if (!is.function(f.sumstats)) {
     stop("You must provide a function to calculate summary statistics",
          "(f.sumstats)")
