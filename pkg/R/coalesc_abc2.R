@@ -1,6 +1,6 @@
 coalesc_abc2 <- function (comm.obs, pool, multi = "single", traits = NULL, f.sumstats, filt.abc, params,
-                          theta.max = NULL, nb.samp = 10^6, parallel = T, tol = 10^-4, type = "seq", 
-                          method.seq = "Beaumont", method.mcmc = "Marjoram", method.abc = "neuralnet") 
+                          theta.max = NULL, nb.samp = 10^6, parallel = T, tol = NULL, type = "seq", 
+                          method.seq = "Beaumont", method.mcmc = "Marjoram", method.abc = NULL) 
 {
   # This alternative function uses the sequential algorithms provided in EasyABC
   
@@ -28,6 +28,9 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", traits = NULL, f.sum
   
   if(type=="mcmc") if(!method.mcmc%in%c("Marjoram_original", "Marjoram", "Wegmann"))
     stop("method.mcmc should be either Marjoram_original, Marjoram or Wegmann")
+  
+  if(!is.null(method.abc)) if(!method.abc%in%c("rejection", "loclinear", "neuralnet", "ridge"))
+    stop("method.abc should be either rejection, loclinear, neuralnet or ridge")
   
   if (ncol(pool) >= 3) 
     traits <- data.frame(apply(data.frame(pool[, -(1:2)]), 2, function(x) tapply(x, pool[, 2], mean))) else if (is.null(traits) & ncol(pool) < 3) 
@@ -71,7 +74,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", traits = NULL, f.sum
   # Definition of prior distribution to be improved
   prior=c();
   for(i in 1:nrow(params)) prior[[i]] <- c("unif",params[i,1],params[i,2])
-  prior[[length(prior)+1]] <- c("unif",0,1)
+  prior[[length(prior)+1]] <- c("unif",0.1,1)
   
   coalesc_model <- function(par, traits, J, pool, filt.abc, f.sumstats) {
       stats.samp <- NA
@@ -104,9 +107,19 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", traits = NULL, f.sum
       res <- EasyABC::ABC_sequential(method=method.seq, model=function(par) coalesc_model(par, traits, J, pool, 
           filt.abc, f.sumstats), prior=prior, nb_simul=nb.samp, summary_stat_target=stats.obs, 
           p_acc_min=pacc, use_seed=F)
-    } else if(method.seq=="Beaumont") res <- EasyABC::ABC_sequential(method=method.seq, 
+    } else if(method.seq=="Beaumont") 
+      {
+      tol_tab <- c(tol,tol/2,tol/5)
+      res <- EasyABC::ABC_sequential(method=method.seq, 
           model=function(par) coalesc_model(par, traits, J, pool, filt.abc, f.sumstats), prior=prior, 
-          nb_simul=nb.samp, summary_stat_target=stats.obs, tolerance_tab=c(tol,tol/10,tol/100), use_seed=F)
+          nb_simul=nb.samp, summary_stat_target=stats.obs, tolerance_tab=tol_tab, use_seed=F)
+    } else if(method.seq=="Drovandi") 
+    {
+     res <- EasyABC::ABC_sequential(method=method.seq, 
+                                     model=function(par) coalesc_model(par, traits, J, pool, filt.abc, f.sumstats), prior=prior, 
+                                     nb_simul=nb.samp, summary_stat_target=stats.obs, first_tolerance_level_auto = T, use_seed=F)
+    }
+    
   } else if(type=="mcmc")
   {
     res <- EasyABC::ABC_mcmc(method=method.mcmc, model=function(par) coalesc_model(par, traits, J, pool, 
@@ -121,7 +134,9 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", traits = NULL, f.sum
     #     summarystats=FALSE, y=NULL, f.summarystats=NULL)
   }
   
-  res.abc <- abc(stats.obs, seq$param, seq$stats, tol=tol, method=method.abc)
-  
-  return(list(par = seq$param, ss = seq$stats, abc=seq.abc))
+  if(!is.null(method.abc))
+  {
+    res.abc <- abc(stats.obs, res$param, res$stats, tol=tol, method=method.abc)
+    return(list(res=res, stats.obs=stats.obs, abc=res.abc))
+  } else return(list(res=res, stats.obs=stats.obs))
 }

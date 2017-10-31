@@ -15,9 +15,9 @@
 }
 \usage{
   coalesc_abc2(comm.obs, pool, multi = "single", traits = NULL, f.sumstats, filt.abc, 
-  params,  theta.max = NULL, nb.samp = 10^6, parallel = T, tol = 10^-4, type = "seq", 
+  params,  theta.max = NULL, nb.samp = 10^6, parallel = T, tol = NULL, type = "seq", 
   method.seq = "Beaumont", method.mcmc = "Marjoram",
-  method.abc = "neuralnet")
+  method.abc = NULL)
 }
 \arguments{
   \item{comm.obs}{
@@ -87,7 +87,7 @@
   \item{tol}{
     the tolerance value used in ABC estimation (see help in
     \code{\link[=abc]{abc()}} function of package \code{abc} for further
-    information).
+    information). Default is \code{NULL}.
   }
   %\item{pkg}{
   %  packages needed for calculation of \code{filt.abc} and/or \code{f.sumstats}.
@@ -112,7 +112,7 @@
  \item{method.abc}{
     the method to be used in ABC estimation (see help on
     \code{\link[=abc]{abc()}} function  of package \code{abc} for further
-    information). Default is "neuralnet".
+    information). Can be "rejection", "loclinear", "neuralnet" or "ridge". Default is NULL.
   }
 
 }
