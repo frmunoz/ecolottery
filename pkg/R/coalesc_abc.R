@@ -1,4 +1,4 @@
-coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
+coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
                         f.sumstats, filt.abc = NULL, params = NULL,
                         theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
                         tol = NULL, pkg = NULL, method = "rejection")
@@ -11,6 +11,9 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
     stop("You must provide a function to calculate summary statistics",
          "(f.sumstats)")
   }
+  
+  if(prop & multi!="tab")
+    stop("prop data can only be handled in tab format")
   
   if (length(formals(f.sumstats)) > 2) {
     stop("f.sumstats must be a function of up to two arguments")
@@ -63,6 +66,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
     if (multi == "tab") {
       # comm.obs is a species-by-site matrix/data.frame
       J <- apply(comm.obs, 1, function(x) sum(x, na.rm = TRUE))
+      # if the dataset includes relative proportions, the columns must sum to 1
+      if(prop & any(J!=1)) stop("Relative species abundances must sum to 1")
       nb.com <- nrow(comm.obs)
     } else if (multi == "seqcom") {
       # comm.obs is a list of communities with individuals on rows in each
@@ -105,7 +110,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
   }
   
   # Community simulation
-  sim <- do.simul(J, pool, multi, nb.com, traits, f.sumstats, filt.abc, params,
+  sim <- do.simul(J, pool, multi, prop, nb.com, traits, f.sumstats, filt.abc, params,
                   theta.max, nb.samp, parallel, tol, pkg, method)
   
   # Scaling f.sumstats criterions for simulations
@@ -199,7 +204,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", traits = NULL,
               abc = res.abc))
 }
 
-do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
+do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
                      traits = NULL, f.sumstats = NULL, filt.abc = NULL, params,
                      theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
                      tol = NULL, pkg = NULL, method = "rejection") {
@@ -231,32 +236,49 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
   prior[[length(prior) + 1]] <- runif(nb.samp, min = 0, max = 1)
   names(prior)[length(params) + 1] <- "m"
   
+  if(prop) 
+  {
+    prior[[length(prior)+1]] <- runif(nb.samp, min = 100, max = 1000)
+    warning("The prior of community size is uniform between 100 and 1000")
+  }
+  
   if (is.null(pool)) {
     prior[[length(prior) + 1]] <- runif(nb.samp, min = 0, max = theta.max)
     names(prior)[length(prior)] <- "theta"
   }
   
   # Function to perform simulations
-  mkWorker <- function(traits, nb.com, multi, prior, J, pool, filt.abc,
+  mkWorker <- function(traits, nb.com, multi, prop, prior, J, pool, filt.abc,
                        f.sumstats, pkg) {
     force(J)
     force(pool)
     force(traits)
     force(filt.abc)
     force(f.sumstats)
+    force(prop)
     force(prior)
     force(nb.com)
     force(pkg)
     force(multi)
     
-    summCalc <- function(j, multi, traits, nb.com, prior, J, pool, filt.abc,
+    summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc,
                          f.sumstats) {
       
       params.samp <- unlist(lapply(prior,function(x) x[j]))
       stats.samp <- NA
       params.samp.all <- params.samp
       names(params.samp.all) <- names(prior)
-        
+      
+      if(prop) if(!is.null(pool))
+      {
+        J <- round(params.samp[length(params.samp)])
+        params.samp <- params.samp[-length(params.samp)]
+      } else if(is.null(pool)) 
+      {
+        J <- round(params.samp[length(params.samp)-1])
+        params.samp <- params.samp[-(length(params.samp)-1)]
+      }
+          
       if (is.null(pool)) {
         if (multi == "seqcom"){
           pool <- coalesc(mean(unlist(J))*100,
@@ -322,10 +344,11 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
                              m = params.samp[length(params.samp)],
                              filt = filt,
                              pool = pool, traits = traits)
+        if(prop) comm.samp$com <- t(table(comm.samp$com[,2])/J)
         if (length(formals(f.sumstats))==1) {
           stats.samp <- f.sumstats(comm.samp$com)
         } else {
-          stats.samp <- f.sumstats(comm.samp$com, traits)
+          stats.samp <- f.sumstats(comm.samp$com, traits[colnames(comm.samp$com),])
         }
       }
           
@@ -342,7 +365,7 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
           stop(paste("Package ", pkg[i], " is not available", sep = ""))
         }
       }
-      summCalc(j, multi, traits, nb.com, prior, J, pool, filt.abc, f.sumstats)
+      summCalc(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, f.sumstats)
     }
     return(worker)
   }
@@ -350,10 +373,10 @@ do.simul <- function(J, pool = NULL, multi = "single", nb.com = NULL,
   # Calculation of summary statistics over the whole range of parameters
   if (parallel) {
     models <- parallel::parLapply(parCluster, 1:nb.samp,
-                                  mkWorker(traits, nb.com, multi, prior, J,
+                                  mkWorker(traits, nb.com, multi, prop, prior, J,
                                            pool, filt.abc, f.sumstats, pkg))
   } else {
-    models <- lapply(1:nb.samp, mkWorker(traits, nb.com, multi, prior, J, pool,
+    models <- lapply(1:nb.samp, mkWorker(traits, nb.com, multi, prop, prior, J, pool,
                                          filt.abc, f.sumstats, pkg))
   }
   

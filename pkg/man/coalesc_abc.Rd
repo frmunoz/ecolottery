@@ -13,11 +13,11 @@
   regional pool. 
 }
 \usage{
-  coalesc_abc(comm.obs, pool = NULL, multi = "single", traits = NULL,
+  coalesc_abc(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
               f.sumstats, filt.abc = NULL, params = NULL, 
               theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
               tol = NULL, pkg = NULL, method="rejection")
-  do.simul(J, pool = NULL, multi = "single", nb.com = NULL, 
+  do.simul(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
               traits = NULL, f.sumstats = NULL, filt.abc = NULL,
               params, theta.max = NULL, nb.samp = 10^6, 
               parallel = TRUE, tol = NULL, pkg = NULL,
@@ -48,6 +48,11 @@
       \item if \code{multi = "seqcom"}, \code{comm.obs} contains a list of
       communities
     }
+  }
+  \item{prop}{
+    indicates if the community composition is given in term of relative species abundances, 
+    cover or proportions. In this case, a parameter of effective community size is estimated.
+    Presently only available with multi = "tab". Default is FALSE.
   }
   \item{traits}{
     the trait values of species in the regional pool. It is used if trait
