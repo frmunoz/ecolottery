@@ -348,7 +348,7 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
         if (length(formals(f.sumstats))==1) {
           stats.samp <- f.sumstats(comm.samp$com)
         } else {
-          stats.samp <- f.sumstats(comm.samp$com, traits[colnames(comm.samp$com),])
+          stats.samp <- f.sumstats(comm.samp$com, traits)
         }
       }
           

@@ -51,7 +51,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
     if (multi == "tab") {
       # comm.obs is a species-by-site matrix/data.frame
       J <- apply(comm.obs, 1, function(x) sum(x, na.rm = TRUE))
-      # if the dataset includes relative proportons, the columns must sum to 1
+      # if the dataset includes relative proportions, the columns must sum to 1
       if(prop & any(J!=1)) stop("Relative species abundances must sum to 1")
       nb.com <- nrow(comm.obs)
     } else if (multi == "seqcom") {
@@ -83,7 +83,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
   if(prop) 
   {
     prior[[length(prior)+1]] <- c("unif",100,1000)
-    warning("The prior of community size is uniform between 10 and 1000")
+    warning("The prior of community size is uniform between 100 and 1000")
   }
 
   coalesc_model <- function(par, traits, prop, J, pool, filt.abc, f.sumstats) {
