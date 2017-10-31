@@ -25,7 +25,7 @@
 }
 \arguments{
   \item{comm.obs}{
-    the observed community composition. If \code{multi = FALSE} (default),
+    the observed community composition. If \code{multi = "single"} (default),
     should be a matrix or data.frame of individuals on rows with their
     individual id (first column), and species id (second column).
   }
