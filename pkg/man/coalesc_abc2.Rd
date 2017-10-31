@@ -14,14 +14,14 @@
   in the package \code{EasyABC} for ABC processing.
 }
 \usage{
-  coalesc_abc2(comm.obs, pool, multi = "single", traits = NULL, f.sumstats, filt.abc, 
+  coalesc_abc2(comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats, filt.abc, 
   params,  theta.max = NULL, nb.samp = 10^6, parallel = T, tol = NULL, type = "seq", 
   method.seq = "Beaumont", method.mcmc = "Marjoram",
   method.abc = NULL)
 }
 \arguments{
   \item{comm.obs}{
-    the observed community composition. If \code{multi = FALSE} (default),
+    the observed community composition. If \code{multi = "single"} (default),
     should be a matrix or data.frame of individuals on rows with their
     individual id (first column), and species id (second column).
   }
@@ -35,7 +35,7 @@
   \item{multi}{
     structure of the community inputs:
     \itemize{
-      \item if \code{multi = "single"}, \code{comm.obs} contains a single
+      \item if \code{multi = "single"}, \code{comm.obs} represents a single
       community
       
       \item if \code{multi = "tab"}, the user provides a site-species matrix
@@ -45,10 +45,16 @@
       communities
     }
   }
+  \item{prop}{
+    indicates if the community composition is given in term of relative species abundances, 
+    cover or proportions. In this case, a parameter of effective community size is estimated.
+    Presently only available with multi = "tab". Default is FALSE.
+  }
   \item{traits}{
     the trait values of species in the regional pool. It is used if trait
     information is not provided in \code{pool}. In this case, intraspecific
-    trait variation is assumed to be null.
+    trait variation is assumed to be null. Species names of \code{pool} must
+    be included in \code{traits}.
   }
   \item{f.sumstats}{
     a function allowing to calculate the summary statistics of local community

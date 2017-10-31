@@ -1,4 +1,4 @@
-coalesc_abc2 <- function (comm.obs, pool, multi = "single", traits = NULL, f.sumstats, filt.abc, params,
+coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats, filt.abc, params,
                           theta.max = NULL, nb.samp = 10^6, parallel = T, tol = NULL, type = "seq", 
                           method.seq = "Beaumont", method.mcmc = "Marjoram", method.abc = NULL) 
 {
@@ -11,6 +11,9 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", traits = NULL, f.sum
       theta.max <- 500
     stop("Estimation of theta not implemented - Ongoing work")
   }
+  
+  if(prop & multi!="tab")
+    stop("prop data can only be handled in tab format")
   
   if (!requireNamespace("abc", quietly = TRUE)) 
     stop("coalesc_abc requires package abc to be installed")
@@ -48,6 +51,8 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", traits = NULL, f.sum
     if (multi == "tab") {
       # comm.obs is a species-by-site matrix/data.frame
       J <- apply(comm.obs, 1, function(x) sum(x, na.rm = TRUE))
+      # if the dataset includes relative proportons, the columns must sum to 1
+      if(prop & any(J!=1)) stop("Relative species abundances must sum to 1")
       nb.com <- nrow(comm.obs)
     } else if (multi == "seqcom") {
       # comm.obs is a list of communities with individuals on rows in each
@@ -75,13 +80,25 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", traits = NULL, f.sum
   prior=c();
   for(i in 1:nrow(params)) prior[[i]] <- c("unif",params[i,1],params[i,2])
   prior[[length(prior)+1]] <- c("unif",0.1,1)
-  
-  coalesc_model <- function(par, traits, J, pool, filt.abc, f.sumstats) {
+  if(prop) 
+  {
+    prior[[length(prior)+1]] <- c("unif",100,1000)
+    warning("The prior of community size is uniform between 10 and 1000")
+  }
+
+  coalesc_model <- function(par, traits, prop, J, pool, filt.abc, f.sumstats) {
       stats.samp <- NA
       try({
-            comm.samp <- coalesc(J, m = par[length(par)], 
+            if(!prop) {
+              comm.samp <- coalesc(J, m = par[length(par)], 
                                  filt = function(x) filt.abc(x, par[-length(par)]), 
                                  pool = pool, traits = traits)
+            } else {
+              comm.samp <- coalesc(par[length(par)], m = par[length(par)-1], 
+                                      filt = function(x) filt.abc(x, par[-((length(par)-1):length(par))]), 
+                                      pool = pool, traits = traits)
+              comm.samp$com <- t(table(comm.samp$com[,2])/par[length(par)])
+            }
             if (length(formals(f.sumstats))==1) {
               stats.samp <- as.vector(f.sumstats(comm.samp$com))
             } else {
@@ -95,7 +112,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", traits = NULL, f.sum
   #test <- c()
   #for(i in 1:100) test[[i]] <- coalesc_model(c(runif(0,1),runif(0,1),runif(0,1)), traits, J, pool, filt.abc, f.sumstats)
   
-  if(multi!="single") stop("multi option is not implemented - ongoing work")
+  #if(multi!="single") stop("multi option is not implemented - ongoing work")
   
   set.seed(1)
 
@@ -104,25 +121,25 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", traits = NULL, f.sum
     if(method.seq=="Lenormand") 
     {
       pacc=0.05 # Can be set by user (to be included in input)
-      res <- EasyABC::ABC_sequential(method=method.seq, model=function(par) coalesc_model(par, traits, J, pool, 
+      res <- EasyABC::ABC_sequential(method=method.seq, model=function(par) coalesc_model(par, traits, prop, J, pool, 
           filt.abc, f.sumstats), prior=prior, nb_simul=nb.samp, summary_stat_target=stats.obs, 
           p_acc_min=pacc, use_seed=F)
     } else if(method.seq=="Beaumont") 
       {
       tol_tab <- c(tol,tol/2,tol/5)
       res <- EasyABC::ABC_sequential(method=method.seq, 
-          model=function(par) coalesc_model(par, traits, J, pool, filt.abc, f.sumstats), prior=prior, 
+          model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats), prior=prior, 
           nb_simul=nb.samp, summary_stat_target=stats.obs, tolerance_tab=tol_tab, use_seed=F)
     } else if(method.seq=="Drovandi") 
     {
      res <- EasyABC::ABC_sequential(method=method.seq, 
-                                     model=function(par) coalesc_model(par, traits, J, pool, filt.abc, f.sumstats), prior=prior, 
+                                     model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats), prior=prior, 
                                      nb_simul=nb.samp, summary_stat_target=stats.obs, first_tolerance_level_auto = T, use_seed=F)
     }
     
   } else if(type=="mcmc")
   {
-    res <- EasyABC::ABC_mcmc(method=method.mcmc, model=function(par) coalesc_model(par, traits, J, pool, 
+    res <- EasyABC::ABC_mcmc(method=method.mcmc, model=function(par) coalesc_model(par, traits, prop, J, pool, 
           filt.abc, f.sumstats), prior=prior, summary_stat_target=stats.obs)
   } else if(type=="annealing")
   {
