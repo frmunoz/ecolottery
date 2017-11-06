@@ -14,12 +14,12 @@
 }
 \usage{
   coalesc_abc(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-              f.sumstats, filt.abc = NULL, params = NULL, 
-              theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
-              tol = NULL, pkg = NULL, method="rejection")
+              f.sumstats, filt.abc = NULL, add = F, var.add = NULL,
+              params = NULL, theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
+              tol = NULL, pkg = NULL, method = "rejection")
   do.simul(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
               traits = NULL, f.sumstats = NULL, filt.abc = NULL,
-              params, theta.max = NULL, nb.samp = 10^6, 
+              add = F, var.add = NULL, params, theta.max = NULL, nb.samp = 10^6, 
               parallel = TRUE, tol = NULL, pkg = NULL,
               method = "rejection")
 }
@@ -69,6 +69,12 @@
   \item{filt.abc}{
     the hypothesized environmental filtering function. It is a function of
     individual trait values and additional parameters to be estimated.
+  }
+   \item{add}{
+    indicates if additional variables must be passed to \code{filt}. It can be, for instance, environmental data          conditioning the trait-based filtering in the community. Default is FALSE.
+  }
+    \item{var.add}{
+    additional variables to be passed to \code{filt} when \code{add = T}.
   }
   \item{params}{
     a matrix of the bounds of the parameters used in \code{filt.abc}. The row

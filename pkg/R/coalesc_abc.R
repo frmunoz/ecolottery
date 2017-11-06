@@ -1,6 +1,6 @@
 coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-                        f.sumstats, filt.abc = NULL, params = NULL,
-                        theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
+                        f.sumstats, filt.abc = NULL, add = F, var.add = NULL,
+                        params = NULL, theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
                         tol = NULL, pkg = NULL, method = "rejection")
 {
   
@@ -95,105 +95,46 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     warning("Trait information is not provided")
   }
   
-  if(multi == "seqcom"){
-    if (length(formals(f.sumstats))==1) {
-      stats.obs <- lapply(comm.obs, f.sumstats)
-    } else {
-      stats.obs <- lapply(comm.obs, function(x) f.sumstats(x, traits))
-    }
+  if (length(formals(f.sumstats))==1) {
+    stats.obs <- f.sumstats(comm.obs)
   } else {
-    if (length(formals(f.sumstats))==1) {
-      stats.obs <- f.sumstats(comm.obs)
-    } else {
-      stats.obs <- f.sumstats(comm.obs, traits)
-    }
+    stats.obs <- f.sumstats(comm.obs, traits)
   }
   
   # Community simulation
-  sim <- do.simul(J, pool, multi, prop, nb.com, traits, f.sumstats, filt.abc, params,
-                  theta.max, nb.samp, parallel, tol, pkg, method)
+  sim <- do.simul(J, pool, multi, prop, nb.com, traits, f.sumstats, filt.abc, add, var.add, 
+                  params, theta.max, nb.samp, parallel, tol, pkg, method)
   
   # Scaling f.sumstats criterions for simulations
-  if (multi == "seqcom"){
-    stats.mean <- lapply(sim$stats, function(x) {
-      apply(x, 2, function(y) mean(y, na.rm = TRUE))
-    })
-    
-    stats.sd <- lapply(sim$stats, function(x) {
-      apply(x, 2, function(y) sd(y, na.rm = TRUE))
-    })
-    
-    sim$stats.scaled <- list()
-    for (i in 1:length(sim$stats)) {
-      sim$stats.scaled[[i]] <- t(apply(sim$stats[[i]], 1, function(x) {
-        (x - stats.mean[[i]])/stats.sd[[i]]
-      }))
-      colnames(sim$stats.scaled[[i]]) <- colnames(sim$stats[[i]])
-    }
-  } else {
-    stats.mean <- apply(sim$stats, 2, function(x) mean(x, na.rm = TRUE))
-    stats.sd <- apply(sim$stats, 2, function(x) sd(x, na.rm = TRUE))
-    sim$stats.scaled <- t(apply(sim$stats, 1,
-                                function(x) (x - stats.mean)/stats.sd))
-    colnames(sim$stats.scaled) <- colnames(sim$stats)
-  }
+  stats.mean <- apply(sim$stats, 2, function(x) mean(x, na.rm = TRUE))
+  stats.sd <- apply(sim$stats, 2, function(x) sd(x, na.rm = TRUE))
+  sim$stats.scaled <- t(apply(sim$stats, 1,
+                              function(x) (x - stats.mean)/stats.sd))
+  colnames(sim$stats.scaled) <- colnames(sim$stats)
   
   if (is.null(tol)){
     res.abc <- NA
   } else {
-    if (multi == "seqcom") {
-      stats.obs.scaled <- list()
-      for (i in 1:length(sim$stats)){
-        stats.obs.scaled[[i]] <- (stats.obs[[i]] - stats.mean[[i]])/
-          stats.sd[[i]]
-      }
-    } else {
-      stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
-    }
+    stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
     
     if (is.null(tol)){
       res.abc <- NA
     } else {
-      if (multi == "seqcom"){
-        # ABC estimation
-        sel <- lapply(sim$stats.scaled, function(x) {
-          which(rowSums(is.na(x)) == 0)
-        })
-        
-        res.abc <- list()
-        for(i in 1:length(stats.obs.scaled)){
-          res.abc[[i]] <- tryCatch(
-            abc::abc(target = stats.obs.scaled[[i]],
-                     param = sim$params.sim[[i]][sel[[i]],],
-                     sumstat = sim$stats.scaled[[i]][sel[[i]],],
-                     tol = tol,
-                     method = method),
-            error = function(x) {
-              warning("ABC computation failed with the requested method.")
-            }
-        )}
-          for(i in 1:length(res.abc)){
-            if (is.character(res.abc[[i]])){
-              res.abc <- NA
-            }
-          }
-      } else {
-        # ABC estimation
-        sel <- which(rowSums(is.na(sim$stats.scaled)) == 0)
-        
-        res.abc <- tryCatch(
-          abc::abc(target = stats.obs.scaled,
-                   param = sim$params.sim[sel,],
-                   sumstat = sim$stats.scaled[sel,],
-                   tol = tol,
-                   method = method),
-          error = function(x) {
-            warning("ABC computation failed with the requested method.")
-          }
-        )
-        if (is.character(res.abc)){
-          res.abc <- NA
+      # ABC estimation
+      sel <- which(rowSums(is.na(sim$stats.scaled)) == 0)
+      
+      res.abc <- tryCatch(
+        abc::abc(target = stats.obs.scaled,
+                 param = sim$params.sim[sel,],
+                 sumstat = sim$stats.scaled[sel,],
+                 tol = tol,
+                 method = method),
+        error = function(x) {
+          warning("ABC computation failed with the requested method.")
         }
+      )
+      if (is.character(res.abc)){
+        res.abc <- NA
       }
     }
   }
@@ -205,7 +146,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
 }
 
 do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
-                     traits = NULL, f.sumstats = NULL, filt.abc = NULL, params,
+                     traits = NULL, f.sumstats = NULL, filt.abc = NULL, 
+                     add = F, var.add = NULL, params,
                      theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
                      tol = NULL, pkg = NULL, method = "rejection") {
   
@@ -234,7 +176,7 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
   # the future
   
   prior[[length(prior) + 1]] <- runif(nb.samp, min = 0, max = 1)
-  names(prior)[length(params) + 1] <- "m"
+  names(prior)[nrow(params) + 1] <- "m"
   
   if(prop) 
   {
@@ -248,20 +190,22 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
   }
   
   # Function to perform simulations
-  mkWorker <- function(traits, nb.com, multi, prop, prior, J, pool, filt.abc,
+  mkWorker <- function(traits, nb.com, multi, prop, prior, J, pool, filt.abc, add, var.add,
                        f.sumstats, pkg) {
-    force(J)
-    force(pool)
     force(traits)
-    force(filt.abc)
-    force(f.sumstats)
+    force(nb.com)
+    force(multi)
     force(prop)
     force(prior)
-    force(nb.com)
+    force(J)
+    force(pool)
+    force(filt.abc)
+    force(add)
+    force(var.add)
+    force(f.sumstats)
     force(pkg)
-    force(multi)
     
-    summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc,
+    summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, add, var.add,
                          f.sumstats) {
       
       params.samp <- unlist(lapply(prior,function(x) x[j]))
@@ -269,14 +213,17 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
       params.samp.all <- params.samp
       names(params.samp.all) <- names(prior)
       
-      if(prop) if(!is.null(pool))
+      if(prop) 
       {
-        J <- round(params.samp[length(params.samp)])
-        params.samp <- params.samp[-length(params.samp)]
-      } else if(is.null(pool)) 
-      {
-        J <- round(params.samp[length(params.samp)-1])
-        params.samp <- params.samp[-(length(params.samp)-1)]
+        if(!is.null(pool))
+        {
+          J <- round(params.samp[length(params.samp)])
+          params.samp <- params.samp[-length(params.samp)]
+        } else 
+        {
+          J <- round(params.samp[length(params.samp)-1])
+          params.samp <- params.samp[-(length(params.samp)-1)]
+        }
       }
           
       if (is.null(pool)) {
@@ -291,7 +238,9 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
       }
       
       if (!is.null(filt.abc)) {
-        filt <- function(x) filt.abc(x, params.samp[-length(params.samp)])
+        if(!add) 
+          filt <- function(x) filt.abc(x, params.samp[-length(params.samp)])
+        else filt <- function(x, var.add) filt.abc(x, params.samp[-length(params.samp)], var.add)
       } else {
         filt <- NULL
       }
@@ -304,8 +253,10 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
           
           for (i in 1:nb.com) {
             try({
-              comm.samp <- coalesc(J[i], m = params.samp[length(params.samp)],
+              comm.samp <- ecolottery::coalesc(J[i], m = params.samp[length(params.samp)],
                                    filt = filt,
+                                   add = add,
+                                   var.add = var.add[i,],
                                    pool = pool, traits = traits)
               tab <- table(comm.samp$com[,2])
               meta.samp[i,names(tab)] <- tab
@@ -322,27 +273,27 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
           
           for (i in 1:nb.com) {
             try({
-              seqcom.samp[[i]] <- coalesc(J[[i]],
+              seqcom.samp[[i]] <- ecolottery::coalesc(J[[i]],
                                           m = params.samp[length(params.samp)],
                                           filt = filt,
-                                          pool = pool, traits = traits)
+                                          add = add,
+                                          var.add = var.add[i,],
+                                          pool = pool, traits = traits)$com
             })
           }
           if (length(formals(f.sumstats)) == 1) {
-            seqcom.samp.com <- lapply(seqcom.samp, function(l) l[[1]])
-            stats.samp <- lapply(seqcom.samp.com, f.sumstats)
+            stats.samp <- f.sumstats(seqcom.samp)
           } else {
-            seqcom.samp.com <- lapply(seqcom.samp, function(l) l[[1]])
-            stats.samp <- lapply(seqcom.samp.com, function(x) {
-              f.sumstats(x, traits)
-            })
+            stats.samp <- f.sumstats(seqcom.samp, traits)
           }
         }
       
       } else { # single community
-        comm.samp <- coalesc(J,
+        comm.samp <- ecolottery::coalesc(J,
                              m = params.samp[length(params.samp)],
                              filt = filt,
+                             add = add,
+                             var.add = var.add,
                              pool = pool, traits = traits)
         if(prop) comm.samp$com <- t(table(comm.samp$com[,2])/J)
         if (length(formals(f.sumstats))==1) {
@@ -365,7 +316,8 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
           stop(paste("Package ", pkg[i], " is not available", sep = ""))
         }
       }
-      summCalc(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, f.sumstats)
+      summCalc(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, 
+               add, var.add, f.sumstats)
     }
     return(worker)
   }
@@ -374,10 +326,10 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
   if (parallel) {
     models <- parallel::parLapply(parCluster, 1:nb.samp,
                                   mkWorker(traits, nb.com, multi, prop, prior, J,
-                                           pool, filt.abc, f.sumstats, pkg))
+                                           pool, filt.abc, add, var.add, f.sumstats, pkg))
   } else {
     models <- lapply(1:nb.samp, mkWorker(traits, nb.com, multi, prop, prior, J, pool,
-                                         filt.abc, f.sumstats, pkg))
+                                         filt.abc, add, var.add, f.sumstats, pkg))
   }
   
   if (parallel) {
@@ -388,36 +340,11 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
     }
   }
   
-  if (multi == "seqcom"){ # Results stored in a list
-    stats <- list()
-    params.sim <- list()
-    for (i in 1:nb.com){
-      stats[[i]] <- lapply(models, function(x) x$sum.stats[[i]])
-      params.sim[[i]] <- lapply(models, function(x) x$param)
-    }
-    stats <- lapply(stats, function(x) t(data.frame(x)))
-    stats<- lapply(stats, function(x) {
-      rownames(x) <- NULL
-      return(x)
-    })
-    
-    params.sim <- lapply(params.sim, function(x) t(data.frame(x)))
-    params.sim <- lapply(params.sim, function(x) {
-      rownames(x) <- NULL
-      return(x)
-    })
-    params.sim <- lapply(params.sim, function(x, prior) {
-      colnames(x) <- names(prior)
-    return(x)
-    }, prior = prior)
-  }
-  else {
-    stats <- t(data.frame(lapply(models, function(x) x$sum.stats)))
-    rownames(stats) <- NULL
-    params.sim <- t(data.frame(lapply(models, function(x) x$param)))
-    rownames(params.sim) <- NULL
-    colnames(params.sim) <- names(prior)
-  }
+  stats <- t(data.frame(lapply(models, function(x) x$sum.stats)))
+  rownames(stats) <- NULL
+  params.sim <- t(data.frame(lapply(models, function(x) x$param)))
+  rownames(params.sim) <- NULL
+  colnames(params.sim) <- names(prior)
   
   return(list(stats = stats, params.sim = params.sim))
 }
