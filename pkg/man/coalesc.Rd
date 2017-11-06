@@ -8,8 +8,8 @@ Coalescent-based simulation of ecological communities undergoing both neutral an
 Simulates the composition of a community based on immigration from a regional pool, habitat filtering depending on local environment and species traits, and local birth-death stochastic dynamics. 
 }
 \usage{
-coalesc(J, m = 1, theta = NULL, filt = NULL, pool = NULL, traits = NULL, 
-        Jpool = 50 * J, verbose = FALSE)
+coalesc(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL, pool = NULL, 
+        traits = NULL, Jpool = 50 * J, verbose = FALSE)
 }
 \arguments{
  \item{J}{
@@ -23,6 +23,12 @@ parameter of neutral dynamics in the regional pool (used only if \code{pool=NULL
 }
  \item{filt}{
 a function representing the effect of local habitat filtering. For a given trait value \code{t}, \code{filt(t)} represents the probability that an individual with trait \code{t} enters the local community. If \code{filt = NULL},  \code{coalesc()} provides a neutral community.
+}
+ \item{add}{
+indicates if additional variables must be passed to \code{filt}. It can be, for instance, environmental data conditioning the trait-based filtering in the community. Default is FALSE.
+}
+ \item{var.add}{
+additional variables to be passed to \code{filt} when \code{add = T}.
 }
  \item{pool}{
 the regional pool of species providing immigrants to the local community. It should include the label of individual on first column, and of its species on second column. If \code{pool = NULL}, the pool is simulated as a metacommunity at speciation-drift equilibrium, based on parameter \code{theta}. The provided \code{pool} can contain trait values for each individuals in a third column.

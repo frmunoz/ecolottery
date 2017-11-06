@@ -1,10 +1,13 @@
-coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
+coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL, pool = NULL,
                     traits = NULL, Jpool = 50*J, verbose = FALSE) {
   
   # Check parameters
   if (is.null(theta) & is.null(pool)) {
     stop("You must provide either regional pool composition or a theta value")
   }
+  
+  if((add & is.null(var.add)) | (!add & !is.null(var.add))) 
+    warning("No additional variables are passed to filt")
   
   if(length(m)>1 | length(theta)>1) {
     stop("m and theta cannot be vectors of length greater than 1")
@@ -142,14 +145,22 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, pool = NULL,
   ## Define environmental filter
         
   if (!is.null(filt)) {
-    env_filter <- function(x) t(apply(x,1,function(y) filt(y)))
+    if(!add)
+    {
+      env_filter <- function(x) t(apply(x,1,function(y) filt(y)))
+    } else 
+    {
+      env_filter <- function(x, var.add) t(apply(x,1,function(y) filt(y, var.add)))
+    }
   } else {
     env_filter <- function(x) t(apply(x,1,function(y) 1))
   }
   
   # Environmental filter should not provide negative values
   
-  prob <- env_filter(ind_pool_traits)
+  if(!add) 
+    prob <- env_filter(ind_pool_traits)
+  else prob <- env_filter(ind_pool_traits, var.add)
   
   if (any(prob < 0)) {
       if (verbose) {
