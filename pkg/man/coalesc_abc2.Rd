@@ -14,9 +14,9 @@
   in the package \code{EasyABC} for ABC processing.
 }
 \usage{
-  coalesc_abc2(comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats, filt.abc, 
-  params,  theta.max = NULL, nb.samp = 10^6, parallel = T, tol = NULL, type = "seq", 
-  method.seq = "Beaumont", method.mcmc = "Marjoram",
+  coalesc_abc2(comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats,
+  filt.abc, params,  theta.max = NULL, nb.samp = 10^6, parallel = T, tol = NULL, 
+  type = "seq", method.seq = "Beaumont", method.mcmc = "Marjoram",
   method.abc = NULL)
 }
 \arguments{
@@ -210,7 +210,8 @@ row.names(params) <- c("topt", "sigmaopt")
 # Number of values to sample in prior distributions
 nb.samp <- 1000 # Should be large
 
-comm.abc2 <- coalesc_abc2(comm$com, comm$pool, f.sumstats=f.sumstats, filt.abc=filt_gaussian, params=params, nb.samp=nb.samp)
+comm.abc2 <- coalesc_abc2(comm$com, comm$pool, f.sumstats=f.sumstats, filt.abc=filt_gaussian,
+params=params, nb.samp=nb.samp)
 }
 }
 
