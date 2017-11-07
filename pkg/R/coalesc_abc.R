@@ -67,12 +67,17 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
       # comm.obs is a species-by-site matrix/data.frame
       J <- apply(comm.obs, 1, function(x) sum(x, na.rm = TRUE))
       # if the dataset includes relative proportions, the columns must sum to 1
-      if(prop & any(J!=1)) stop("Relative species abundances must sum to 1")
+      if(prop & any(J != 1)) 
+        stop("Relative species abundances must sum to 1")
+      if(!prop & any(round(J) != J)) 
+        stop("Species abundance must be integer values. Consider using prop = T for proportion data")
       nb.com <- nrow(comm.obs)
     } else if (multi == "seqcom") {
       # comm.obs is a list of communities with individuals on rows in each
       # community
-      J <- lapply(comm.obs, nrow)
+      J <- unlist(lapply(comm.obs, nrow))
+      if(any(round(J) != J)) 
+        stop("Species abundance must be integer values. Consider using prop = T for proportion data")
       nb.com <- length(comm.obs)
     }
   }
@@ -130,7 +135,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     {
       add.obs <- t(data.frame(stats.obs))
       colnames(add.obs) <- colnames(sim$stats.pca$tab)
-      stats.obs.scaled <- suprow(sim$stats.pca, add.obs)$lisup
+      stats.obs.scaled <- ade4::suprow(sim$stats.pca, add.obs)$lisup
     }
     
     if (is.null(tol)){
@@ -273,13 +278,15 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
           
           for (i in 1:nb.com) {
             try({
-              comm.samp <- ecolottery::coalesc(J[i], m = params.samp[length(params.samp)],
+              J.loc <- ifelse(length(J)>1, J[i], J)
+              comm.samp <- ecolottery::coalesc(J.loc, m = params.samp[length(params.samp)],
                                    filt = filt,
                                    add = add,
                                    var.add = var.add[i,],
-                                   pool = pool, traits = traits)
+                                  pool = pool, traits = traits)
               tab <- table(comm.samp$com[,2])
               meta.samp[i,names(tab)] <- tab
+              if(prop) meta.samp[i,] <- meta.samp[i,]/sum(meta.samp[i,])
             })
           }
           
