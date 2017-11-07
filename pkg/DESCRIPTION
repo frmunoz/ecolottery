@@ -16,6 +16,7 @@ Depends:
     R (>= 3.0.2)
 Imports:
     abc,
+    ade4,
     stats,
     graphics,
     ggplot2,

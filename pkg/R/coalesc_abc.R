@@ -1,7 +1,7 @@
 coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
                         f.sumstats, filt.abc = NULL, add = F, var.add = NULL,
-                        params = NULL, theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
-                        tol = NULL, pkg = NULL, method = "rejection")
+                        params = NULL, dim.pca = NULL, theta.max = NULL, nb.samp = 10^6, 
+                        parallel = TRUE, tol = NULL, pkg = NULL, method = "rejection")
 {
   
   if(!method%in%c("rejection", "loclinear", "neuralnet", "ridge"))
@@ -103,30 +103,45 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   
   # Community simulation
   sim <- do.simul(J, pool, multi, prop, nb.com, traits, f.sumstats, filt.abc, add, var.add, 
-                  params, theta.max, nb.samp, parallel, tol, pkg, method)
+                  params, dim.pca, theta.max, nb.samp, parallel, tol, pkg, method)
   
   # Scaling f.sumstats criterions for simulations
-  stats.mean <- apply(sim$stats, 2, function(x) mean(x, na.rm = TRUE))
-  stats.sd <- apply(sim$stats, 2, function(x) sd(x, na.rm = TRUE))
-  sim$stats.scaled <- t(apply(sim$stats, 1,
+  if(is.null(dim.pca))
+  {
+    stats.mean <- apply(sim$stats, 2, function(x) mean(x, na.rm = TRUE))
+    stats.sd <- apply(sim$stats, 2, function(x) sd(x, na.rm = TRUE))
+    sim$stats.scaled <- t(apply(sim$stats, 1,
                               function(x) (x - stats.mean)/stats.sd))
-  colnames(sim$stats.scaled) <- colnames(sim$stats)
+    colnames(sim$stats.scaled) <- colnames(sim$stats)
+  } else 
+  {
+    # Use scores on PCA dimensions
+    sim$stats.scaled <- sim$stats.pca$l1
+    colnames(sim$stats.scaled) <- colnames(sim$stats)
+  }
   
   if (is.null(tol)){
     res.abc <- NA
   } else {
-    stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
+    if(is.null(dim.pca))
+    {
+      stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
+    } else
+    {
+      add.obs <- t(data.frame(stats.obs))
+      colnames(add.obs) <- colnames(sim$stats.pca$tab)
+      stats.obs.scaled <- suprow(sim$stats.pca, add.obs)$lisup
+    }
     
     if (is.null(tol)){
       res.abc <- NA
     } else {
       # ABC estimation
-      sel <- which(rowSums(is.na(sim$stats.scaled)) == 0)
       
       res.abc <- tryCatch(
         abc::abc(target = stats.obs.scaled,
-                 param = sim$params.sim[sel,],
-                 sumstat = sim$stats.scaled[sel,],
+                 param = sim$params.sim,
+                 sumstat = sim$stats.scaled,
                  tol = tol,
                  method = method),
         error = function(x) {
@@ -139,15 +154,20 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     }
   }
   
-  return(list(par = sim$params.sim, obs = stats.obs,
+  if(is.null(dim.pca))
+    return(list(par = sim$params.sim, obs = stats.obs,
               obs.scaled = stats.obs.scaled, ss = sim$stats.scaled,
               ss.scale = data.frame(mean=stats.mean,sd=stats.sd),
               abc = res.abc))
+  else
+    return(list(par = sim$params.sim, obs = stats.obs,
+                obs.scaled = stats.obs.scaled, ss = sim$stats.scaled,
+                abc = res.abc))
 }
 
 do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
                      traits = NULL, f.sumstats = NULL, filt.abc = NULL, 
-                     add = F, var.add = NULL, params,
+                     add = F, var.add = NULL, params, dim.pca = NULL,
                      theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
                      tol = NULL, pkg = NULL, method = "rejection") {
   
@@ -346,5 +366,17 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
   rownames(params.sim) <- NULL
   colnames(params.sim) <- names(prior)
   
-  return(list(stats = stats, params.sim = params.sim))
+  # Remove simulations for which some summary statistics ate NA
+  sel <- which(rowSums(is.na(stats)) == 0)
+  params.sim <- params.sim[sel,]
+  stats <- stats[sel,]
+  
+  if(is.null(dim.pca))
+  {
+    return(list(stats = stats, params.sim = params.sim))
+  } else
+  {
+    stats.pca <- ade4::dudi.pca(stats, scannf = F, nf = dim.pca) 
+    return(list(stats = stats, stats.pca = stats.pca, params.sim = params.sim))
+  }
 }
