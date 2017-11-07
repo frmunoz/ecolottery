@@ -15,12 +15,12 @@
 \usage{
   coalesc_abc(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
               f.sumstats, filt.abc = NULL, add = F, var.add = NULL,
-              params = NULL, theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
-              tol = NULL, pkg = NULL, method = "rejection")
+              params = NULL, dim.pca = NULL, theta.max = NULL, nb.samp = 10^6, 
+              parallel = TRUE, tol = NULL, pkg = NULL, method = "rejection")
   do.simul(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
               traits = NULL, f.sumstats = NULL, filt.abc = NULL,
-              add = F, var.add = NULL, params, theta.max = NULL, nb.samp = 10^6, 
-              parallel = TRUE, tol = NULL, pkg = NULL,
+              add = F, var.add = NULL, params, dim.pca = NULL, theta.max = NULL, 
+              nb.samp = 10^6, parallel = TRUE, tol = NULL, pkg = NULL,
               method = "rejection")
 }
 \arguments{
@@ -81,6 +81,10 @@
     names of \code{params} provide the parameter names used in ABC calculation
     and output. First column contains minimum values and second column contains
     maximum values.
+  }
+  \item{dim.pca}{
+    gives a number of independent dimensions to calculate from the simulated summary statistics, by performing
+    Principal Component Analysis (PCA). Default is \code{NULL}, in which case no PCA is performed.
   }
   \item{theta.max}{
     if \code{pool = NULL}, regional abundances will be simulated following a
