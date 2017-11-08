@@ -15,13 +15,14 @@
 \usage{
   coalesc_abc(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
               f.sumstats, filt.abc = NULL, add = F, var.add = NULL,
-              params = NULL, dim.pca = NULL, theta.max = NULL, nb.samp = 10^6, 
-              parallel = TRUE, tol = NULL, pkg = NULL, method = "rejection")
+              params = NULL, dim.pca = NULL, svd = F, theta.max = NULL, 
+              nb.samp = 10^6, parallel = TRUE, tol = NULL, pkg = NULL, 
+              method = "rejection")
   do.simul(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
               traits = NULL, f.sumstats = NULL, filt.abc = NULL,
-              add = F, var.add = NULL, params, dim.pca = NULL, theta.max = NULL, 
-              nb.samp = 10^6, parallel = TRUE, tol = NULL, pkg = NULL,
-              method = "rejection")
+              add = F, var.add = NULL, params, dim.pca = NULL, svd = F, 
+              theta.max = NULL, nb.samp = 10^6, parallel = TRUE, tol = NULL, 
+              pkg = NULL, method = "rejection")
 }
 \arguments{
   \item{comm.obs}{
@@ -85,6 +86,11 @@
   \item{dim.pca}{
     gives a number of independent dimensions to calculate from the simulated summary statistics, by performing
     Principal Component Analysis (PCA). Default is \code{NULL}, in which case no PCA is performed.
+    If \code{svd = T}, Singular Value Decomposition (SVD) will be performed instead of PCA.
+  }
+  \item{svd}{
+    indicates if Singular Value Decomposition (SVD) must be performed to get the basic dimensions requested in 
+    \code{dim.pca}. Will be ignored if \code{dim.pca = NULL}.
   }
   \item{theta.max}{
     if \code{pool = NULL}, regional abundances will be simulated following a

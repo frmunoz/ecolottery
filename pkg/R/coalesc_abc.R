@@ -1,6 +1,6 @@
 coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
                         f.sumstats, filt.abc = NULL, add = F, var.add = NULL,
-                        params = NULL, dim.pca = NULL, theta.max = NULL, nb.samp = 10^6, 
+                        params = NULL, dim.pca = NULL, svd = F, theta.max = NULL, nb.samp = 10^6, 
                         parallel = TRUE, tol = NULL, pkg = NULL, method = "rejection")
 {
   
@@ -108,7 +108,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   
   # Community simulation
   sim <- do.simul(J, pool, multi, prop, nb.com, traits, f.sumstats, filt.abc, add, var.add, 
-                  params, dim.pca, theta.max, nb.samp, parallel, tol, pkg, method)
+                  params, dim.pca, svd, theta.max, nb.samp, parallel, tol, pkg, method)
   
   # Scaling f.sumstats criterions for simulations
   if(is.null(dim.pca))
@@ -120,9 +120,16 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     colnames(sim$stats.scaled) <- colnames(sim$stats)
   } else 
   {
-    # Use scores on PCA dimensions
-    sim$stats.scaled <- sim$stats.pca$l1
-    colnames(sim$stats.scaled) <- colnames(sim$stats)
+    if(!svd)
+    {
+      # Use scores on PCA dimensions
+      sim$stats.scaled <- sim$stats.pca$l1
+      colnames(sim$stats.scaled) <- colnames(sim$stats)
+    } else
+    {
+      # Use scores derived from SVD
+      sim$stats.scaled <- sim$stats.svd$u%*%diag(sim$stats.svd$d)[,1:dim.pca]
+    }
   }
   
   if (is.null(tol)){
@@ -133,9 +140,19 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
       stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
     } else
     {
-      add.obs <- t(data.frame(stats.obs))
-      colnames(add.obs) <- colnames(sim$stats.pca$tab)
-      stats.obs.scaled <- ade4::suprow(sim$stats.pca, add.obs)$lisup
+      if(!svd)
+      {
+        add.obs <- t(data.frame(stats.obs))
+        colnames(add.obs) <- colnames(sim$stats.pca$tab)
+        stats.obs.scaled <- ade4::suprow(sim$stats.pca, add.obs)$lisup
+      } else
+      {
+        stats.obs.scaled <- sim$stats.scaled[nrow(sim$stats.scaled),]
+        sim$stats.scaled <- sim$stats.scaled[-nrow(sim$stats.scaled),]
+        # For debug
+        if(nrow(sim$stats.scaled)!=nrow(sim$params.sim)) stop("stats.scaled and params.sim must have
+                                                              the same number of rows")
+      }
     }
     
     if (is.null(tol)){
@@ -172,7 +189,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
 
 do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
                      traits = NULL, f.sumstats = NULL, filt.abc = NULL, 
-                     add = F, var.add = NULL, params, dim.pca = NULL,
+                     add = F, var.add = NULL, params, dim.pca = NULL, svd = F,
                      theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
                      tol = NULL, pkg = NULL, method = "rejection") {
   
@@ -383,7 +400,16 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
     return(list(stats = stats, params.sim = params.sim))
   } else
   {
-    stats.pca <- ade4::dudi.pca(stats, scannf = F, nf = dim.pca) 
-    return(list(stats = stats, stats.pca = stats.pca, params.sim = params.sim))
+    if(!svd)
+    {
+      stats.pca <- ade4::dudi.pca(stats, scannf = F, nf = dim.pca) 
+      return(list(stats = stats, stats.pca = stats.pca, params.sim = params.sim))
+    } else
+    {
+      bigtab <- rbind(stats, stats.obs)
+      bigtab <- scale(bigtab)
+      bigtab.svd <- svd(bigtab)
+      return(list(stats = stats, stats.svd = bigtab.svd, params.sim = params.sim))
+    }
   }
 }
