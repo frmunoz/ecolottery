@@ -110,6 +110,15 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   sim <- do.simul(J, pool, multi, prop, nb.com, traits, f.sumstats, filt.abc, add, var.add, 
                   params, dim.pca, svd, theta.max, nb.samp, parallel, tol, pkg, method)
   
+  if(sum(sel.ss)!=length(stats.obs))
+  {
+    # Remove summary statistics that failed in simulation
+    stats.obs <- stats.obs[sim$sel.ss]
+    
+    warning("Some summary statistics yielded many NA values and have been 
+            withdrawn. Please consider redifining these statistics or changing the prior distributions.")
+  }
+  
   # Scaling f.sumstats criterions for simulations
   if(is.null(dim.pca))
   {
@@ -117,20 +126,23 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     stats.sd <- apply(sim$stats, 2, function(x) sd(x, na.rm = TRUE))
     sim$stats.scaled <- t(apply(sim$stats, 1,
                               function(x) (x - stats.mean)/stats.sd))
-    colnames(sim$stats.scaled) <- colnames(sim$stats)
   } else 
   {
     if(!svd)
     {
-      # Use scores on PCA dimensions
-      sim$stats.scaled <- sim$stats.pca$l1
-      colnames(sim$stats.scaled) <- colnames(sim$stats)
+        stats.pca <- ade4::dudi.pca(rbind(sim$stats, stats.obs), scannf = F, nf = dim.pca) 
+        # Use scores on PCA dimensions
+        sim$stats.scaled <- sim$stats.pca$l1
     } else
     {
+      bigtab <- rbind(sim$stats, stats.obs)
+      bigtab <- scale(bigtab)
+      stats.svd <- svd(bigtab)
       # Use scores derived from SVD
-      sim$stats.scaled <- sim$stats.svd$u%*%diag(sim$stats.svd$d)[,1:dim.pca]
+      sim$stats.scaled <- (stats.svd$u%*%diag(stats.svd$d))[,1:dim.pca]
     }
   }
+  colnames(sim$stats.scaled) <- colnames(sim$stats)
   
   if (is.null(tol)){
     res.abc <- NA
@@ -140,51 +152,45 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
       stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
     } else
     {
-      if(!svd)
-      {
-        add.obs <- t(data.frame(stats.obs))
-        colnames(add.obs) <- colnames(sim$stats.pca$tab)
-        stats.obs.scaled <- ade4::suprow(sim$stats.pca, add.obs)$lisup
-      } else
-      {
-        stats.obs.scaled <- sim$stats.scaled[nrow(sim$stats.scaled),]
-        sim$stats.scaled <- sim$stats.scaled[-nrow(sim$stats.scaled),]
-        # For debug
-        if(nrow(sim$stats.scaled)!=nrow(sim$params.sim)) stop("stats.scaled and params.sim must have
+      stats.obs.scaled <- sim$stats.scaled[nrow(sim$stats.scaled),]
+      sim$stats.scaled <- sim$stats.scaled[-nrow(sim$stats.scaled),]
+      # For debug
+      if(nrow(sim$stats.scaled)!=nrow(sim$params.sim)) stop("stats.scaled and params.sim must have
                                                               the same number of rows")
-      }
     }
+  }
     
-    if (is.null(tol)){
-      res.abc <- NA
-    } else {
-      # ABC estimation
-      
-      res.abc <- tryCatch(
-        abc::abc(target = stats.obs.scaled,
-                 param = sim$params.sim,
-                 sumstat = sim$stats.scaled,
-                 tol = tol,
-                 method = method),
-        error = function(x) {
-          warning("ABC computation failed with the requested method.")
-        }
-      )
-      if (is.character(res.abc)){
-        res.abc <- NA
+  if (is.null(tol)){
+    res.abc <- NA
+  } else {
+    # ABC estimation
+    res.abc <- tryCatch(
+      abc::abc(target = stats.obs.scaled,
+               param = sim$params.sim,
+               sumstat = sim$stats.scaled,
+               tol = tol,
+               method = method),
+      error = function(x) {
+        warning("ABC computation failed with the requested method.")
       }
+    )
+    if (is.character(res.abc)){
+      res.abc <- NA
     }
   }
   
   if(is.null(dim.pca))
+  {
     return(list(par = sim$params.sim, obs = stats.obs,
-              obs.scaled = stats.obs.scaled, ss = sim$stats.scaled,
-              ss.scale = data.frame(mean=stats.mean,sd=stats.sd),
-              abc = res.abc))
-  else
+                obs.scaled = stats.obs.scaled, ss = sim$stats.scaled,
+                ss.scale = data.frame(mean=stats.mean,sd=stats.sd),
+                abc = res.abc))
+  } else
+  {
     return(list(par = sim$params.sim, obs = stats.obs,
                 obs.scaled = stats.obs.scaled, ss = sim$stats.scaled,
                 abc = res.abc))
+  }
 }
 
 do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
@@ -390,26 +396,16 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
   rownames(params.sim) <- NULL
   colnames(params.sim) <- names(prior)
   
-  # Remove simulations for which some summary statistics ate NA
-  sel <- which(rowSums(is.na(stats)) == 0)
-  params.sim <- params.sim[sel,]
-  stats <- stats[sel,]
+  # Remove simulations for which some summary statistics are NA
+  #sel <- which(rowSums(is.na(stats)) == 0)
+  #params.sim <- params.sim[sel,]
+  #stats <- stats[sel,]
+  # Remove summary statistics with more than 50% NA
+  sel.ss <- colSums(is.na(stats))<nrow(stats)/2
+  # Remove rows with NA
+  sel.row <- rowSums(is.na(stats[, sel.ss]))==0
+  stats.sel <- stats[sel.row, sel.ss]
+  params.sim.sel  <- params.sim[sel.row, ]
   
-  if(is.null(dim.pca))
-  {
-    return(list(stats = stats, params.sim = params.sim))
-  } else
-  {
-    if(!svd)
-    {
-      stats.pca <- ade4::dudi.pca(stats, scannf = F, nf = dim.pca) 
-      return(list(stats = stats, stats.pca = stats.pca, params.sim = params.sim))
-    } else
-    {
-      bigtab <- rbind(stats, stats.obs)
-      bigtab <- scale(bigtab)
-      bigtab.svd <- svd(bigtab)
-      return(list(stats = stats, stats.svd = bigtab.svd, params.sim = params.sim))
-    }
-  }
+  return(list(stats = stats.sel, params.sim = params.sim.sel, sel.ss=sel.ss))
 }
