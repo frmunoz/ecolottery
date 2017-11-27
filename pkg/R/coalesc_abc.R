@@ -15,8 +15,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   if(prop & multi!="tab")
     stop("prop data can only be handled in tab format")
   
-  if (length(formals(f.sumstats)) > 2) {
-    stop("f.sumstats must be a function of up to two arguments")
+  if (length(formals(f.sumstats)) > 3) {
+    stop("f.sumstats must be a function of up to three arguments")
   }
   
   if (is.null(tol)){
@@ -100,10 +100,12 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     warning("Trait information is not provided")
   }
   
-  if (length(formals(f.sumstats))==1) {
-    stats.obs <- f.sumstats(comm.obs)
+  if (length(formals(f.sumstats)) == 1) {
+    stats.samp <- f.sumstats(comm.obs)
+  } else if (length(formals(f.sumstats)) == 2) {
+    stats.samp <- f.sumstats(comm.obs, traits)
   } else {
-    stats.obs <- f.sumstats(comm.obs, traits)
+    stats.samp <- f.sumstats(comm.obs, traits, var.add)
   }
   
   # Community simulation
@@ -205,7 +207,21 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
     parallel <- FALSE
   }
   
-  if (parallel) {
+  if(length(formals(f.sumstats))>1 & is.null(traits))
+  {
+    if(ncol(pool) >= 3) {
+      traits <- data.frame(apply(data.frame(pool[,-(1:2)]), 2,
+                                 function(x) {
+                                   tapply(x, pool[, 2],
+                                          function(y)
+                                            mean(y, na.rm = TRUE)
+                                   )}))
+    } else {
+      stop("Missing trait information")
+    }
+  }
+  if
+  (parallel) {
     # Start up a parallel cluster
     parCluster <- parallel::makeCluster(max(1, parallel::detectCores() - 1))
   }
@@ -313,11 +329,14 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
             })
           }
           
-          if (length(formals(f.sumstats))==1) {
+          if (length(formals(f.sumstats)) == 1) {
             stats.samp <- f.sumstats(meta.samp)
-          } else {
+          } else if (length(formals(f.sumstats)) == 2) {
             stats.samp <- f.sumstats(meta.samp, traits)
-            }
+          } else {
+            stats.samp <- f.sumstats(meta.samp, traits, var.add)
+          }
+          
         } else if(multi == "seqcom") {
           seqcom.samp <- list()
           
@@ -333,8 +352,10 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
           }
           if (length(formals(f.sumstats)) == 1) {
             stats.samp <- f.sumstats(seqcom.samp)
-          } else {
+          } else if (length(formals(f.sumstats)) == 2) {
             stats.samp <- f.sumstats(seqcom.samp, traits)
+          } else {
+            stats.samp <- f.sumstats(seqcom.samp, traits, var.add)
           }
         }
       
@@ -346,10 +367,12 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
                              var.add = var.add,
                              pool = pool, traits = traits)
         if(prop) comm.samp$com <- t(table(comm.samp$com[,2])/J)
-        if (length(formals(f.sumstats))==1) {
-          stats.samp <- f.sumstats(comm.samp$com)
+        if (length(formals(f.sumstats)) == 1) {
+          stats.samp <- f.sumstats(comm.samp)
+        } else if (length(formals(f.sumstats)) == 2) {
+          stats.samp <- f.sumstats(comm.samp, traits)
         } else {
-          stats.samp <- f.sumstats(comm.samp$com, traits)
+          stats.samp <- f.sumstats(comm.samp, traits, var.add)
         }
       }
           
