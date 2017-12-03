@@ -220,8 +220,8 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
       stop("Missing trait information")
     }
   }
-  if
-  (parallel) {
+  
+  if(parallel) {
     # Start up a parallel cluster
     parCluster <- parallel::makeCluster(max(1, parallel::detectCores() - 1))
   }
@@ -426,7 +426,7 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
   # Remove summary statistics with more than 50% NA
   sel.ss <- colSums(is.na(stats))<nrow(stats)/2
   # Remove rows with NA
-  sel.row <- rowSums(is.na(stats[, sel.ss]))==0
+  sel.row <- rowSums(is.na(data.frame(stats[, sel.ss])))==0
   stats.sel <- stats[sel.row, sel.ss]
   params.sim.sel  <- params.sim[sel.row, ]
   
