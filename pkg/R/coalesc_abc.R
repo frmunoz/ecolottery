@@ -67,8 +67,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
       # comm.obs is a species-by-site matrix/data.frame
       J <- apply(comm.obs, 1, function(x) sum(x, na.rm = TRUE))
       # if the dataset includes relative proportions, the columns must sum to 1
-      if(prop & any(J != 1)) 
-        stop("Relative species abundances must sum to 1")
+      #if(prop & any(J != 1)) 
+      #  stop("Relative species abundances must sum to 1")
       if(!prop & any(round(J) != J)) 
         stop("Species abundance must be integer values. Consider using prop = T for proportion data")
       nb.com <- nrow(comm.obs)
@@ -112,7 +112,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   sim <- do.simul(J, pool, multi, prop, nb.com, traits, f.sumstats, filt.abc, add, var.add, 
                   params, dim.pca, svd, theta.max, nb.samp, parallel, tol, pkg, method)
   
-  if(sum(sel.ss)!=length(stats.obs))
+  if(sum(sim$sel.ss)!=length(stats.obs))
   {
     # Remove summary statistics that failed in simulation
     stats.obs <- stats.obs[sim$sel.ss]
@@ -325,7 +325,7 @@ do.simul <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
                                   pool = pool, traits = traits)
               tab <- table(comm.samp$com[,2])
               meta.samp[i,names(tab)] <- tab
-              if(prop) meta.samp[i,] <- meta.samp[i,]/sum(meta.samp[i,])
+              if(prop) meta.samp[i,] <- meta.samp[i,]/J.loc #sum(meta.samp[i,])
             })
           }
           
