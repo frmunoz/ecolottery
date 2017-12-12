@@ -159,8 +159,9 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   # Environmental filter should not provide negative values
   
   if(!add) 
+  {
     prob <- env_filter(ind_pool_traits)
-  else prob <- env_filter(ind_pool_traits, var.add)
+  } else prob <- env_filter(ind_pool_traits, var.add)
   
   if (any(prob < 0)) {
       if (verbose) {
