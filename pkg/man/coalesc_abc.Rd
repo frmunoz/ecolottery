@@ -1,6 +1,6 @@
 \name{coalesc_abc}
 \alias{coalesc_abc}
-\alias{do.simul}
+\alias{do.simul.coalesc}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
   Estimation of neutral and non-neutral parameters of community assembly using
@@ -18,7 +18,7 @@
               params = NULL, dim.pca = NULL, svd = F, theta.max = NULL, 
               nb.samp = 10^6, parallel = TRUE, tol = NULL, pkg = NULL, 
               method = "rejection")
-  do.simul(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
+  do.simul.coalesc(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
               traits = NULL, f.sumstats = NULL, filt.abc = NULL,
               add = F, var.add = NULL, params, dim.pca = NULL, svd = F, 
               theta.max = NULL, nb.samp = 10^6, parallel = TRUE, tol = NULL, 
@@ -135,7 +135,7 @@
 default) or several communities (if \code{multi = TRUE}) related to the same
 regional pool.
 
-\code{do.simul()} provides the simulated communities used in ABC estimation,
+\code{do.simul.coalesc()} provides the simulated communities used in ABC estimation,
 and is not intended to be used directly.
 
 }
