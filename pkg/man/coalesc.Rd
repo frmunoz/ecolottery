@@ -35,7 +35,7 @@ the regional pool of species providing immigrants to the local community. It sho
 }
  \item{traits}{
 a matrix or data.frame including one or several traits on columns. A unique trait value is assigned to each species in the regional pool. Species names of \code{pool} must be included in \code{traits}.
-If \code{traits = NULL}, a random trait value is given to species of the regional pool, from a uniform distribution between 0 and 1. 
+If \code{traits = NULL}  and trait information is absent from \code{pool}, a random trait value is given to species of the regional pool, from a uniform distribution between 0 and 1. 
 }
  \item{Jpool}{
 if \code{pool = NULL}, it is the number of individuals to be simulated in the regional pool.
