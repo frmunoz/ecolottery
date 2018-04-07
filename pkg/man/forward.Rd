@@ -15,9 +15,9 @@ generations.
 
 \usage{
 forward(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
-        pool = NULL, limit.sim = FALSE, coeff.lim.sim = 1,
-        sigm = 0.1, filt = NULL, prob.death = NULL,
-        method.dist = "euclidean", plot_gens = FALSE)
+        pool = NULL, traits = NULL, limit.sim = FALSE, coeff.lim.sim = 1,
+        sigm = 0.1, filt = NULL, add = F, var.add = NULL, 
+        prob.death = NULL, method.dist = "euclidean", plot_gens = FALSE)
 get_number_of_gens(given_size, pool, nbrep = 5, prob = 1, d = 1, 
                    gens = NULL, limit.sim = FALSE, 
                    coeff.lim.sim = 1, sigm = 0.1, filt = NULL, 
@@ -63,6 +63,10 @@ value is given to individuals, from a uniform distribution between 0 and 1.
 If \code{NULL}, the pool is simulated as a metacommunity at speciation-drift
 equilibrium, based on \code{prob} for speciation rate.
 }
+ \item{traits}{
+a matrix or data.frame including one or several traits on columns. A unique trait value is assigned to each species in the regional pool. Species names of \code{pool} must be included in \code{traits}.
+If \code{traits = NULL} and trait information is absent from \code{pool}, a random trait value is given to species of the regional pool, from a uniform distribution between 0 and 1. 
+}
  \item{given_size}{
 size of the community you want to have an estimate of the number of generations
 needed to reach stationarity in species richness.
@@ -87,6 +91,12 @@ similarity.
 the function used to represent habitat filtering. For a given trait value
 \code{t}, \code{filt(t)} represents the probability that an individual with
 trait \code{t} enters the local community.
+}
+ \item{add}{
+indicates if additional variables must be passed to \code{filt}. It can be, for instance, environmental data conditioning the trait-based filtering in the community. Default is FALSE.
+}
+ \item{var.add}{
+additional variables to be passed to \code{filt} when \code{add = T}.
 }
  \item{prob.death}{
 provides a baseline probability of death that is homogeneous across species. It
