@@ -1,8 +1,8 @@
 # Function to compute forward simulation of community dynamics with (eventually)
 # environmental filtering
 forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
-                    pool = NULL, limit.sim = FALSE, coeff.lim.sim = 1,
-                    sigm = 0.1, filt = NULL, prob.death = NULL,
+                    pool = NULL, traits = NULL, limit.sim = FALSE, coeff.lim.sim = 1,
+                    sigm = 0.1, filt = NULL, add = F, var.add = NULL, prob.death = NULL,
                     method.dist = "euclidean", plot_gens = FALSE) {
   # The function will stop if niche - based dynamics is requested, but trait
   # information is missing in the local community
@@ -44,6 +44,9 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   if (!is.null(filt) & !is.function(filt)) {
     stop("filt() must be a function.")
   }    
+  
+  if((add & is.null(var.add)) | (!add & !is.null(var.add))) 
+    warning("No additional variables are passed to filt")
   
   if ((method.dist %in% c("euclidean", "maximum", "manhattan", "canberra",
                           "binary", "minkowski")) == FALSE) {
@@ -101,13 +104,27 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     } else if (ncol(pool) == 2) {
       message("No trait information provided in the regional pool")
     }
-    if ((!limit.sim | !is.null(filt)) & ncol(pool) < 3) {
+    if ((!limit.sim | !is.null(filt)) & is.null(traits) & ncol(pool) < 3) {
       pool[, 3] <- runif(nrow(pool))
       
       message("Random (uniform) trait values attributed to individuals of ",
               "the regional pool")
     }
     colnames(pool) <- c("id", "sp", "trait")
+  }
+  
+  if (is.null(traits) & (is.null(pool) | NCOL(pool) < 3)) {
+    if (verbose) warning("No trait information provided in the regional pool")
+  }
+  
+  if (!is.null(traits) & is.null(colnames(traits))) {
+    colnames(traits) <- paste("tra", 1:ncol(traits), sep = "")
+  }
+  if (!is.null(pool) & is.null(colnames(pool))) {
+    if (ncol(pool) > 2) {
+      colnames(pool) <- c("ind", "sp", paste("tra", 1:(ncol(pool) - 2),
+                                             sep = ""))
+    }
   }
   
   # "init_comm" is a 3 columns matrix of individuals in the initial community,
