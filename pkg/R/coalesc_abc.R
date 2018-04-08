@@ -101,11 +101,11 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   }
   
   if (length(formals(f.sumstats)) == 1) {
-    stats.samp <- f.sumstats(comm.obs)
+    stats.obs <- f.sumstats(comm.obs)
   } else if (length(formals(f.sumstats)) == 2) {
-    stats.samp <- f.sumstats(comm.obs, traits)
+    stats.obs <- f.sumstats(comm.obs, traits)
   } else {
-    stats.samp <- f.sumstats(comm.obs, traits, var.add)
+    stats.obs <- f.sumstats(comm.obs, traits, var.add)
   }
   
   # Community simulation
@@ -148,6 +148,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   
   if (is.null(tol)){
     res.abc <- NA
+    stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
   } else {
     if(is.null(dim.pca))
     {
@@ -368,11 +369,11 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                              pool = pool, traits = traits)
         if(prop) comm.samp$com <- t(table(comm.samp$com[,2])/J)
         if (length(formals(f.sumstats)) == 1) {
-          stats.samp <- f.sumstats(comm.samp)
+          stats.samp <- f.sumstats(comm.samp$com)
         } else if (length(formals(f.sumstats)) == 2) {
-          stats.samp <- f.sumstats(comm.samp, traits)
+          stats.samp <- f.sumstats(comm.samp$com, traits)
         } else {
-          stats.samp <- f.sumstats(comm.samp, traits, var.add)
+          stats.samp <- f.sumstats(comm.samp$com, traits, var.add)
         }
       }
           
