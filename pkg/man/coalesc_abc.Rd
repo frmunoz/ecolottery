@@ -212,7 +212,7 @@ comm <- coalesc(J = 400, m = 0.5, theta = 50,
 ## Warning: this function may take a while
 res <- coalesc_abc(comm$com, comm$pool, f.sumstats = f.sumstats,
                    filt.abc = filt_gaussian, params = params, 
-                   nb.samp = nb.samp, parallel = TRUE, tol = 0.1,
+                   nb.samp = nb.samp, parallel = TRUE, tol = 0.5,
                    pkg = c("e1071","vegan"), method = "neuralnet")
 plot(res$abc, param = res$par)
 hist(res$abc)
