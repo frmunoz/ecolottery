@@ -114,7 +114,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   }
   
   if (is.null(traits) & (is.null(pool) | NCOL(pool) < 3)) {
-    if (verbose) warning("No trait information provided in the regional pool")
+    warning("No trait information provided in the regional pool")
   }
   
   if (!is.null(traits) & is.null(colnames(traits))) {
