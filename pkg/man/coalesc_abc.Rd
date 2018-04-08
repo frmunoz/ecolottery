@@ -192,7 +192,7 @@ filt_gaussian <- function(t, params) exp(-(t-params[1])^2/(2*params[2]^2))
 params <- data.frame(rbind(c(0, 1), c(0.05, 1)))
 row.names(params) <- c("topt", "sigmaopt")
 # Number of values to sample in prior distributions
-nb.samp <- 10^6 # Should be large
+nb.samp <- 1000 # Should be large
 
 \dontrun{
 # Basic summary statistics
@@ -212,43 +212,20 @@ comm <- coalesc(J = 400, m = 0.5, theta = 50,
 ## Warning: this function may take a while
 res <- coalesc_abc(comm$com, comm$pool, f.sumstats = f.sumstats,
                    filt.abc = filt_gaussian, params = params, 
-                   nb.samp = nb.samp, parallel = TRUE, 
+                   nb.samp = nb.samp, parallel = TRUE, tol = 0.1,
                    pkg = c("e1071","vegan"), method = "neuralnet")
 plot(res$abc, param = res$par)
 hist(res$abc)
 
 # Cross validation
 ## Warning: this function is slow
-res$cv <- abc::cv4abc(param = res$par, sumstat = res$ss, nval = 1000,
+res$cv <- abc::cv4abc(param = res$par, sumstat = res$ss, nval = 100,
                       tols = c(0.01, 0.1, 1), method = "neuralnet")
 plot(res$cv)
 
 # Multiple community option
 # When the input is a site-species matrix, use argument multi="tab"
 # See vignette Barro_Colorado for more details
-
-# When the input is a list of communities, use argument multi="seqcom"
-comm.obs <- list()
-
-comm.obs[[1]] <- cbind(rep(1,400), coalesc(J = 400, m = 0.5, filt = function(x)
-                                           filt_gaussian(x, c(0.2, 0.1)),
-                                           pool = comm$pool)$com))
-comm.obs[[2]] <- cbind(rep(2,400), coalesc(J = 400, m = 0.5, filt = function(x) 
-                                           filt_gaussian(x, c(0.5, 0.1)),
-                                           pool = comm$pool)$com))
-comm.obs[[3]] <- cbind(rep(3,400), coalesc(J = 400, m = 0.5, filt = function(x) 
-                                           filt_gaussian(x, c(0.8, 0.1)),
-                                           pool = comm$pool)$com))
-
-comm.obs <- lapply(comm.obs, as.matrix)
-
-res <- coalesc_abc(comm.obs, comm$pool, multi="seqcom", f.sumstats=f.sumstats,
-                   filt.abc = filt_gaussian, params = params, nb.samp = nb.samp,
-                   parallel = TRUE, pkg = c("e1071","vegan"), tol = 0.1,
-                   method = "neuralnet")
-                   
-lapply(res$abc, summary)
-
 }
 }
 
