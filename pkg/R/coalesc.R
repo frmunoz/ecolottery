@@ -6,8 +6,9 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     stop("You must provide either regional pool composition or a theta value")
   }
   
-  if((add & is.null(var.add)) | (!add & !is.null(var.add))) 
+  if((add & is.null(var.add)) | (!add & !is.null(var.add))) {
     warning("No additional variables are passed to filt")
+  }
   
   if(length(m)>1 | length(theta)>1) {
     stop("m and theta cannot be vectors of length greater than 1")
@@ -119,7 +120,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     } else {
       # Generation of trait values if not provided by the user
       if (is.null(traits)) {
-        traits <- data.frame("tra" = runif(max(pool[,2])))
+        traits <- data.frame("tra" = runif(nlevels(as.factor(pool[,2]))))
+        rownames(traits) <- levels(as.factor(pool[,2]))
       } else {
         if(!is.null(rownames(traits)) & any(!ind_pool_sp %in% rownames(traits))) 
           stop("Species names in traits must match those in pool")
@@ -187,7 +189,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   ind_com_traits <- matrix(NA, nrow = J, ncol = ncol(ind_pool_traits))      
   
   # If migration rate = 0, ecological fixation
-  if (m == 0) {
+  # If J = 1, the community is made of an individual drawn from the pool
+  if (m == 0 | J == 1) {
     
     migrant <- sample(1:nrow(pool), 1, prob = prob)
     
@@ -200,8 +203,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     return(list(com = com, pool = pool))
   }
     
-  # If migration rate > 0
-  if (m < 1) {
+  # If migration rate > 0 and more than 1 individual in community
+  if (m < 1 & J > 1) {
     I <- m * (J - 1) / (1 - m) # Number of available immigrants
     X <- runif(J)
     # Probability that new migrant ancestor arrives in the community
