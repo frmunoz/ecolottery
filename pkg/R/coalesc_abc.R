@@ -12,9 +12,13 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
          "(f.sumstats)")
   }
   
-  if(prop & multi!="tab")
+  if(prop & multi!="tab") {
     stop("prop data can only be handled in tab format")
+  }
   
+  if(multi=="tab" & any(rowSums(comm.obs)==0)) {
+    stop("There should not be communities with 0 individuals")
+  }
   if (length(formals(f.sumstats)) > 3) {
     stop("f.sumstats must be a function of up to three arguments")
   }
@@ -241,7 +245,12 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   # the future
   
   prior[[length(prior) + 1]] <- runif(nb.samp, min = 0, max = 1)
-  names(prior)[nrow(params) + 1] <- "m"
+  if(!is.null(params)) {
+    names(prior)[nrow(params) + 1] <- "m"
+  } else
+  {
+    names(prior) <- "m"
+  }
   
   if(prop) 
   {
