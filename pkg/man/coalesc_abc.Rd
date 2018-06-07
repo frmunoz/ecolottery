@@ -21,7 +21,7 @@
   do.simul.coalesc(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
               traits = NULL, f.sumstats = NULL, filt.abc = NULL,
               add = F, var.add = NULL, params, dim.pca = NULL, svd = F, 
-              theta.max = NULL, nb.samp = 10^6, parallel = TRUE, tol = NULL, 
+              theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, 
               pkg = NULL, method = "rejection")
 }
 \arguments{
@@ -109,6 +109,10 @@
    boolean. If \code{parallel = TRUE}, the function will perform parallel
    processing using the \code{\link[=parLapply]{parLapply()}} function of
    package \code{parallel}.
+  }
+  \item{nb.core}{
+   number of cores to be used in parallel computation if \code{parallel = TRUE}. 
+   If \code{NULL}, all the cores minus 1 are used.
   }
   \item{tol}{
     the tolerance value used in ABC estimation (see help in

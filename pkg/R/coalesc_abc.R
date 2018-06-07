@@ -1,7 +1,7 @@
 coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
                         f.sumstats, filt.abc = NULL, add = F, var.add = NULL,
                         params = NULL, dim.pca = NULL, svd = F, theta.max = NULL, nb.samp = 10^6, 
-                        parallel = TRUE, tol = NULL, pkg = NULL, method = "rejection")
+                        parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, method = "rejection")
 {
   
   if(!method%in%c("rejection", "loclinear", "neuralnet", "ridge"))
@@ -228,7 +228,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   
   if(parallel) {
     # Start up a parallel cluster
-    parCluster <- parallel::makeCluster(max(1, parallel::detectCores() - 1))
+    if(is.null(nb.core)) nb.core <- parallel::detectCores() - 1
+    parCluster <- parallel::makeCluster(max(1, nb.core))
   }
   
   # Uniform prior distributions of parameters
