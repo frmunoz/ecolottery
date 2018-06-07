@@ -16,7 +16,7 @@
   coalesc_abc(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
               f.sumstats, filt.abc = NULL, add = F, var.add = NULL,
               params = NULL, dim.pca = NULL, svd = F, theta.max = NULL, 
-              nb.samp = 10^6, parallel = TRUE, tol = NULL, pkg = NULL, 
+              nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
               method = "rejection")
   do.simul.coalesc(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
               traits = NULL, f.sumstats = NULL, filt.abc = NULL,

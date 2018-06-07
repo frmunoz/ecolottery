@@ -114,7 +114,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   
   # Community simulation
   sim <- do.simul.coalesc(J, pool, multi, prop, nb.com, traits, f.sumstats, filt.abc, add, var.add, 
-                  params, dim.pca, svd, theta.max, nb.samp, parallel, tol, pkg, method)
+                  params, dim.pca, svd, theta.max, nb.samp, parallel, nb.core, tol, pkg, method)
   
   if(sum(sim$sel.ss)!=length(stats.obs))
   {
@@ -203,7 +203,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
 do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
                      traits = NULL, f.sumstats = NULL, filt.abc = NULL, 
                      add = F, var.add = NULL, params, dim.pca = NULL, svd = F,
-                     theta.max = NULL, nb.samp = 10^6, parallel = TRUE,
+                     theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
                      tol = NULL, pkg = NULL, method = "rejection") {
   
   if (!requireNamespace("parallel", quietly = TRUE) & parallel) {
