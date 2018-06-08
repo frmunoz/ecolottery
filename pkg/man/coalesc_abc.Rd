@@ -72,7 +72,8 @@
     individual trait values and additional parameters to be estimated.
   }
    \item{add}{
-    indicates if additional variables must be passed to \code{filt}. It can be, for instance, environmental data          conditioning the trait-based filtering in the community. Default is FALSE.
+    indicates if additional variables must be passed to \code{filt}. It can be, for instance, 
+    environmental data conditioning the trait-based filtering in the community. Default is FALSE.
   }
     \item{var.add}{
     additional variables to be passed to \code{filt} when \code{add = T}.
@@ -84,13 +85,14 @@
     maximum values.
   }
   \item{dim.pca}{
-    gives a number of independent dimensions to calculate from the simulated summary statistics, by performing
-    Principal Component Analysis (PCA). Default is \code{NULL}, in which case no PCA is performed.
+    gives a number of independent dimensions to calculate from the simulated summary statistics, 
+    by performing Principal Component Analysis (PCA). Default is \code{NULL}, in which case 
+    no PCA is performed. 
     If \code{svd = T}, Singular Value Decomposition (SVD) will be performed instead of PCA.
   }
   \item{svd}{
-    indicates if Singular Value Decomposition (SVD) must be performed to get the basic dimensions requested in 
-    \code{dim.pca}. Will be ignored if \code{dim.pca = NULL}.
+    indicates if Singular Value Decomposition (SVD) must be performed to get the basic 
+    dimensions requested in \code{dim.pca}. Will be ignored if \code{dim.pca = NULL}.
   }
   \item{theta.max}{
     if \code{pool = NULL}, regional abundances will be simulated following a
@@ -159,7 +161,8 @@ and is not intended to be used directly.
     values listed in \code{par}.
   }
   \item{ss.scale}{
-    data frame including the mean and the standard deviation used for standardization of       observed and summary statistics.
+    data frame including the mean and the standard deviation used for standardization of
+    observed and summary statistics.
   }
   \item{abc}{
     a single (if \code{multi = FALSE}, default) or a list of abc objects
