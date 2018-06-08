@@ -116,6 +116,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     
     if (ncol(pool) >= 3)  {
       ind_pool_traits <- data.frame(pool[,-(1:2)])
+      if(any(is.na(ind_pool_traits)))
+        stop("There should not be any NA in trait values of the individuals of the pool")
       colnames(ind_pool_traits) <- colnames(pool)[-(1:2)]
     } else {
       # Generation of trait values if not provided by the user
