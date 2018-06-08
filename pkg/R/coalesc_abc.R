@@ -283,44 +283,43 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, add, var.add,
                          f.sumstats) {
       
-      params.samp <- unlist(lapply(prior,function(x) x[j]))
-      stats.samp <- NA
-      params.samp.all <- params.samp
-      names(params.samp.all) <- names(prior)
-      
-      if(prop) 
-      {
-        if(!is.null(pool))
+        params.samp <- unlist(lapply(prior,function(x) x[j]))
+        stats.samp <- NA
+        params.samp.all <- params.samp
+        names(params.samp.all) <- names(prior)
+        
+        if(prop) 
         {
-          J <- round(params.samp[length(params.samp)])
+          if(!is.null(pool))
+          {
+            J <- round(params.samp[length(params.samp)])
+            params.samp <- params.samp[-length(params.samp)]
+          } else 
+          {
+            J <- round(params.samp[length(params.samp)-1])
+            params.samp <- params.samp[-(length(params.samp)-1)]
+          }
+        }
+            
+        if (is.null(pool)) {
+          if (multi == "seqcom"){
+            pool <- coalesc(mean(unlist(J))*100,
+                            theta = params.samp[length(params.samp)])$pool
+          } else {
+            pool <- coalesc(mean(J)*100,
+                            theta = params.samp[length(params.samp)])$pool
+          }
           params.samp <- params.samp[-length(params.samp)]
-        } else 
-        {
-          J <- round(params.samp[length(params.samp)-1])
-          params.samp <- params.samp[-(length(params.samp)-1)]
         }
-      }
-          
-      if (is.null(pool)) {
-        if (multi == "seqcom"){
-          pool <- coalesc(mean(unlist(J))*100,
-                          theta = params.samp[length(params.samp)])$pool
+        
+        if (!is.null(filt.abc)) {
+          if(!add) 
+            filt <- function(x) filt.abc(x, params.samp[-length(params.samp)])
+          else filt <- function(x, var.add) filt.abc(x, params.samp[-length(params.samp)], var.add)
         } else {
-          pool <- coalesc(mean(J)*100,
-                          theta = params.samp[length(params.samp)])$pool
+          filt <- NULL
         }
-        params.samp <- params.samp[-length(params.samp)]
-      }
-      
-      if (!is.null(filt.abc)) {
-        if(!add) 
-          filt <- function(x) filt.abc(x, params.samp[-length(params.samp)])
-        else filt <- function(x, var.add) filt.abc(x, params.samp[-length(params.samp)], var.add)
-      } else {
-        filt <- NULL
-      }
-      
-      if (nb.com > 1) {
+        
         if(multi == "tab") {
           pool.sp <- unique(pool$sp)
           meta.samp <- array(0, c(nb.com, length(pool.sp)))
@@ -368,9 +367,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
           } else {
             stats.samp <- f.sumstats(seqcom.samp, traits, var.add)
           }
-        }
-      
-      } else { # single community
+        } else { # single community
         comm.samp <- ecolottery::coalesc(J,
                              m = params.samp[length(params.samp)],
                              filt = filt,
@@ -386,7 +383,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
           stats.samp <- f.sumstats(comm.samp$com, traits, var.add)
         }
       }
-          
+            
       return(list(sum.stats = stats.samp, param = params.samp.all))
     }
     
