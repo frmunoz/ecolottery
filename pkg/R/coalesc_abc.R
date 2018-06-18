@@ -405,9 +405,9 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   
   # Calculation of summary statistics over the whole range of parameters
   if (parallel) {
-    models <- parallel::parLapply(parCluster, 1:nb.samp,
+    err.chk <- try(models <- parallel::parLapply(parCluster, 1:nb.samp,
                                   mkWorker(traits, nb.com, multi, prop, prior, J,
-                                           pool, filt.abc, add, var.add, f.sumstats, pkg))
+                                           pool, filt.abc, add, var.add, f.sumstats, pkg)), T)
   } else {
     models <- lapply(1:nb.samp, mkWorker(traits, nb.com, multi, prop, prior, J, pool,
                                          filt.abc, add, var.add, f.sumstats, pkg))
@@ -419,6 +419,10 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
       parallel::stopCluster(parCluster)
       parCluster <- c()
     }
+  }
+  if(class(err.chk)=="try-error")
+  {
+    stop(err.chk[1])
   }
   
   stats <- t(data.frame(lapply(models, function(x) x$sum.stats)))
