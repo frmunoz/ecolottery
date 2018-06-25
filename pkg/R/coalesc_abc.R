@@ -47,6 +47,10 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
       theta.max <- 500
   }
   
+  if (!is.null(pool) & !is.null(traits) & sum(!pool[,2]%in%rownames(traits)!=0)) {
+    warning("The names of some species of the pool are not present in the rownames of traits")
+  }
+  
   if (!requireNamespace("abc", quietly = TRUE)) {
     stop("coalesc_abc requires package abc to be installed")
   }
