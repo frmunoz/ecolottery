@@ -325,7 +325,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
         }
         
         if(multi == "tab") {
-          pool.sp <- unique(pool$sp)
+          pool.sp <- unique(pool[,2])
           meta.samp <- array(0, c(nb.com, length(pool.sp)))
           colnames(meta.samp) <- pool.sp
           
