@@ -108,7 +108,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     if(any(!colnames(comm.obs)%in%rownames(traits)))
        stop("Mismatch of species names in pool and comm.obs")
     # Reorder species in comm.obs following the order in traits
-    comm.obs <- comm.obs[,rownames(traits)[rownames(traits)%in%colnames(tab)]]
+    comm.obs <- comm.obs[,rownames(traits)[rownames(traits)%in%colnames(comm.obs)]]
   }
   
   if (is.null(traits)){
