@@ -14,14 +14,15 @@
 }
 \usage{
   coalesc_abc(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-              f.sumstats, filt.abc = NULL, add = F, var.add = NULL,
-              params = NULL, dim.pca = NULL, svd = F, theta.max = NULL, 
-              nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
-              method = "rejection")
+              f.sumstats, filt.abc = NULL, migr.abc = NULL, add = F, var.add = NULL,
+              params = NULL, par.filt = NULL, par.migr = NULL, dim.pca = NULL, svd = F, 
+              theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
+              tol = NULL, pkg = NULL, method = "rejection")
   do.simul.coalesc(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
-              traits = NULL, f.sumstats = NULL, filt.abc = NULL,
-              add = F, var.add = NULL, params, dim.pca = NULL, svd = F, 
-              theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, 
+              traits = NULL, f.sumstats = NULL, filt.abc = NULL, migr.abc = NULL,
+              add = F, var.add = NULL, par.filt = NULL, par.migr = NULL,
+              dim.pca = NULL, svd = F, theta.max = NULL, nb.samp = 10^6, 
+              parallel = TRUE, nb.core = NULL, tol = NULL, 
               pkg = NULL, method = "rejection")
 }
 \arguments{
@@ -69,17 +70,34 @@
   }
   \item{filt.abc}{
     the hypothesized environmental filtering function. It is a function of
-    individual trait values and additional parameters to be estimated.
+    individual trait values, additional parameters to be estimated and (optionally) 
+    environmental variables defined in \code{var.add}.
+  }
+  \item{migr.abc}{
+    a function defining immigration probability in local communities. It can be a function of 
+    environmental variables defined in \code{var.add} and of parameters to be estimated.
   }
    \item{add}{
-    indicates if additional variables must be passed to \code{filt}. It can be, for instance, 
-    environmental data conditioning the trait-based filtering in the community. Default is FALSE.
+    indicates if additional variables must be passed to \code{filt.abc} and/or \code{migr.abc}
+    . It can be, for instance, environmental data conditioning the trait-based filtering 
+    and/or immigration in the community. Default is FALSE.
   }
     \item{var.add}{
-    additional variables to be passed to \code{filt} when \code{add = T}.
+    additional variables to be passed to \code{filt.abc} and/or \code{migr.abc} 
+    when \code{add = T}.
   }
   \item{params}{
+    equivalent to par.filt (see below): it is kept in the function for compatibility with 
+    previous versions.
+  }
+  \item{par.filt}{
     a matrix of the bounds of the parameters used in \code{filt.abc}. The row
+    names of \code{params} provide the parameter names used in ABC calculation
+    and output. First column contains minimum values and second column contains
+    maximum values.
+  }
+  \item{par.migr}{
+    a matrix of the bounds of the parameters used in \code{migr.abc}. The row
     names of \code{params} provide the parameter names used in ABC calculation
     and output. First column contains minimum values and second column contains
     maximum values.
@@ -192,17 +210,18 @@ and is not intended to be used directly.
   F. Munoz
 }
 \examples{
-# Trait-dependent filtering function
-filt_gaussian <- function(t, params) exp(-(t-params[1])^2/(2*params[2]^2))
-
-# Definition of parameters and their range
-params <- data.frame(rbind(c(0, 1), c(0.05, 1)))
-row.names(params) <- c("topt", "sigmaopt")
-# Number of values to sample in prior distributions
-nb.samp <- 1000 # Should be large
-
 \dontrun{
-# Basic summary statistics
+
+# 1/ Analysis of community assembly in a single community
+
+# Trait-dependent filtering function
+filt_gaussian <- function(t, par) exp(-(t - par[1])^2/(2*par[2]^2))
+
+# Definition of parameters of this function and their range
+par.range <- data.frame(rbind(c(0, 1), c(0.05, 1)))
+row.names(par.range) <- c("topt", "sigmaopt")
+
+# Basic summary statistics describing local community composition
 f.sumstats <- function(com) array(dimnames=list(c("cwm", "cwv", "cws",
                                                   "cwk", "S", "Es")),
                                   c(mean(com[,3]), var(com[,3]), 
@@ -211,28 +230,146 @@ f.sumstats <- function(com) array(dimnames=list(c("cwm", "cwv", "cws",
                                     vegan::specnumber(table(com[,2])),
                                     vegan::diversity(table(com[,2]))))
 
-# An observed community is here simulated (known parameters)
+# An observed community is simulated with known parameter values
 comm <- coalesc(J = 400, m = 0.5, theta = 50,
                 filt = function(x) filt_gaussian(x, c(0.2, 0.1)))
 
-# ABC estimation of the parameters based on observed community composition 
+# ABC estimation of the parameters of filtering and migration based on observed 
+# community composition 
+# Number of values to sample in prior distributions
+nb.samp <- 1000 # Should be large
 ## Warning: this function may take a while
-res <- coalesc_abc(comm$com, comm$pool, f.sumstats = f.sumstats,
-                   filt.abc = filt_gaussian, params = params, 
+res.single <- coalesc_abc(comm$com, comm$pool, f.sumstats = f.sumstats,
+                   filt.abc = filt_gaussian, par.filt = par.range, 
                    nb.samp = nb.samp, parallel = TRUE, tol = 0.5,
                    pkg = c("e1071","vegan"), method = "neuralnet")
-plot(res$abc, param = res$par)
-hist(res$abc)
+plot(res.single$abc, param = res.single$par)
+hist(res.single$abc)
 
 # Cross validation
 ## Warning: this function is slow
-res$cv <- abc::cv4abc(param = res$par, sumstat = res$ss, nval = 100,
+res.single$cv <- abc::cv4abc(param = res.single$par, sumstat = res.single$ss, nval = 100,
                       tols = c(0.01, 0.1, 1), method = "neuralnet")
-plot(res$cv)
+plot(res.single$cv)
 
-# Multiple community option
+# 2/ Analysis of community assembly in multiple communities with a common pool of 
+# immigrants
+
 # When the input is a site-species matrix, use argument multi="tab"
-# See vignette Barro_Colorado for more details
+
+# 2.1/ Environment-dependent environmental filtering
+
+# The variation of optimal trait values can depend on environmental variation across communities
+filt_gaussian_env <- function(t, par, env) exp(-(t-par[1]*env+par[2])^2/(2*par[3]^2))
+# Vector of environmental conditions across communities
+env1 <- matrix(runif(20))
+
+# Simulate a set of 20 communities with varying environmental filtering in
+# different environmental conditions
+# A common source pool of immigrants
+pool <- coalesc(J = 10000, theta = 50)$pool
+meta1 <- c()
+for(i in 1:20)
+  meta1[[i]] <- coalesc(J = 400, pool = pool, m = 0.5, 
+                filt = function(x) filt_gaussian_env(x, c(0.5, 0.2, 0.1), env1[i,]))
+# Build a species-by-site table
+tab1 <- array(0, c(20, max(pool$sp)))
+for(i in 1:20) {
+  compo <- table(meta1[[i]]$com$sp)
+  tab1[i, as.numeric(names(compo))] <- compo
+}
+colnames(tab1) <- as.character(1:ncol(tab1))
+tab1 <- tab1[, colSums(tab1)!=0]
+
+# Definition of parameters and their range
+# We will estimate the slope a and intercept b of the linear relationship between 
+# optimal trait values and environmental conditions
+par.range <- data.frame(rbind(c(-1, 1), c(0, 1), c(0.05, 1)))
+row.names(par.range) <- c("a", "b", "sigmaopt")
+
+# Basic summary statistics
+# The function will provide trait-based statistics and taxonomic diversity in
+# each community
+f.sumstats <- function(tab, traits) array(dimnames=list(c(paste(rep("cwm",nrow(tab)),1:nrow(tab)), paste(rep("cwv",nrow(tab)),1:nrow(tab)), paste(rep("cws",nrow(tab)),1:nrow(tab)),
+                                                  paste(rep("cwk",nrow(tab)),1:nrow(tab)), paste(rep("S",nrow(tab)),1:nrow(tab)), paste(rep("Es",nrow(tab)),1:nrow(tab)), paste(rep("beta",nrow(tab)),1:nrow(tab)))),
+                                  c(apply(tab, 1, function(x) Weighted.Desc.Stat::w.mean(traits[colnames(tab),], x)), 
+                                  apply(tab, 1, function(x) Weighted.Desc.Stat::w.var(traits[colnames(tab),], x)), 
+                                    apply(tab, 1, function(x) Weighted.Desc.Stat::w.skewness(traits[colnames(tab),], x)),  
+                                    apply(tab, 1, function(x) Weighted.Desc.Stat::w.kurtosis(traits[colnames(tab),], x)),
+                                    apply(tab, 1, function(x) sum(x!=0)),
+                                    apply(tab, 1, vegan::diversity),
+                                    colMeans(as.matrix(vegan::betadiver(tab,"w")))))
+
+# ABC estimation of the parameters of trait-environment relationship and of migration,
+# based on observed community composition 
+## Warning: this function may take a while
+res.tab1 <- coalesc_abc(tab1, pool, multi = "tab", f.sumstats = f.sumstats,
+                   filt.abc = filt_gaussian_env, par.filt = par.range, 
+                   add = T, var.add = env1,
+                   nb.samp = nb.samp, parallel = TRUE, tol = 0.5,
+                   pkg = c("e1071","vegan"), method = "neuralnet")
+
+plot(res.tab1$abc, param=res.tab1$par)                   
+hist(res.tab1$abc)
+
+# 2.2/ Environment-dependent environmental filtering and immigration
+
+# In this case, the migration rate depends of another environmental variable
+# representing, e.g., community isolation
+# There will be two environmental variables used for parameter inference, one conditioning
+# environmental filtering, and the other conditioning migration
+env2 <-  matrix(runif(20))
+env <- cbind(env1, env2)
+colnames(env) <- c("env1", "env2")
+# Migration depends on environmental conditions following some linear relationship
+migr_env <- function(par, env) (par[2]-par[1])*env+par[1]
+
+# Simulate a set of 20 communities with environment-dependent environmental filtering 
+# and immigration
+meta2 <- c()
+for(i in 1:20)
+  meta2[[i]] <- coalesc(J = 400, pool = pool, m = migr_env(c(0.25,0.75), env[i,2]), 
+                filt = function(x) filt_gaussian_env(x, c(0.5, 0.2, 0.1), env[i,1]))
+# Build a species-by-site table
+tab2 <- array(0, c(20, max(pool$sp)))
+for(i in 1:20) {
+  compo <- table(meta2[[i]]$com$sp)
+  tab2[i, as.numeric(names(compo))] <- compo
+}
+colnames(tab2) <- as.character(1:ncol(tab2))
+tab2 <- tab2[, colSums(tab2)!=0]
+
+# Definition of parameters and their range
+# We will estimate the slope a and intercept b of the linear relationship between 
+# optimal trait values and environmental variable 1, and slope c and intercept d in the
+# logistic function determining the variation of migration rate with environmental variable 2
+par.filt.range <- data.frame(rbind(c(-1, 1), c(0, 1), c(0.05, 1)))
+row.names(par.filt.range) <- c("a", "b", "sigmaopt")
+par.migr.range <- data.frame(rbind(c(0, 1), c(0, 1)))
+row.names(par.migr.range) <- c("c", "d")
+
+# ABC estimation of the parameters of trait-environment and migration-environment 
+# relationships, based on observed community composition 
+## Warning: this function may take a while
+nb.samp <- 200
+res.tab2 <- coalesc_abc(tab2, pool, multi = "tab", f.sumstats = f.sumstats,
+                   filt.abc = function(x, par, env) filt_gaussian_env(x, par, env[1]), 
+                   migr.abc = function(par, env) migr_env(par, env[2]),
+                   par.filt = par.filt.range, par.migr = par.migr.range,
+                   add = T, var.add = env,
+                   nb.samp = nb.samp, parallel = FALSE, tol = 0.5,
+                   pkg = c("e1071","vegan"), method = "neuralnet")
+
+plot(res.tab2$abc, param=res.tab2$par)                   
+hist(res.tab2$abc)
+
+# Check result consistency
+comm <- 1
+coeff <- summary(res.tab2$abc)
+plot(cbind(sapply(pool$tra, function(x) filt_gaussian_env(x, c(0.5, 0.2, 0.1), env[comm,1])), sapply(pool$tra, function(x) filt_gaussian_env(x, coeff[3,1:3], env[comm,1]))), xlab = paste("Expected filter value in community ", comm, sep=" "), ylab = "Estimated filter value")
+abline(0,1)
+plot(cbind(sapply(env[,2], function(x) migr_env(c(0.25, 0.75), x)), sapply(env[,2], function(x) migr_env(coeff[3,4:5], x))), xlab = "Expected migration value", ylab = "Estimated migration value")
+abline(0,1)
 }
 }
 

@@ -1,7 +1,8 @@
 coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-                        f.sumstats, filt.abc = NULL, add = F, var.add = NULL,
-                        params = NULL, dim.pca = NULL, svd = F, theta.max = NULL, nb.samp = 10^6, 
-                        parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, method = "rejection")
+                        f.sumstats, filt.abc = NULL, migr.abc = NULL, add = F, var.add = NULL,
+                        params = NULL, par.filt = NULL, par.migr = NULL, dim.pca = NULL, svd = F, theta.max = NULL, 
+                        nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
+                        method = "rejection")
 {
   
   if(!method%in%c("rejection", "loclinear", "neuralnet", "ridge"))
@@ -27,8 +28,10 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     warning("You must provide a tolerance value for ABC computation.\n",
             "The function will only provide simulations and will not perform ",
             "ABC analysis.")
-  } else if(is.null(params)){
-    warning("No value provided for params argument. Only m and theta will be ",
+  } 
+  
+  if(is.null(par.filt) & is.null(par.migr)){
+    warning("No value provided for par.filt and par.migr arguments. Only m and theta will be ",
             "estimated.")
   }
   
@@ -105,6 +108,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   }
   
   if (multi == "tab"){
+    if(is.null(colnames(comm.obs)))
+      stop("Missing species names in species-by-site table")
     if(any(!colnames(comm.obs)%in%rownames(traits)))
        stop("Mismatch of species names in pool and comm.obs")
     # Reorder species in comm.obs following the order in traits
@@ -124,8 +129,9 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   }
   
   # Community simulation
-  sim <- do.simul.coalesc(J, pool, multi, prop, nb.com, traits, f.sumstats, filt.abc, add, var.add, 
-                  params, dim.pca, svd, theta.max, nb.samp, parallel, nb.core, tol, pkg, method)
+  sim <- do.simul.coalesc(J, pool, multi, prop, nb.com, traits, f.sumstats, filt.abc, migr.abc,
+                          add, var.add, params, par.filt, par.migr, dim.pca, svd, theta.max, 
+                          nb.samp, parallel, nb.core, tol, pkg, method)
   
   if(sum(sim$sel.ss)!=length(stats.obs))
   {
@@ -212,15 +218,29 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
 }
 
 do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
-                     traits = NULL, f.sumstats = NULL, filt.abc = NULL, 
-                     add = F, var.add = NULL, params, dim.pca = NULL, svd = F,
-                     theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
-                     tol = NULL, pkg = NULL, method = "rejection") {
+                     traits = NULL, f.sumstats = NULL, filt.abc = NULL, migr.abc = NULL, 
+                     add = F, var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
+                     dim.pca = NULL, svd = F, theta.max = NULL, nb.samp = 10^6, 
+                     parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
+                     method = "rejection") {
   
   if (!requireNamespace("parallel", quietly = TRUE) & parallel) {
     warning("parallel = TRUE requires package 'parallel' to be installed\n",
             "changed to parallel = FALSE")
     parallel <- FALSE
+  }
+  
+  if (!is.null(params) & is.null(par.filt))
+  {
+    warning("The use of params will be deprecated, please use arguments par.filt 
+            and par.migr instead.")
+    par.filt <- params
+    par.migr <- t(data.frame(c(0, 1)))
+    rownames(par.migr) <- "m"
+  }
+  if (is.null(params) & is.null(par.filt) & is.null(par.migr))
+  {
+    stop("You must provide range limit values of the parameters.")
   }
   
   if(length(formals(f.sumstats))>1 & is.null(traits))
@@ -245,29 +265,33 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   
   # Uniform prior distributions of parameters
   prior <- c()
-  if(!is.null(params)) {
-    for (i in 1:nrow(params)) {
-      prior[[i]] <- runif(nb.samp, min = params[i, 1], max = params[i, 2])
+  if(!is.null(par.filt)) {
+    for (i in 1:nrow(par.filt)) {
+      prior[[i]] <- runif(nb.samp, min = par.filt[i, 1], max = par.filt[i, 2])
     }
   }
-  names(prior) <- rownames(params)
+  if(!is.null(par.migr)) {
+    for (i in 1:nrow(par.migr)) {
+      prior[[i+nrow(par.filt)]] <- runif(nb.samp, min = par.migr[i, 1], max = par.migr[i, 2])
+    }
+  } else {
+    prior[[i+1]] <- runif(nb.samp, min = 0, max = 1)
+  }
+  if(!is.null(par.migr)) {
+    names(prior) <- c(rownames(par.filt), rownames(par.migr))
+  } else {
+    names(prior) <- c(rownames(par.filt), "m")
+  }
   
   # Note - Defining a lower bound at 0 for m and theta can entail issues when species richness is 1
   # in simulated community; we should allow the user to define the prior for m and theta in
   # the future
   
-  prior[[length(prior) + 1]] <- runif(nb.samp, min = 0, max = 1)
-  if(!is.null(params)) {
-    names(prior)[nrow(params) + 1] <- "m"
-  } else
-  {
-    names(prior) <- "m"
-  }
-  
   if(prop) 
   {
     prior[[length(prior)+1]] <- runif(nb.samp, min = 100, max = 1000)
     warning("The prior of community size is uniform between 100 and 1000")
+    names(prior)[length(prior)] <- "J"
   }
   
   if (is.null(pool)) {
@@ -276,8 +300,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   }
   
   # Function to perform simulations
-  mkWorker <- function(traits, nb.com, multi, prop, prior, J, pool, filt.abc, add, var.add,
-                       f.sumstats, pkg) {
+  mkWorker <- function(traits, nb.com, multi, prop, prior, J, pool, filt.abc, migr.abc, add,
+                       var.add, f.sumstats, pkg) {
     force(traits)
     force(nb.com)
     force(multi)
@@ -286,12 +310,13 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     force(J)
     force(pool)
     force(filt.abc)
+    force(migr.abc)
     force(add)
     force(var.add)
     force(f.sumstats)
     force(pkg)
     
-    summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, add, var.add,
+    summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, migr.abc, add, var.add,
                          f.sumstats) {
       
         params.samp <- unlist(lapply(prior,function(x) x[j]))
@@ -325,10 +350,19 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
         
         if (!is.null(filt.abc)) {
           if(!add) 
-            filt <- function(x) filt.abc(x, params.samp[-length(params.samp)])
-          else filt <- function(x, var.add) filt.abc(x, params.samp[-length(params.samp)], var.add)
+            filt <- function(x) filt.abc(x, params.samp[1:nrow(par.filt)])
+          else filt <- function(x, var.add) filt.abc(x, params.samp[1:nrow(par.filt)], var.add)
         } else {
           filt <- NULL
+        }
+        if (!is.null(migr.abc)) {
+          if(!add) 
+            migr <- function() migr.abc(params.samp[(nrow(par.filt)+1):(nrow(par.filt)+nrow(par.migr))])
+          else migr <- function(var.add) migr.abc(params.samp[(nrow(par.filt)+1):(nrow(par.filt)+nrow(par.migr))], var.add)
+        } else {
+          if(!add) 
+            migr <- function() params.samp["m"]
+          else migr <- function(var.add) params.samp["m"]
         }
         
         if(multi == "tab") {
@@ -339,7 +373,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
           for (i in 1:nb.com) {
             try({
               J.loc <- ifelse(length(J)>1, J[i], J)
-              comm.samp <- ecolottery::coalesc(J.loc, m = params.samp[length(params.samp)],
+              m <- unlist(ifelse(add, migr(var.add[i,]), migr()))
+              comm.samp <- ecolottery::coalesc(J.loc, m = m,
                                    filt = filt,
                                    add = add,
                                    var.add = var.add[i,],
@@ -363,8 +398,9 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
           
           for (i in 1:nb.com) {
             try({
+              m <- ifelse(add, migr(var.add[i,]), migr())[[1]]
               seqcom.samp[[i]] <- ecolottery::coalesc(J[[i]],
-                                          m = params.samp[length(params.samp)],
+                                          m = m,
                                           filt = filt,
                                           add = add,
                                           var.add = var.add[i,],
@@ -379,8 +415,9 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
             stats.samp <- f.sumstats(seqcom.samp, traits, var.add)
           }
         } else { # single community
-        comm.samp <- ecolottery::coalesc(J,
-                             m = params.samp[length(params.samp)],
+          m <- ifelse(add, migr(var.add[i,]), migr())[[1]]
+          comm.samp <- ecolottery::coalesc(J,
+                             m = m,
                              filt = filt,
                              add = add,
                              var.add = var.add,
@@ -408,7 +445,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
           stop(paste("Package ", pkg[i], " is not available", sep = ""))
         }
       }
-      summCalc(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, 
+      summCalc(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, migr.abc, 
                add, var.add, f.sumstats)
     }
     return(worker)
@@ -418,10 +455,10 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   if (parallel) {
     err.chk <- try(models <- parallel::parLapply(parCluster, 1:nb.samp,
                                   mkWorker(traits, nb.com, multi, prop, prior, J,
-                                           pool, filt.abc, add, var.add, f.sumstats, pkg)), T)
+                                           pool, filt.abc, migr.abc, add, var.add, f.sumstats, pkg)), T)
   } else {
     models <- lapply(1:nb.samp, mkWorker(traits, nb.com, multi, prop, prior, J, pool,
-                                         filt.abc, add, var.add, f.sumstats, pkg))
+                                         filt.abc, migr.abc, add, var.add, f.sumstats, pkg))
   }
   
   if (parallel) {
@@ -430,10 +467,10 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
       parallel::stopCluster(parCluster)
       parCluster <- c()
     }
-  }
-  if(class(err.chk)=="try-error")
-  {
-    stop(err.chk[1])
+    if(class(err.chk)=="try-error")
+    {
+      stop(err.chk[1])
+    }
   }
   
   stats <- t(data.frame(lapply(models, function(x) x$sum.stats)))
