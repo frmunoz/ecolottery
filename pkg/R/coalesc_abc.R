@@ -50,8 +50,21 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
       theta.max <- 500
   }
   
-  if (!is.null(pool) & !is.null(traits) & sum(!pool[,2]%in%rownames(traits)!=0)) {
-    warning("The names of some species of the pool are not present in the rownames of traits")
+  if (!multi == "single" & class(pool) == "list") {
+    if((multi == "tab" & length(pool) != nrow(comm.obs)) | (multi == "seqcom" & length(pool) != length(comm.obs)))
+      stop("When several pools are given (list), there must be one for each community")
+  }
+  if (multi=="single" & class(pool)=="list" & length(pool)>1)
+    stop("If multi=single, pool should not be a list of more than one element")
+  
+  if (is.list(pool) & length(pool)>1) {
+    pool.glob <- Reduce(rbind, pool)
+  } else {
+    pool.glob <- pool
+  }
+  
+  if (!is.null(pool.glob) & !is.null(traits) & sum(!pool.glob[,2]%in%rownames(traits)!=0)) {
+    warning("The names of some species of the pool(s) are not present in the rownames of traits")
   }
   
   if (!requireNamespace("abc", quietly = TRUE)) {
@@ -70,7 +83,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     stop("multi parameter must be either single, tab or seqcom.")
   }
   
-  if (multi == "single") {
+    if (multi == "single") {
     J <- nrow(comm.obs)
     nb.com <- 1
   } else {
@@ -96,11 +109,12 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   # Trait values can be provided with community composition
   # Mean trait values of pool are stored in traits in absence of trait
   # information in local community
-  if (!is.null(pool)){
-    if(ncol(pool) >= 3) {
-      traits <- data.frame(apply(data.frame(pool[,-(1:2)]), 2,
+  if (!is.null(pool.glob)){
+    if(ncol(pool.glob) >= 3) {
+      #Using matrix instead of data.frame
+      traits <- data.frame(apply(data.frame(pool.glob[,-(1:2)]), 2,
                                  function(x) {
-                                   tapply(x, pool[, 2],
+                                   tapply(x, pool.glob[, 2],
                                           function(y)
                                             mean(y, na.rm = TRUE)
                                    )}))
@@ -366,7 +380,11 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
         }
         
         if(multi == "tab") {
-          pool.sp <- unique(pool[,2])
+          if(is.list(pool) & length(pool) > 1) {
+            pool.sp <- unique(Reduce(rbind , pool)[,2])
+          } else {
+            pool.sp <- unique(pool[,2])
+          }
           meta.samp <- array(0, c(nb.com, length(pool.sp)))
           colnames(meta.samp) <- pool.sp
           
@@ -374,11 +392,16 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
             try({
               J.loc <- ifelse(length(J)>1, J[i], J)
               m <- unlist(ifelse(add, migr(var.add[i,]), migr()))
+              if(is.list(pool) & length(pool)>1) {
+                pool.loc <- pool[[i]]
+              } else {
+                pool.loc <- pool
+              }
               comm.samp <- ecolottery::coalesc(J.loc, m = m,
                                    filt = filt,
                                    add = add,
                                    var.add = var.add[i,],
-                                  pool = pool, traits = traits)
+                                  pool = pool.loc, traits = traits)
               tab <- table(comm.samp$com[,2])
               meta.samp[i,names(tab)] <- tab
               if(prop) meta.samp[i,] <- meta.samp[i,]/J.loc #sum(meta.samp[i,])
@@ -399,12 +422,17 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
           for (i in 1:nb.com) {
             try({
               m <- ifelse(add, migr(var.add[i,]), migr())[[1]]
+              if(is.list(pool) & length(pool)>1) {
+                pool.loc <- pool[[i]]
+              } else {
+                pool.loc <- pool
+              }
               seqcom.samp[[i]] <- ecolottery::coalesc(J[[i]],
                                           m = m,
                                           filt = filt,
                                           add = add,
                                           var.add = var.add[i,],
-                                          pool = pool, traits = traits)$com
+                                          pool = pool.loc, traits = traits)$com
             })
           }
           if (length(formals(f.sumstats)) == 1) {

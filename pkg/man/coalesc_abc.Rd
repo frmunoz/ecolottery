@@ -373,6 +373,49 @@ plot(cbind(sapply(pool$tra, function(x) filt_gaussian_env(x, c(0.5, 0.2, 0.1), e
 abline(0,1)
 plot(cbind(sapply(env[,2], function(x) migr_env(c(0.25, 0.75), x)), sapply(env[,2], function(x) migr_env(coeff[3,4:5], x))), xlab = "Expected migration value", ylab = "Estimated migration value")
 abline(0,1)
+
+# 3/ Distinct pools of migrants across communities
+
+# The immigrants can be drawn from distinct pools for each community, to represent a local context.
+# In this case, the pool argument sent to coalesc_abc must be a list of the local pools.
+
+# Simulate several communities with distinct pools and same environmental filter
+pool.loc <- c()
+meta3 <- c()
+theta <- 2.5*(1:20) # The pools differ in diversity
+# We first define a baseline pool of immigrants common to all communities
+baseline <- coalesc(J = 10000, theta = 25)$pool
+baseline$sp <- paste(0, baseline$sp, sep = "_")
+for(i in 1:20)
+{
+  pool.loc[[i]] <- coalesc(J = 10000, theta = theta[i])$pool
+  pool.loc[[i]]$sp <- paste(i, pool.loc[[i]]$sp, sep = "_")
+  pool.loc[[i]] <- rbind(pool.loc[[i]], baseline)
+  meta3[[i]] <- coalesc(J = 400, pool = pool.loc[[i]], m = 0.5, 
+                filt = function(x) filt_gaussian(x, c(0.25, 0.1)))
+}
+# Build a species-by-site table
+tab3 <- array(0, c(20, length(unique(Reduce(rbind, pool.loc)[,2]))))
+colnames(tab3) <- unique(Reduce(rbind, pool.loc)[,2])
+for(i in 1:20) {
+  compo <- table(meta3[[i]]$com$sp)
+  tab3[i, names(compo)] <- compo
+}
+tab3 <- tab3[, colSums(tab3)!=0]
+
+# ABC estimation of the parameters of trait-environment and migration-environment 
+# relationships, based on observed community composition 
+## Warning: this function may take a while
+par.range <- data.frame(rbind(c(0, 1), c(0.05, 1)))
+row.names(par.range) <- c("topt", "sigmaopt")
+res.tab3 <- coalesc_abc(tab3, pool.loc, multi = "tab", f.sumstats = f.sumstats,
+                   filt.abc = filt_gaussian,
+                   par.filt = par.range, 
+                   nb.samp = nb.samp, parallel = FALSE, tol = 0.5,
+                   pkg = c("e1071","vegan"), method = "neuralnet")
+
+plot(res.tab3$abc, param=res.tab3$par)  
+hist(res.tab3$abc)
 }
 }
 
