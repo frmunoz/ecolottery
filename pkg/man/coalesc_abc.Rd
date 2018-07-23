@@ -20,7 +20,7 @@
               tol = NULL, pkg = NULL, method = "rejection")
   do.simul.coalesc(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
               traits = NULL, f.sumstats = NULL, filt.abc = NULL, migr.abc = NULL,
-              add = F, var.add = NULL, par.filt = NULL, par.migr = NULL,
+              add = F, var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL,
               dim.pca = NULL, svd = F, theta.max = NULL, nb.samp = 10^6, 
               parallel = TRUE, nb.core = NULL, tol = NULL, 
               pkg = NULL, method = "rejection")
@@ -32,11 +32,14 @@
     individual id (first column), and species id (second column).
   }
   \item{pool}{
-    composition of the regional pool to which the local community is
+    give the composition of the regional pool to which a local community is
     hypothesized to be related through migration dynamics with possible
     environmental filtering. Should be a matrix of individuals on rows with
     their individual id (first column), species id (second column), and
     (optionally) the trait values of the individuals.
+    When \code{multi = "tab"} or \code{"seqcom"}, different pools can be 
+    set for each community: \code{pool} must be then defined as a list of 
+    matrices with the same columns as above.
   }
   \item{multi}{
     structure of the community inputs:
