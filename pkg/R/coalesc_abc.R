@@ -8,7 +8,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   if(!method%in%c("rejection", "loclinear", "neuralnet", "ridge"))
     stop("method.abc should be either rejection, loclinear, neuralnet or ridge")
   
-  if (!is.function(f.sumstats)) {
+  if(!is.function(f.sumstats)) {
     stop("You must provide a function to calculate summary statistics",
          "(f.sumstats)")
   }
@@ -57,7 +57,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   if (multi=="single" & class(pool)=="list" & length(pool)>1)
     stop("If multi=single, pool should not be a list of more than one element")
   
-  if (is.list(pool) & length(pool)>1) {
+  if (!is.data.frame(pool) & is.list(pool) & length(pool)>1) {
     pool.glob <- Reduce(rbind, pool)
   } else {
     pool.glob <- pool
@@ -112,12 +112,12 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   if (!is.null(pool.glob)){
     if(ncol(pool.glob) >= 3) {
       #Using matrix instead of data.frame
-      traits <- data.frame(apply(data.frame(pool.glob[,-(1:2)]), 2,
+      traits <- apply(data.frame(pool.glob[,-(1:2)]), 2,
                                  function(x) {
                                    tapply(x, pool.glob[, 2],
                                           function(y)
                                             mean(y, na.rm = TRUE)
-                                   )}))
+                                   )})
     }
   }
   
@@ -380,6 +380,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
         }
         
         if(multi == "tab") {
+          # It is too slow
           if(is.list(pool) & length(pool) > 1) {
             pool.sp <- unique(Reduce(rbind , pool)[,2])
           } else {
