@@ -381,7 +381,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
         
         if(multi == "tab") {
           # It is too slow
-          if(is.list(pool) & length(pool) > 1) {
+          if(!is.data.frame(pool) & is.list(pool) & length(pool) > 1) {
             pool.sp <- unique(Reduce(rbind , pool)[,2])
           } else {
             pool.sp <- unique(pool[,2])
@@ -393,7 +393,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
             try({
               J.loc <- ifelse(length(J)>1, J[i], J)
               m <- unlist(ifelse(add, migr(var.add[i,]), migr()))
-              if(is.list(pool) & length(pool)>1) {
+              if(!is.data.frame(pool) & is.list(pool) & length(pool)>1) {
                 pool.loc <- pool[[i]]
               } else {
                 pool.loc <- pool
