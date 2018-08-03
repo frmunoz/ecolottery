@@ -17,7 +17,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     stop("prop data can only be handled in tab format")
   }
   
-  if(multi=="tab" & any(rowSums(comm.obs)==0)) {
+  if(multi=="tab") if(any(rowSums(comm.obs)==0)) {
     stop("There should not be communities with 0 individuals")
   }
   if (length(formals(f.sumstats)) > 3) {
