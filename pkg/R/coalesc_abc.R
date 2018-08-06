@@ -252,7 +252,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     par.migr <- t(data.frame(c(0, 1)))
     rownames(par.migr) <- "m"
   }
-  if (is.null(params) & is.null(par.filt) & is.null(par.migr))
+  if (is.null(params) & is.null(par.filt) & is.null(par.migr) & (!is.null(filt.abc) | !is.null(migr.abc)))
   {
     stop("You must provide range limit values of the parameters.")
   }
