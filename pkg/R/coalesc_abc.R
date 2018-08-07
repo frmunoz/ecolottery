@@ -279,6 +279,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   
   # Uniform prior distributions of parameters
   prior <- c()
+  i <- 0
   if(!is.null(par.filt)) {
     for (i in 1:nrow(par.filt)) {
       prior[[i]] <- runif(nb.samp, min = par.filt[i, 1], max = par.filt[i, 2])
@@ -516,8 +517,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   sel.ss <- colSums(is.na(stats))<nrow(stats)/2
   # Remove rows with NA
   sel.row <- rowSums(is.na(data.frame(stats[, sel.ss])))==0
-  stats.sel <- stats[sel.row, sel.ss]
-  params.sim.sel  <- params.sim[sel.row, ]
+  stats.sel <- stats[sel.row, sel.ss, drop = FALSE]
+  params.sim.sel  <- params.sim[sel.row, , drop = FALSE]
   
   return(list(stats = stats.sel, params.sim = params.sim.sel, sel.ss=sel.ss))
 }
