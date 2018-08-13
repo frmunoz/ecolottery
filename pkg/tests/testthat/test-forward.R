@@ -9,7 +9,7 @@ test_that("forward() works and returns desired result structure", {
   initial <- pool[sample(nrow(pool), size = 50, replace = FALSE),]
   
   sink(tempfile())
-  res <- forward(initial, prob = 0.1, gens = 10, pool = pool)
+  res <- forward(initial, prob = 0.1, gens = 10, pool = pool, limit.sim = TRUE)
   sink()
   
   expect_is(res, "list")
@@ -31,7 +31,7 @@ test_that("forward() works and returns desired result structure", {
   sink()
   
   expect_is(res_keep, "list")
-  expect_named(res_keep, c("com_t", "sp_t", "dist.t", "pool"))
+  expect_named(res_keep, c("com_t", "sp_t", "pool"))
   expect_is(res_keep$com_t, "list")
   expect_is(res_keep$com_t[[1]], "data.frame")
   expect_is(res_keep$pool, "data.frame")
