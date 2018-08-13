@@ -1,8 +1,8 @@
 get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
                                gens = NULL, limit.sim = FALSE,
-                               coeff.lim.sim = 1, sigm = 0.1, filt = NULL,
-                               prob.death = NULL, method.dist = "euclidean",
-                               plot_gens = FALSE) {
+                               coeff.lim.sim = 1, type.assemb = "death", sigm = 0.1, 
+                               filt = NULL, prob.death = NULL, 
+                               method.dist = "euclidean", plot_gens = FALSE) {
   
     if (is.character(pool)) {
       pool <- data.frame(id = 1:length(pool),
@@ -40,9 +40,9 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
     for (i in 1:nbrep) {
       final <- forward(initial = start_com, prob = prob, d = d, gens = gens,
                        keep = FALSE, pool = pool, limit.sim = limit.sim, 
-                       coeff.lim.sim = coeff.lim.sim, sigm = sigm, filt = filt,
-                       prob.death = prob.death, method.dist = method.dist,
-                       plot_gens = plot_gens)
+                       coeff.lim.sim = coeff.lim.sim, type.assemb = type.assemb,
+                       sigm = sigm, filt = filt, prob.death = prob.death, 
+                       method.dist = method.dist, plot_gens = plot_gens)
       
       data <- data.frame(gens = 1:gens, rich = final$sp_t,
                          stringsAsFactors = FALSE)
