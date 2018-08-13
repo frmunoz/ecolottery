@@ -1,7 +1,7 @@
 # Function to compute forward simulation of community dynamics with (eventually)
 # environmental filtering
 forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
-                    pool = NULL, traits = NULL, limit.sim = FALSE, coeff.lim.sim = 1,
+                    pool = NULL, traits = NULL, limit.sim = FALSE, coeff.lim.sim = 1, type.assemb = "death",
                     sigm = 0.1, filt = NULL, add = F, var.add = NULL, prob.death = NULL,
                     method.dist = "euclidean", plot_gens = FALSE) {
   # The function will stop if niche - based dynamics is requested, but trait
@@ -36,6 +36,9 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   if (!is.numeric(coeff.lim.sim)) {
     stop("coeff.lim.sim parameter must be numeric.")
   }
+  
+  if (is.null(type.assemb) | !type.assemb%in%c("death","estab","both"))
+    type.assemb <- "death"
   
   if (!is.numeric(sigm) | sigm < 0) {
     stop("sigm parameter must be a positive number.")
@@ -104,11 +107,16 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     } else if (ncol(pool) == 2) {
       message("No trait information provided in the regional pool")
     }
-    if ((!limit.sim | !is.null(filt)) & is.null(traits) & ncol(pool) < 3) {
-      pool[, 3] <- runif(nrow(pool))
-      
-      message("Random (uniform) trait values attributed to individuals of ",
-              "the regional pool")
+    if (limit.sim | !is.null(filt)) {
+      if(!is.null(traits)) {
+        pool[, 3] <- traits[pool[,2],]
+      }
+      if(is.null(traits) & ncol(pool) < 3) {
+        pool[, 3] <- runif(nrow(pool))
+        
+        message("Random (uniform) trait values attributed to individuals of ",
+                "the regional pool")
+      }
     }
     colnames(pool) <- c("id", "sp", "trait")
   }
@@ -191,15 +199,15 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     # Simulate community dynamics
     next_comm <- pick(next_comm, d = d, prob = prob, pool = pool,
                       prob.death = prob.death, limit.sim = limit.sim,
-                      coeff.lim.sim = coeff.lim.sim, sigm = sigm,
-                      filt = filt, new.index = new.index,
+                      coeff.lim.sim = coeff.lim.sim, type.assemb = type.assemb,
+                      sigm = sigm, filt = filt, new.index = new.index,
                       method.dist = "euclidean")
     
     sp_t <- c(sp_t, length(unique(next_comm$com$sp)))
     ind_t <- c(ind_t, length(unique(next_comm$com$ind)))
     
     # Store average trait distance among coexisting individuals
-    if (!is.null(limit.sim)) {
+    if (limit.sim) {
       dist.t <- c(dist.t, next_comm$dist.t)
     }
     new.index <- next_comm$new.index
@@ -233,7 +241,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     }
   }
   
-  if (!is.null(limit.sim))
+  if (limit.sim)
   {
     if (keep) return(list(com_t = comm_through_time,
                           sp_t = sp_t,
@@ -253,7 +261,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
 # Precise function to simulate a single timestep by picking an individual in
 # the pool or make an individual mutate
 pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
-                 limit.sim = NULL, coeff.lim.sim = 1, sigm = 0.1, filt = NULL,
+                 limit.sim = NULL, coeff.lim.sim = 1, type.assemb = "death", sigm = 0.1, filt = NULL,
                  new.index = new.index, method.dist = "euclidean") {
   
   
@@ -266,7 +274,7 @@ pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
   
   } else {
 	  
-    if((!is.null(filt) | limit.sim) & prob > 0 & any(is.na(pool[,3]))) {
+    if((!is.null(filt) | limit.sim) & prob > 0 & any(is.na(pool[,-(1:2)]))) {
 	    stop("With environmental filtering, NA trait values not allowed in ",
 	         "regional pool")
     }
@@ -274,8 +282,8 @@ pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
   # If there is a species pool make an individual immigrates
     return(pick.immigrate(com, d = d, prob.of.immigrate = prob, pool = pool,
                           prob.death = prob.death, limit.sim = limit.sim,
-                          coeff.lim.sim = coeff.lim.sim, sigm = sigm,
-                          filt = filt, method.dist = "euclidean"))
+                          coeff.lim.sim = coeff.lim.sim, type.assemb = type.assemb,
+                          sigm = sigm, filt = filt, method.dist = "euclidean"))
   }
 }
 
@@ -345,7 +353,8 @@ pick.mutate <- function(com, d = 1, prob.of.mutate = 0, new.index = 0) {
 # limit.sim = distances de traits; filt = habitat filtering function
 pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
                            prob.death = NULL, limit.sim = NULL,
-                           coeff.lim.sim = 1, sigm = 0.1, filt = NULL,
+                           coeff.lim.sim = 1, type.assemb = "death", 
+                           sigm = 0.1, filt = NULL,
                            method.dist = "euclidean") {
   
   if (is.vector(com)) {
@@ -385,6 +394,11 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
    colnames(tr.dist) <- com[, 1]
    rownames(tr.dist) <- com[, 1]
    diag(tr.dist) <- NA
+   
+   # dist.t will display the average distance between trait of species
+   # for the whole community at each generation
+   dist.t <- mean(tr.dist[com[, 1], com[, 1]], na.rm = TRUE)
+   
   } else {
     tr.dist <- NULL
   }
@@ -392,7 +406,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
   # Initial community
   com.init <- com
   
-  if (is.null(limit.sim) & is.null(filt)) {
+  if (!limit.sim & is.null(filt)) {
     
     died <- sample(J, d, replace = FALSE)
     
@@ -402,54 +416,51 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       stop("Error: NA values in community composition (1)")
       }
   
-  } else {# Influence of limiting similarity and habitat filtering on mortality
+  } else {
+    
+    if(limit.sim)
+    {
+      # lim_sim_function indicates the influence of limiting similarity depending on
+      # a Gaussian function of pairwise trait distances
+      # coeff.lim.sim modulates the strength of limiting similarity
+      lim_sim_function <- function(x) {
+        coeff.lim.sim * (sum(exp( -x^2 / (2 * (sigm^2))), na.rm = TRUE))
+      }
+    }
     
     # Vector of the individual probability of dying
     if (is.null(prob.death)) {
       prob.death <- rep(1, nrow(com))
     }
     
-    # Under limiting similarity, mortality increases when an individual is more
-    # similar to other resident individuals
-    if (!is.null(tr.dist)) {
-      
-      if (sum(!com[, 1] %in% rownames(tr.dist)) > 0 |
-          sum(!com[, 1] %in% colnames(tr.dist)) > 0) {
-        stop("tr.dist: mismatch of species names")
+    if(type.assemb=="death" | type.assemb=="both")
+    {
+      # Influence of limiting similarity and habitat filtering on mortality
+    
+      # Under limiting similarity, mortality increases when an individual is more
+      # similar to other resident individuals
+      if (limit.sim & !is.null(tr.dist)) {
+        
+        # For each species: compute death probability depending on limiting
+        # similarity plus a baseline individual death probability
+        
+        prob.death <- apply(tr.dist[com[, 1], com[, 1]], 2,
+                             function(x) lim_sim_function(x))
+        # Add baseline probability
+        prob.death <- prob.death + 1/J
+        names(prob.death ) <- com[, 1]
+        
       }
-      
-      # For each species: compute death probability depending on limiting
-      # similarity
-      # Individual death probability is the sum of the influence of each other
-      # individuals  (Gaussian function of pairwise trait distance), plus a
-      # baseline individual death probability coeff.lim.sim modulates the
-      # strength of limiting similarity compared to the baseline mortality
-      
-      lim_sim_function <- function(x) {
-        coeff.lim.sim * (sum(exp( -x^2 / (2 * (sigm^2))), na.rm = TRUE))
+    
+      # Habitat filtering also influences the individual death probability
+      if (!is.null(filt)) {
+        if (any(is.na(hab_filter(com[, -(1:2)])))) {
+          stop("Error: NA values in habitat filter")
+        }
+   
+        prob.death <- prob.death * (1 - hab_filter(com[, -(1:2)]) /
+                                      sum(hab_filter(com[, -(1:2)])))
       }
-      
-      prob.death <- apply(tr.dist[com[, 1], com[, 1]], 2,
-                           function(x) lim_sim_function(x))
-      # Add baseline probability
-      prob.death <- prob.death + 1/J
-      # Scaling prob.death
-      prob.death <- prob.death / max(prob.death)			  
-      names(prob.death ) <- com[, 1]
-				   
-      # dist.t will display the average distance between trait of species
-      # for the whole community at each generation
-      dist.t <- mean(tr.dist[com[, 1], com[, 1]], na.rm = TRUE)
-      
-    }
-    # Habitat filtering also influences the individual death probability
-    if (!is.null(filt)) {
-      if (any(is.na(hab_filter(com[, -(1:2)])))) {
-        stop("Error: NA values in habitat filter")
-      }
- 
-      prob.death <- prob.death * (1 - hab_filter(com[, -(1:2)]) /
-                                    sum(hab_filter(com[, -(1:2)])))
       
       # Giving names to prob.death
       names(prob.death) <- com[, 1]      
@@ -473,36 +484,86 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
   # drawing the new individual from the community
   J2 <- sum(!immigrated)
   
-  if (J1 > 0) { # Immigrant drawn from regional pool
-    # Influence of habitat filtering on immigration
-    if (is.null(filt)) {
-      add <- pool[sample(1:nrow(pool), J1, replace = TRUE), 1:3]
-      com <- rbind(com, add)
+  if (J1 > 0) { 
+    # Immigrant drawn from regional pool
+    
+    # Default equal probability of immigration
+    prob = rep(1, nrow(pool))
+    
+    # Influence of limiting similarity on immigration
+    if(type.assemb=="estab" | type.assemb=="both") {
       
-      if (sum(is.na(com[, 1])) != 0) {
-        stop("Error: NA values in immigrants")
+      if (!is.null(filt)) {
+        # Influence of habitat filtering on immigration
+        
+        if (any(is.na(hab_filter(pool[, -(1:2)])))) {
+          stop("Error: NA values in habitat filtering of immigrants")
+        }
+        
+        prob <- prob * vapply(pool[, -(1:2)], hab_filter, 0)
       }
-    } else {
-      # Add new immigrated individual to community
-      com <- rbind(com, pool[sample(1:nrow(pool), J1, replace = TRUE,
-                                    prob = vapply(pool[, 3], hab_filter, 0)),
-                             1:3])
       
-      if (any(is.na(hab_filter(pool[, 3])))) {
-        stop("Error: NA values in habitat filtering")
+      if (limit.sim) {
+        
+        # Establishment success depends on how distant is the candidate from local individuals
+        lim_sim_mig_function <- function(x) {
+          coeff.lim.sim * (sum(exp( -(x-com.init[,-(1:2)])^2 / (2 * (sigm^2))), na.rm = TRUE))
+        }
+        
+        # Influence of limiting similarity on establishment
+        prob.estab <- sapply(pool[, -(1:2)],
+                             function(x) lim_sim_mig_function(x))
+        prob.estab <- prob.estab/max(prob.estab)
+        prob.estab <- 1 - prob.estab
+        # Add baseline probability
+        prob.estab <- prob.estab + 1/J
+        prob <- prob * prob.estab
       }
     }
+    
+    # Add new immigrated individual to community
+    com <- rbind(com, pool[sample(1:nrow(pool), J1, replace = TRUE,
+                                  prob = prob),
+                           1:3])
     
     if (any(is.na(com[, 1]))) {
       stop("Error: NA values in community composition (3)")
       }
   }
   
-  if (J2 > 0) { # Immigrant drawn from com.init
+  if (J2 > 0) { # Recruitment from com.init
     
-    com <- rbind(com, com.init[sample(1:nrow(com.init), J2, replace = TRUE),
-                               1:3])
+    # Default equal probability of establishment of local offspring
+    prob = rep(1, nrow(com.init))
     
+    if(type.assemb=="estab" | type.assemb=="both") {
+      
+      if (!is.null(filt)) {
+        # Influence of habitat filtering on establishment
+        
+        if (any(is.na(hab_filter(com.init[, -(1:2)])))) {
+          stop("Error: NA values in habitat filtering of local offspring")
+        }
+        
+        prob <- prob * vapply(com.init[, -(1:2)], hab_filter, 0)
+      }
+      
+      if (limit.sim) {
+        # Influence of limiting similarity on establishment
+        # Same constraint is used for local offspring and immigrants
+        prob.estab <- prob.death/max(prob.death)
+        prob.estab <- 1 - prob.estab
+        # Add baseline probability
+        prob.estab <- prob.estab + 1/J
+        prob <- prob * prob.estab
+      }
+    }
+    
+    # Add new established offspring individual to community
+    com <- rbind(com, com.init[sample(1:nrow(com.init), J2, replace = TRUE,
+                                  prob = prob),
+                           1:3])
+     
     if (any(is.na(com[, 1]))) {
       print(J2)
       stop("Error: NA values in community composition (4)")
