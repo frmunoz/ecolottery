@@ -299,7 +299,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   prior <- list()
   dim.prior <- nrow(par.filt) + max(nrow(par.migr),1) + prop*max(par.size,1) + is.null(pool) 
   length(prior) <- dim.prior
-  while(length(prior[[1]]) < nb.samp) {
+  stop <- 0
+  while(length(prior[[1]]) < nb.samp | stop < 100) {
     samp <- nb.samp - length(prior[[1]])
     i <- 0
     if(!is.null(par.filt)) {
@@ -348,7 +349,11 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     
     constr.sel <- sapply(1:nb.samp, function(x) constr.test(names(prior), unlist(lapply(prior,function(y) y[x]))))
     prior <- lapply(prior, function(x) x[constr.sel])
+    
+    stop <- stop + 1
   }
+  
+  if(stop==100) warning("Fail to meet constraints for nb.samp sets of parameter values")
   
   # Function to perform simulations
   mkWorker <- function(traits, nb.com, multi, prop, prior, J, pool, filt.abc, migr.abc, size.abc,
