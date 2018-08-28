@@ -14,16 +14,17 @@
 }
 \usage{
   coalesc_abc(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-              f.sumstats, filt.abc = NULL, migr.abc = NULL, add = F, var.add = NULL,
-              params = NULL, par.filt = NULL, par.migr = NULL, dim.pca = NULL, svd = F, 
+              f.sumstats, filt.abc = NULL, migr.abc = NULL, size.abc = NULL, add = F, 
+              var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
+              par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, theta.max = NULL, 
+              nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, 
+              pkg = NULL, method = "rejection")
+  do.simul.coalesc(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
+              traits = NULL, f.sumstats = NULL, filt.abc = NULL, migr.abc = NULL, 
+              size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
+              par.migr = NULL, par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, 
               theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
               tol = NULL, pkg = NULL, method = "rejection")
-  do.simul.coalesc(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
-              traits = NULL, f.sumstats = NULL, filt.abc = NULL, migr.abc = NULL,
-              add = F, var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL,
-              dim.pca = NULL, svd = F, theta.max = NULL, nb.samp = 10^6, 
-              parallel = TRUE, nb.core = NULL, tol = NULL, 
-              pkg = NULL, method = "rejection")
 }
 \arguments{
   \item{comm.obs}{
@@ -57,7 +58,8 @@
   \item{prop}{
     indicates if the community composition is given in term of relative species abundances, 
     cover or proportions. In this case, a parameter of effective community size is estimated.
-    Presently only available with multi = "tab". Default is FALSE.
+    Presently only available with multi = "tab". Default is FALSE. If no prior is provided for
+    \code{J}, it is by default a uniform distribution between 100 and 1000.
   }
   \item{traits}{
     the trait values of species in the regional pool. It is used if trait
@@ -80,6 +82,11 @@
     a function defining immigration probability in local communities. It can be a function of 
     environmental variables defined in \code{var.add} and of parameters to be estimated.
   }
+  \item{size.abc}{
+    a function defining local community sizes. It can be used when \code{prop = T}.
+    It can be a function of environmental variables defined in \code{var.add} and of 
+    parameters to be estimated.
+  }
    \item{add}{
     indicates if additional variables must be passed to \code{filt.abc} and/or \code{migr.abc}
     . It can be, for instance, environmental data conditioning the trait-based filtering 
@@ -95,15 +102,28 @@
   }
   \item{par.filt}{
     a matrix of the bounds of the parameters used in \code{filt.abc}. The row
-    names of \code{params} provide the parameter names used in ABC calculation
+    names of \code{par.filt} provide the parameter names used in ABC calculation
     and output. First column contains minimum values and second column contains
     maximum values.
   }
   \item{par.migr}{
     a matrix of the bounds of the parameters used in \code{migr.abc}. The row
-    names of \code{params} provide the parameter names used in ABC calculation
+    names of \code{par.migr} provide the parameter names used in ABC calculation
     and output. First column contains minimum values and second column contains
     maximum values.
+  }
+  \item{par.size}{
+    a matrix of the bounds of the parameters used in \code{size.abc}. The row
+    names of \code{par.size} provide the parameter names used in ABC calculation
+    and output. First column contains minimum values and second column contains
+    maximum values.
+  }
+  \item{constr}{
+    constraints that must be set on parameter values, i.e., relationships that must
+    be met when drawing the values in prior distributions. It must be a list of 
+    character strings each including an operator relating some of the parameters.
+    The names of parameters must be consistent with those used in \code{par.filt},
+    \code{par.migr} and \code{par.size}. Default is \code{NULL} (no constraint).
   }
   \item{dim.pca}{
     gives a number of independent dimensions to calculate from the simulated summary statistics, 
@@ -293,15 +313,18 @@ row.names(par.range) <- c("a", "b", "sigmaopt")
 # Basic summary statistics
 # The function will provide trait-based statistics and taxonomic diversity in
 # each community
-f.sumstats <- function(tab, traits) array(dimnames=list(c(paste(rep("cwm",nrow(tab)),1:nrow(tab)), paste(rep("cwv",nrow(tab)),1:nrow(tab)), paste(rep("cws",nrow(tab)),1:nrow(tab)),
-                                                  paste(rep("cwk",nrow(tab)),1:nrow(tab)), paste(rep("S",nrow(tab)),1:nrow(tab)), paste(rep("Es",nrow(tab)),1:nrow(tab)), paste(rep("beta",nrow(tab)),1:nrow(tab)))),
-                                  c(apply(tab, 1, function(x) Weighted.Desc.Stat::w.mean(traits[colnames(tab),], x)), 
-                                  apply(tab, 1, function(x) Weighted.Desc.Stat::w.var(traits[colnames(tab),], x)), 
-                                    apply(tab, 1, function(x) Weighted.Desc.Stat::w.skewness(traits[colnames(tab),], x)),  
-                                    apply(tab, 1, function(x) Weighted.Desc.Stat::w.kurtosis(traits[colnames(tab),], x)),
-                                    apply(tab, 1, function(x) sum(x!=0)),
-                                    apply(tab, 1, vegan::diversity),
-                                    colMeans(as.matrix(vegan::betadiver(tab,"w")))))
+f.sumstats <- function(tab, traits) array(dimnames=
+  list(c(paste(rep("cwm",nrow(tab)),1:nrow(tab)), paste(rep("cwv",nrow(tab)),1:nrow(tab)), 
+  paste(rep("cws",nrow(tab)),1:nrow(tab)), paste(rep("cwk",nrow(tab)),1:nrow(tab)), 
+  paste(rep("S",nrow(tab)),1:nrow(tab)), paste(rep("Es",nrow(tab)),1:nrow(tab)), 
+  paste(rep("beta",nrow(tab)),1:nrow(tab)))),
+  c(apply(tab, 1, function(x) Weighted.Desc.Stat::w.mean(traits[colnames(tab),], x)), 
+  apply(tab, 1, function(x) Weighted.Desc.Stat::w.var(traits[colnames(tab),], x)), 
+  apply(tab, 1, function(x) Weighted.Desc.Stat::w.skewness(traits[colnames(tab),], x)),  
+  apply(tab, 1, function(x) Weighted.Desc.Stat::w.kurtosis(traits[colnames(tab),], x)),
+  apply(tab, 1, function(x) sum(x!=0)),
+  apply(tab, 1, vegan::diversity),
+  colMeans(as.matrix(vegan::betadiver(tab,"w")))))
 
 # ABC estimation of the parameters of trait-environment relationship and of migration,
 # based on observed community composition 
@@ -369,9 +392,13 @@ hist(res.tab2$abc)
 # Check result consistency
 comm <- 1
 coeff <- summary(res.tab2$abc)
-plot(cbind(sapply(pool$tra, function(x) filt_gaussian_env(x, c(0.5, 0.2, 0.1), env[comm,1])), sapply(pool$tra, function(x) filt_gaussian_env(x, coeff[3,1:3], env[comm,1]))), xlab = paste("Expected filter value in community ", comm, sep=" "), ylab = "Estimated filter value")
+plot(cbind(sapply(pool$tra, function(x) filt_gaussian_env(x, c(0.5, 0.2, 0.1), env[comm,1])), 
+sapply(pool$tra, function(x) filt_gaussian_env(x, coeff[3,1:3], env[comm,1]))), 
+xlab = paste("Expected filter value in community ", comm, sep=" "), ylab = "Estimated filter value")
 abline(0,1)
-plot(cbind(sapply(env[,2], function(x) migr_env(c(0.25, 0.75), x)), sapply(env[,2], function(x) migr_env(coeff[3,4:5], x))), xlab = "Expected migration value", ylab = "Estimated migration value")
+plot(cbind(sapply(env[,2], function(x) migr_env(c(0.25, 0.75), x)), 
+sapply(env[,2], function(x) migr_env(coeff[3,4:5], x))), 
+xlab = "Expected migration value", ylab = "Estimated migration value")
 abline(0,1)
 
 # 3/ Distinct pools of migrants across communities

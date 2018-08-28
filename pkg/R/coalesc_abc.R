@@ -1,6 +1,7 @@
 coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-                        f.sumstats, filt.abc = NULL, migr.abc = NULL, add = F, var.add = NULL,
-                        params = NULL, par.filt = NULL, par.migr = NULL, dim.pca = NULL, svd = F, theta.max = NULL, 
+                        f.sumstats, filt.abc = NULL, migr.abc = NULL, size.abc = NULL, add = F,
+                        var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
+                        par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, theta.max = NULL, 
                         nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
                         method = "rejection")
 {
@@ -71,6 +72,10 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     stop("coalesc_abc requires package abc to be installed")
   }
   
+  if (!is.null(constr) & !requireNamespace("lazyeval", quietly = TRUE)) {
+    stop("coalesc_abc requires package lazy_eval to be installed")
+  }
+  
   # Other required packages
   for (i in pkg) {
     if (!requireNamespace(pkg, quietly = TRUE)) {
@@ -83,7 +88,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     stop("multi parameter must be either single, tab or seqcom.")
   }
   
-    if (multi == "single") {
+  if (multi == "single") {
     J <- nrow(comm.obs)
     nb.com <- 1
   } else {
@@ -144,8 +149,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   
   # Community simulation
   sim <- do.simul.coalesc(J, pool, multi, prop, nb.com, traits, f.sumstats, filt.abc, migr.abc,
-                          add, var.add, params, par.filt, par.migr, dim.pca, svd, theta.max, 
-                          nb.samp, parallel, nb.core, tol, pkg, method)
+                          size.abc, add, var.add, params, par.filt, par.migr, par.size, constr,
+                          dim.pca, svd, theta.max, nb.samp, parallel, nb.core, tol, pkg, method)
   
   if(sum(sim$sel.ss)!=length(stats.obs))
   {
@@ -233,10 +238,10 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
 
 do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
                      traits = NULL, f.sumstats = NULL, filt.abc = NULL, migr.abc = NULL, 
-                     add = F, var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
-                     dim.pca = NULL, svd = F, theta.max = NULL, nb.samp = 10^6, 
-                     parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
-                     method = "rejection") {
+                     size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
+                     par.migr = NULL, par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, 
+                     theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, 
+                     pkg = NULL, method = "rejection") {
   
   if (!requireNamespace("parallel", quietly = TRUE) & parallel) {
     warning("parallel = TRUE requires package 'parallel' to be installed\n",
@@ -277,46 +282,77 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     parCluster <- parallel::makeCluster(max(1, nb.core))
   }
   
-  # Uniform prior distributions of parameters
-  prior <- c()
-  i <- 0
-  if(!is.null(par.filt)) {
-    for (i in 1:nrow(par.filt)) {
-      prior[[i]] <- runif(nb.samp, min = par.filt[i, 1], max = par.filt[i, 2])
-    }
-  }
-  if(!is.null(par.migr)) {
-    for (i in 1:nrow(par.migr)) {
-      prior[[i+nrow(par.filt)]] <- runif(nb.samp, min = par.migr[i, 1], max = par.migr[i, 2])
-    }
-  } else {
-    prior[[i+1]] <- runif(nb.samp, min = 0, max = 1)
-  }
-  if(!is.null(par.migr)) {
-    names(prior) <- c(rownames(par.filt), rownames(par.migr))
-  } else {
-    names(prior) <- c(rownames(par.filt), "m")
-  }
-  
-  # Note - Defining a lower bound at 0 for m and theta can entail issues when species richness is 1
-  # in simulated community; we should allow the user to define the prior for m and theta in
-  # the future
-  
-  if(prop) 
+  # Defining constraints on parameter values
+  constr.test <- function(par.names, par.val) 
   {
-    prior[[length(prior)+1]] <- runif(nb.samp, min = 100, max = 1000)
-    warning("The prior of community size is uniform between 100 and 1000")
-    names(prior)[length(prior)] <- "J"
+    res <- T
+    if(!is.null(constr)) {
+      for(j in 1:length(par.names))
+        assign(par.names[j], par.val[j], envir=globalenv())
+      for(j in 1:length(constr)) 
+        res <- res & lazyeval::lazy_eval(constr[j], globalenv())
+    }
+    return(res)
   }
   
-  if (is.null(pool)) {
-    prior[[length(prior) + 1]] <- runif(nb.samp, min = 0, max = theta.max)
-    names(prior)[length(prior)] <- "theta"
+  # Uniform prior distributions of parameters
+  prior <- list()
+  dim.prior <- nrow(par.filt) + max(nrow(par.migr),1) + prop*max(par.size,1) + is.null(pool) 
+  length(prior) <- dim.prior
+  while(length(prior[[1]]) < nb.samp) {
+    samp <- nb.samp - length(prior[[1]])
+    i <- 0
+    if(!is.null(par.filt)) {
+      for (i in 1:nrow(par.filt)) {
+        prior[[i]] <- c(prior[[i]], runif(samp, min = par.filt[i, 1], max = par.filt[i, 2]))
+      }
+    }
+    if(!is.null(par.migr)) {
+      for (i in 1:nrow(par.migr)) {
+        prior[[i+nrow(par.filt)]] <- c(prior[[i+nrow(par.filt)]], runif(samp, min = par.migr[i, 1], 
+                                                                        max = par.migr[i, 2]))
+      }
+    } else {
+      prior[[i+1]] <- c(prior[[i+1]], runif(samp, min = 0, max = 1))
+    }
+    if(!is.null(par.migr)) {
+      names(prior) <- c(rownames(par.filt), rownames(par.migr))
+    } else {
+      names(prior) <- c(rownames(par.filt), "m")
+    }
+    
+    # Note - Defining a lower bound at 0 for m and theta can entail issues when species richness is 1
+    # in simulated community; we should allow the user to define the prior for m and theta in
+    # the future
+    
+    l <- length(prior)
+    if(prop) 
+    {
+      if(!is.null(par.size))
+      {
+        for (i in 1:nrow(par.size)) {
+          prior[[i+l]] <- c(prior[[i+l]], runif(prop, min = par.size[i, 1], max = par.size[i, 2]))
+        }
+        names(prior)[l:(l+nrow(par.size))] <- rownames(par.size)
+      } else {
+        prior[[length(prior)+1]] <- c(prior[[length(prior)+1]], runif(prop, min = 100, max = 1000))
+        warning("The prior of community size is uniform between 100 and 1000")
+        names(prior)[length(prior)] <- "J"
+      }
+    }
+    
+    if (is.null(pool)) {
+      prior[[length(prior) + 1]] <- c(prior[[length(prior) + 1]], runif(prop, min = 0, max = theta.max))
+      names(prior)[length(prior)] <- "theta"
+    }
+    
+    constr.sel <- sapply(1:nb.samp, function(x) constr.test(names(prior), unlist(lapply(prior,function(y) y[x]))))
+    prior <- lapply(prior, function(x) x[constr.sel])
   }
   
   # Function to perform simulations
-  mkWorker <- function(traits, nb.com, multi, prop, prior, J, pool, filt.abc, migr.abc, add,
-                       var.add, f.sumstats, pkg) {
+  mkWorker <- function(traits, nb.com, multi, prop, prior, J, pool, filt.abc, migr.abc, size.abc,
+                       add, var.add, f.sumstats, pkg) {
     force(traits)
     force(nb.com)
     force(multi)
@@ -326,6 +362,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     force(pool)
     force(filt.abc)
     force(migr.abc)
+    force(size.abc)
     force(add)
     force(var.add)
     force(f.sumstats)
@@ -363,6 +400,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
           params.samp <- params.samp[-length(params.samp)]
         }
         
+        ## Need to remove reference to par.filt here
         if (!is.null(filt.abc)) {
           if(!add) 
             filt <- function(x) filt.abc(x, params.samp[1:nrow(par.filt)])
@@ -378,6 +416,15 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
           if(!add) 
             migr <- function() params.samp["m"]
           else migr <- function(var.add) params.samp["m"]
+        }
+        if (!is.null(size.abc)) {
+          if(!add) 
+            size <- function() size.abc(params.samp[(nrow(par.filt)+1):(nrow(par.filt)+nrow(par.migr))])
+          else migr <- function(var.add) size.abc(params.samp[(nrow(par.filt)+1):(nrow(par.filt)+nrow(par.migr))], var.add)
+        } else {
+          if(!add) 
+            size <- function() params.samp["J"]
+          else size <- function(var.add) params.samp["J"]
         }
         
         if(multi == "tab") {
@@ -485,10 +532,10 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   if (parallel) {
     err.chk <- try(models <- parallel::parLapply(parCluster, 1:nb.samp,
                                   mkWorker(traits, nb.com, multi, prop, prior, J,
-                                           pool, filt.abc, migr.abc, add, var.add, f.sumstats, pkg)), T)
+                                           pool, filt.abc, migr.abc, size.abc, add, var.add, f.sumstats, pkg)), T)
   } else {
     models <- lapply(1:nb.samp, mkWorker(traits, nb.com, multi, prop, prior, J, pool,
-                                         filt.abc, migr.abc, add, var.add, f.sumstats, pkg))
+                                         filt.abc, migr.abc, size.abc, add, var.add, f.sumstats, pkg))
   }
   
   if (parallel) {
