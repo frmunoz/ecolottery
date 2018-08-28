@@ -322,7 +322,9 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   
   # Uniform prior distributions of parameters
   prior <- list()
-  dim.prior <- nrow(par.filt) + max(nrow(par.migr),1) + prop*max(par.size,1) + is.null(pool) 
+  dim.prior <- ifelse(!is.null(nrow(par.filt)),nrow(par.filt),0) + 
+    max(ifelse(!is.null(par.migr),nrow(par.migr),0),1) + 
+    prop*max(ifelse(!is.null(par.size),nrow(par.size),0),1) + as.numeric(is.null(pool))
   length(prior) <- dim.prior
   stop <- 0
   while(length(prior[[1]]) < nb.samp | stop < 100) {
