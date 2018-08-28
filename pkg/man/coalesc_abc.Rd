@@ -16,7 +16,7 @@
   coalesc_abc(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
               f.sumstats, filt.abc = NULL, migr.abc = NULL, size.abc = NULL, add = F, 
               var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
-              par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, theta.max = NULL, 
+              par.size = NULL, constr = NULL, scale = T, dim.pca = NULL, svd = F, theta.max = NULL, 
               nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, 
               pkg = NULL, method = "rejection")
   do.simul.coalesc(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
@@ -124,6 +124,9 @@
     character strings each including an operator relating some of the parameters.
     The names of parameters must be consistent with those used in \code{par.filt},
     \code{par.migr} and \code{par.size}. Default is \code{NULL} (no constraint).
+  }
+  \item{scale}{
+    should the summary statistics be scaled. Default is \code{TRUE}.
   }
   \item{dim.pca}{
     gives a number of independent dimensions to calculate from the simulated summary statistics, 

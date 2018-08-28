@@ -1,7 +1,7 @@
 coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
                         f.sumstats, filt.abc = NULL, migr.abc = NULL, size.abc = NULL, add = F,
                         var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
-                        par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, theta.max = NULL, 
+                        par.size = NULL, constr = NULL, scale = T, dim.pca = NULL, svd = F, theta.max = NULL, 
                         nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
                         method = "rejection")
 {
@@ -186,37 +186,52 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   }
   colnames(sim$stats.scaled) <- colnames(sim$stats)
   
-  if (is.null(tol)){
+  if (scale)
+  {
+    if (is.null(tol)){
     res.abc <- NA
     stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
-  } else {
-    if(is.null(dim.pca))
-    {
-      stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
-    } else
-    {
-      stats.obs.scaled <- sim$stats.scaled[nrow(sim$stats.scaled),]
-      sim$stats.scaled <- sim$stats.scaled[-nrow(sim$stats.scaled),]
-      # For debug
-      if(nrow(sim$stats.scaled)!=nrow(sim$params.sim)) stop("stats.scaled and params.sim must have
-                                                              the same number of rows")
+    } else {
+      if(is.null(dim.pca))
+      {
+        stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
+      } else
+      {
+        stats.obs.scaled <- sim$stats.scaled[nrow(sim$stats.scaled),]
+        sim$stats.scaled <- sim$stats.scaled[-nrow(sim$stats.scaled),]
+        # For debug
+        if(nrow(sim$stats.scaled)!=nrow(sim$params.sim)) stop("stats.scaled and params.sim must have
+                                                                the same number of rows")
+      }
     }
   }
     
   if (is.null(tol)){
     res.abc <- NA
   } else {
-    # ABC estimation
-    res.abc <- tryCatch(
-      abc::abc(target = stats.obs.scaled,
+    if(scale) {
+      # ABC estimation
+      res.abc <- tryCatch(
+        abc::abc(target = stats.obs.scaled,
                param = sim$params.sim,
                sumstat = sim$stats.scaled,
                tol = tol,
                method = method),
-      error = function(x) {
-        warning("ABC computation failed with the requested method.")
-      }
-    )
+        error = function(x) {
+          warning("ABC computation failed with the requested method.")
+        })
+    } else {
+      res.abc <- tryCatch(
+        abc::abc(target = stats.obs,
+                 param = sim$params.sim,
+                 sumstat = sim$stats,
+                 tol = tol,
+                 method = method),
+        error = function(x) {
+          warning("ABC computation failed with the requested method.")
+        })
+    }
+    
     if (is.character(res.abc)){
       res.abc <- NA
     }
@@ -224,15 +239,25 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   
   if(is.null(dim.pca))
   {
-    return(list(par = sim$params.sim, obs = stats.obs,
+    if(scale) {
+      return(list(par = sim$params.sim, obs = stats.obs,
                 obs.scaled = stats.obs.scaled, ss = sim$stats.scaled,
                 ss.scale = data.frame(mean=stats.mean,sd=stats.sd),
                 abc = res.abc))
+    } else {
+      return(list(par = sim$params.sim, obs = stats.obs,
+                  ss = sim$stats, abc = res.abc))
+    }
   } else
   {
-    return(list(par = sim$params.sim, obs = stats.obs,
+    if(scale) {
+      return(list(par = sim$params.sim, obs = stats.obs,
                 obs.scaled = stats.obs.scaled, ss = sim$stats.scaled,
                 abc = res.abc))
+    } else {
+      return(list(par = sim$params.sim, obs = stats.obs,
+                  ss = sim$stats, abc = res.abc))
+    }
   }
 }
 
@@ -288,9 +313,9 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     res <- T
     if(!is.null(constr)) {
       for(j in 1:length(par.names))
-        assign(par.names[j], par.val[j], envir=globalenv())
+        assign(par.names[j], par.val[j], envir=environment())
       for(j in 1:length(constr)) 
-        res <- res & lazyeval::lazy_eval(constr[j], globalenv())
+        res <- res & lazyeval::lazy_eval(constr[j], environment())
     }
     return(res)
   }
