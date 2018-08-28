@@ -22,7 +22,8 @@ Imports:
     ggplot2,
     grDevices,
     parallel,
-    EasyABC
+    EasyABC,
+    lazyeval
 Suggests:
     ape,
     changepoint,
