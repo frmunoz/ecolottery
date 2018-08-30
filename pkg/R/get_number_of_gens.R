@@ -1,7 +1,7 @@
-get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
+get_number_of_gens <- function(given_size, pool, traits = NULL, nbrep = 5, prob = 1, d = 1,
                                gens = NULL, limit.sim = FALSE,
                                coeff.lim.sim = 1, type.assemb = "death", sigm = 0.1, 
-                               filt = NULL, prob.death = NULL, 
+                               filt = NULL, add = F, var.add = NULL, prob.death = NULL, 
                                method.dist = "euclidean", plot_gens = FALSE) {
   
     if (is.character(pool)) {
@@ -29,19 +29,16 @@ get_number_of_gens <- function(given_size, pool, nbrep = 5, prob = 1, d = 1,
     # Simulate starting community from given pool
     start_com <- pool[sample(1:nrow(pool), given_size),]
     
-    if (is.null(filt)) {
-      filt <- function(x) return(1)
-    }
-    
     gens_conv_cpt <- c()
     nb_sp_gen <- c()
     
     # Loop to simulate the communities and determine changepoint
     for (i in 1:nbrep) {
       final <- forward(initial = start_com, prob = prob, d = d, gens = gens,
-                       keep = FALSE, pool = pool, limit.sim = limit.sim, 
+                       keep = FALSE, pool = pool, traits = traits, limit.sim = limit.sim, 
                        coeff.lim.sim = coeff.lim.sim, type.assemb = type.assemb,
-                       sigm = sigm, filt = filt, prob.death = prob.death, 
+                       sigm = sigm, filt = filt, add = add, var.add = var.add,
+                       prob.death = prob.death, 
                        method.dist = method.dist, plot_gens = plot_gens)
       
       data <- data.frame(gens = 1:gens, rich = final$sp_t,
