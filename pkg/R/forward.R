@@ -141,13 +141,20 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   if (is.character(initial)) {  # If only list of species names provided
     J <- length(initial)
     # The ids of individuals present in the initial community begi with "init"
-    init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
-                            sp = initial,
-                            trait = rep(NA, J),
-                            stringsAsFactors = FALSE) 
+    if(is.null(traits)) {
+      init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
+                              sp = initial,
+                              trait = rep(NA, J),
+                              stringsAsFactors = FALSE) 
+    } else {
+      init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
+                              sp = initial,
+                              trait = traits[initial,],
+                              stringsAsFactors = FALSE) 
+    }
   } else {
     
-    if (ncol(initial) < 3) {
+    if (ncol(initial) == 2 & is.null(traits)) {
       message("Two-column initial community: assumed to represent species ",
               "and trait information; individual ids will be generated")
       J <- nrow(initial)
@@ -155,11 +162,14 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
                               sp = initial[, 1],
                               trait = initial[, 2],
                               stringsAsFactors = FALSE)
-    } else
-    {
+    } else if (ncol(initial) == 2 & !is.null(traits)) {
+      message("Two-column initial community: assumed to represent individual ",
+              "and species ids; trait information in traits")
+      init_comm <- data.frame(initial,
+                              trait = traits[initial[,2], ],
+                              stringsAsFactors = FALSE)
       J <- nrow(initial)
-      init_comm <- initial
-    }
+    } else stop("initial is misspecified")
   }
 	
   if (J < d) stop("The number of dead individuals per time step ",
@@ -170,6 +180,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
          "composition for niche-based dynamics")
   }
   
+  # TODO: possibility to handle several traits
   colnames(init_comm) <- c("id", "sp", "trait")
   
   new.index <- 0
@@ -384,7 +395,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
   if (!is.null(filt)) {
     hab_filter <- function(x) filt(x)
   } else {
-    # If no function defined, dummy function returning one
+    # If no function defined, dummy function returning value 1
 	  hab_filter <- function(x) vapply(x, function(x) 1, c(1))
   }
   
@@ -449,7 +460,6 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
         # Add baseline probability
         prob.death <- prob.death + 1/J
         names(prob.death ) <- com[, 1]
-        
       }
     
       # Habitat filtering also influences the individual death probability
@@ -457,7 +467,6 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
         if (any(is.na(hab_filter(com[, -(1:2)])))) {
           stop("Error: NA values in habitat filter")
         }
-   
         prob.death <- prob.death * (1 - hab_filter(com[, -(1:2)]) /
                                       sum(hab_filter(com[, -(1:2)])))
       }
