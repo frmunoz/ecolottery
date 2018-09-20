@@ -13,7 +13,7 @@ test_that("forward() works and returns desired result structure", {
   sink()
   
   expect_is(res, "list")
-  expect_named(res, c("com", "sp_t", "dist.t", "pool"))
+  expect_named(res, c("com", "sp_t", "dist.t", "pool", "call"))
   expect_is(res$com, "data.frame")
   expect_is(res$pool, "data.frame")
   expect_named(res$com, c("id", "sp", "trait"))
@@ -31,7 +31,7 @@ test_that("forward() works and returns desired result structure", {
   sink()
   
   expect_is(res_keep, "list")
-  expect_named(res_keep, c("com_t", "sp_t", "pool"))
+  expect_named(res_keep, c("com_t", "sp_t", "pool", "call"))
   expect_is(res_keep$com_t, "list")
   expect_is(res_keep$com_t[[1]], "data.frame")
   expect_is(res_keep$pool, "data.frame")
@@ -50,7 +50,7 @@ test_that("forward() works and returns desired result structure", {
   sink()
   
   expect_is(res_limit, "list")
-  expect_named(res_limit, c("com_t", "sp_t", "dist.t", "pool"))
+  expect_named(res_limit, c("com_t", "sp_t", "dist.t", "pool", "call"))
   expect_is(res_limit$com_t, "list")
   expect_is(res_limit$com_t[[1]], "data.frame")
   expect_is(res_limit$pool, "data.frame")
