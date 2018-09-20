@@ -5,7 +5,6 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
                         nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
                         method = "rejection")
 {
-  
   if(!method%in%c("rejection", "loclinear", "neuralnet", "ridge"))
     stop("method.abc should be either rejection, loclinear, neuralnet or ridge")
   
@@ -243,20 +242,20 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
       return(list(par = sim$params.sim, obs = stats.obs,
                 obs.scaled = stats.obs.scaled, ss = sim$stats.scaled,
                 ss.scale = data.frame(mean=stats.mean,sd=stats.sd),
-                abc = res.abc))
+                abc = res.abc, call = match.call()))
     } else {
       return(list(par = sim$params.sim, obs = stats.obs,
-                  ss = sim$stats, abc = res.abc))
+                  ss = sim$stats, abc = res.abc, call = match.call()))
     }
   } else
   {
     if(scale) {
       return(list(par = sim$params.sim, obs = stats.obs,
                 obs.scaled = stats.obs.scaled, ss = sim$stats.scaled,
-                abc = res.abc))
+                abc = res.abc, call = match.call()))
     } else {
       return(list(par = sim$params.sim, obs = stats.obs,
-                  ss = sim$stats, abc = res.abc))
+                  ss = sim$stats, abc = res.abc, call = match.call()))
     }
   }
 }

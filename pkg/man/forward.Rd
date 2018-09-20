@@ -21,8 +21,8 @@ forward(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
 get_number_of_gens(given_size, pool, traits = NULL, nbrep = 5, prob = 1, d = 1, 
                    gens = NULL, limit.sim = FALSE, 
                    coeff.lim.sim = 1, type.assemb = "death", sigm = 0.1, filt = NULL, 
-                   prob.death = NULL, method.dist = "euclidean",
-                   plot_gens = FALSE)
+                   add = F, var.add = NULL, prob.death = NULL, 
+                   method.dist = "euclidean", plot_gens = FALSE)
 pick(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
      limit.sim = NULL, coeff.lim.sim = 1, type.assemb = "death", sigm = 0.1, filt = NULL, 
      new.index = new.index, method.dist = "euclidean")
@@ -169,6 +169,9 @@ function over time.
 \item{new.index}{
 for \code{pick.mutate()}, return the new index to be used for species name at a
 next speciation event.
+}
+\item{call}{
+the call function.
 }
 }
 \references{

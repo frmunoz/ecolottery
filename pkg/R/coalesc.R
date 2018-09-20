@@ -9,7 +9,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   if((add & is.null(var.add)) | (!add & !is.null(var.add))) {
     warning("No additional variables are passed to filt")
   }
-  
+    
   if(length(m)>1 | length(theta)>1) {
     stop("m and theta cannot be vectors of length greater than 1")
   }
@@ -100,7 +100,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     
     if (m == 1 & is.null(filt)) {
       return(list(pool = data.frame(ind = ind_pool_lab, sp = ind_pool_sp,
-                                    ind_pool_traits)))
+                                    ind_pool_traits), call = match.call()))
     }
   } else { 
     
@@ -118,6 +118,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
       ind_pool_traits <- data.frame(pool[,-(1:2)])
       if(any(is.na(ind_pool_traits)))
         stop("There should not be any NA in trait values of the individuals of the pool")
+      if(!is.null(traits))  
+        warning("Trait information already in 'pool', the 'traits' input is ignored")
       colnames(ind_pool_traits) <- colnames(pool)[-(1:2)]
     } else {
       # Generation of trait values if not provided by the user
@@ -151,18 +153,18 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   if (!is.null(filt)) {
     if(!add)
     {
-      env_filter <- function(x) t(apply(x,1,function(y) filt(y)))
+      env_filter <- function(x) t(apply(x, 1, function(y) filt(y)))
     } else 
     {
-      env_filter <- function(x, var.add) t(apply(x,1,function(y) filt(y, var.add)))
+      env_filter <- function(x, var.add) t(apply(x, 1, function(y) filt(y, var.add)))
     }
   } else {
-    env_filter <- function(x) t(apply(x,1,function(y) 1))
+    env_filter <- function(x) t(apply(x, 1, function(y) 1))
   }
   
   # Environmental filter should not provide negative values
   
-  if(!add) 
+  if (!add) 
   {
     prob <- env_filter(ind_pool_traits)
   } else prob <- env_filter(ind_pool_traits, var.add)
@@ -181,7 +183,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
       warning("Your filtering function does not allow any immigrant to enter ",
               "the community")
     }
-    return(list(com = array(NA, c(J,3)), pool = pool))
+    return(list(com = array(NA, c(J,3)), pool = pool, call = match.call()))
   }
 
   ## Community generation
@@ -202,7 +204,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     com <- data.frame(ind = rep(pool[migrant, 1], J),
                       sp = rep(pool[migrant, 2], J),
                       ind_com_traits)
-    return(list(com = com, pool = pool))
+    return(list(com = com, pool = pool, call = match.call()))
   }
     
   # If migration rate > 0 and more than 1 individual in community
@@ -256,8 +258,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   com <- data.frame(ind = ind_com_lab, sp = ind_com_sp, ind_com_traits)
   
   if (m == 1 & is.null(filt)) {
-    return(list(pool = com))
+    return(list(pool = com, call = match.call()))
   } else {
-    return(list(com = com, pool = pool))
+    return(list(com = com, pool = pool, call = match.call()))
   }
 }

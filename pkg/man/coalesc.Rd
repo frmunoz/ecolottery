@@ -53,6 +53,9 @@ a data.frame of simulated individuals, with the label of ancestor individual in 
 \strong{Not provided if \code{m = 1} and \code{filt = NULL}: in this case the function provides a sample of the regional pool.}}
   \item{pool}{
 a data.frame of the individuals of the regional source pool, with the label of ancestor individual in the regional pool on first column (as in first column of input \code{pool}), species label on second column (as in second column of input \code{pool}), and species trait (as in third column of input \code{pool}).}
+  \item{call}{
+    the call function.
+  }
 }
 \references{
 Hurtt, G. C. and S. W. Pacala (1995). "The consequences of recruitment limitation: reconciling chance, history and competitive differences between plants." Journal of Theoretical Biology 176(1): 1-12.

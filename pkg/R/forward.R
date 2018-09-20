@@ -139,8 +139,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   # with individual id in first column, species name in second column, and
   # additional trait information for niche-based dynamics in the third column
   if (is.character(initial)) {  # If only list of species names provided
-    J <- length(initial)
     # The ids of individuals present in the initial community begi with "init"
+    J <- length(initial)
     if(is.null(traits)) {
       init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
                               sp = initial,
@@ -153,11 +153,10 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
                               stringsAsFactors = FALSE) 
     }
   } else {
-    
+    J <- nrow(initial)
     if (ncol(initial) == 2 & is.null(traits)) {
       message("Two-column initial community: assumed to represent species ",
               "and trait information; individual ids will be generated")
-      J <- nrow(initial)
       init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
                               sp = initial[, 1],
                               trait = initial[, 2],
@@ -168,10 +167,11 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
       init_comm <- data.frame(initial,
                               trait = traits[initial[,2], ],
                               stringsAsFactors = FALSE)
-      J <- nrow(initial)
-    } else stop("initial is misspecified")
+    } else if (ncol(initial) > 2) {
+      init_comm <- initial
+    }
   }
-	
+  
   if (J < d) stop("The number of dead individuals per time step ",
 		  "cannot be greater than community size")
 	  
@@ -257,15 +257,17 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     if (keep) return(list(com_t = comm_through_time,
                           sp_t = sp_t,
                           dist.t = dist.t,
-                          pool = pool))
+                          pool = pool,
+                          call = match.call()))
     else return(list(com = next_comm, sp_t = sp_t, 
-                     dist.t = dist.t, pool = pool))
+                     dist.t = dist.t, pool = pool, call = match.call()))
   } else
   {
     if (keep) return(list(com_t = comm_through_time,
                           sp_t = sp_t,
-                          pool = pool))
-    else return(list(com = next_comm, sp_t = sp_t, pool = pool))
+                          pool = pool,
+                          call = match.call()))
+    else return(list(com = next_comm, sp_t = sp_t, pool = pool, call = match.call()))
   }
 }
 

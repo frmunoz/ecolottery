@@ -16,9 +16,9 @@
   coalesc_abc(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
               f.sumstats, filt.abc = NULL, migr.abc = NULL, size.abc = NULL, add = F, 
               var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
-              par.size = NULL, constr = NULL, scale = T, dim.pca = NULL, svd = F, theta.max = NULL, 
-              nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, 
-              pkg = NULL, method = "rejection")
+              par.size = NULL, constr = NULL, scale = T, dim.pca = NULL, svd = F, 
+              theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
+              tol = NULL, pkg = NULL, method = "rejection")
   do.simul.coalesc(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
               traits = NULL, f.sumstats = NULL, filt.abc = NULL, migr.abc = NULL, 
               size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
@@ -212,6 +212,9 @@ and is not intended to be used directly.
     a single (if \code{multi = FALSE}, default) or a list of abc objects
     including ABC estimation information for each community provided in input
     (\code{comm.obs}).
+  }
+  \item{call}{
+    the call function.
   }
 }
 \seealso{
