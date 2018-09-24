@@ -120,7 +120,7 @@
   }
   \item{constr}{
     constraints that must be set on parameter values, i.e., relationships that must
-    be met when drawing the values in prior distributions. It must be a list of 
+    be met when drawing the values in prior distributions. It must be a vector of 
     character strings each including an operator relating some of the parameters.
     The names of parameters must be consistent with those used in \code{par.filt},
     \code{par.migr} and \code{par.size}. Default is \code{NULL} (no constraint).
