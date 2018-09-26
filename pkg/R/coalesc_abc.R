@@ -326,7 +326,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     prop*max(ifelse(!is.null(par.size),nrow(par.size),0),1) + as.numeric(is.null(pool))
   length(prior) <- dim.prior
   stop <- 0
-  while(length(prior[[1]]) < nb.samp | stop < 100) {
+  while(length(prior[[1]]) < nb.samp & stop < 100) {
     samp <- nb.samp - length(prior[[1]])
     i <- 0
     if(!is.null(par.filt)) {
