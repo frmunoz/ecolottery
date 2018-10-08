@@ -109,6 +109,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     }
     if (limit.sim | !is.null(filt)) {
       if(!is.null(traits)) {
+        # TOSOLVE: pb if several traits in traits
         pool[, 3] <- traits[pool[,2],]
       }
       if(is.null(traits) & ncol(pool) < 3) {
@@ -118,7 +119,9 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
                 "the regional pool")
       }
     }
-    colnames(pool) <- c("id", "sp", "trait")
+    # TEMPORARY - TOUPDATE
+    if(ncol(pool) == 3) colnames(pool) <- c("id", "sp", "trait")
+    if(ncol(pool) == 2) colnames(pool) <- c("id", "sp")
   }
   
   if (is.null(traits) & (is.null(pool) | NCOL(pool) < 3)) {
@@ -408,9 +411,11 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
    rownames(tr.dist) <- com[, 1]
    diag(tr.dist) <- NA
    
-   # dist.t will display the average distance between trait of species
+   # dist.t will display the average trait distance among species
    # for the whole community at each generation
-   dist.t <- mean(tr.dist[com[, 1], com[, 1]], na.rm = TRUE)
+   if (min(dim(tr.dist))>1) {
+     dist.t <- mean(tr.dist[com[, 1], com[, 1]], na.rm = TRUE)
+   } else dist.t <- NA
    
   } else {
     tr.dist <- NULL
@@ -502,7 +507,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     prob = rep(1, nrow(pool))
     
     # Influence of limiting similarity on immigration
-    if(type.assemb=="estab" | type.assemb=="both") {
+    if(type.assemb=="estab" | type.assemb=="both" | type.assemb=="immig") {
       
       if (!is.null(filt)) {
         # Influence of habitat filtering on immigration

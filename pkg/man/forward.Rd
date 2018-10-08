@@ -89,6 +89,7 @@ If \code{type.assemb="death"} (default), it plays on mortality events.
 If \code{type.assemb="estab"}, it plays at the establishment of immigrants
 and local offspring.
 If \code{type.assemb="both"}, it plays at both mortality and establishment.
+If \code{type.assemb="immig"}, it plays only at the establishment of immigrants.
 }
  \item{sigm}{
 adjust the variance of the overlap function used to calculate limiting
