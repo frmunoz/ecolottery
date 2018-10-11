@@ -101,6 +101,12 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   
   # If species pool is specified by user
   if (!is.null(pool)) {
+    if(ncol(pool)==2 &  !is.null(traits)) {
+      # Assign trait values to individuals of the pool
+      pool[,3:(2+ncol(traits))] <- traits[pool[,2],]
+      if(any(is.na(pool[,-(1:2)]))) 
+        stop("Mismatch of species names between pool and traits")
+    }
     if (ncol(pool) < 2) {
       stop("The regional pool is misdefined (at least two columns ",
            "required when a matrix or data frame is provided)")
@@ -175,18 +181,26 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     }
   }
   
+  if(is.null(filt) & ncol(pool)==2 & ncol(init_comm)>2)
+  {
+    # TO BE IMPROVED
+    # No need to keep trait information for neutral dynamics
+    init_comm <- init_comm[,1:2]
+  }
+  
   if (J < d) stop("The number of dead individuals per time step ",
 		  "cannot be greater than community size")
 	  
-  if ((limit.sim | !is.null(filt)) & any(is.na(init_comm[, 3]))) {
+  if ((limit.sim | !is.null(filt))) if(any(is.na(init_comm[, 3]))) {
     stop("Trait information must be provided in initial community ",
          "composition for niche-based dynamics")
   }
   
   # TODO: possibility to handle several traits
-  colnames(init_comm) <- c("id", "sp", "trait")
+  if(ncol(init_comm)==3) colnames(init_comm) <- c("id", "sp", "trait")
+  if(ncol(init_comm)==2) colnames(init_comm) <- c("id", "sp")
   
-  new.index <- 0
+    new.index <- 0
   
   ## Forward simulation with community
   
@@ -539,8 +553,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     
     # Add new immigrated individual to community
     com <- rbind(com, pool[sample(1:nrow(pool), J1, replace = TRUE,
-                                  prob = prob),
-                           1:3])
+                                  prob = prob),])
     
     if (any(is.na(com[, 1]))) {
       stop("Error: NA values in community composition (3)")
@@ -577,8 +590,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     
     # Add new established offspring individual to community
     com <- rbind(com, com.init[sample(1:nrow(com.init), J2, replace = TRUE,
-                                  prob = prob),
-                           1:3])
+                                  prob = prob),])
      
     if (any(is.na(com[, 1]))) {
       print(J2)
