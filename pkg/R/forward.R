@@ -181,7 +181,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     }
   }
   
-  if(is.null(filt) & ncol(pool)==2 & ncol(init_comm)>2)
+  if(is.null(filt) & !is.null(pool)) if(ncol(pool)==2 & ncol(init_comm)>2)
   {
     # TO BE IMPROVED
     # No need to keep trait information for neutral dynamics
