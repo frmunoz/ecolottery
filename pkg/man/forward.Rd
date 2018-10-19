@@ -15,21 +15,24 @@ generations.
 
 \usage{
 forward(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
-        pool = NULL, traits = NULL, limit.sim = FALSE, coeff.lim.sim = 1,
-        type.assemb = "death", sigm = 0.1, filt = NULL, add = F, var.add = NULL, 
-        prob.death = NULL, method.dist = "euclidean", plot_gens = FALSE)
-get_number_of_gens(given_size, pool, traits = NULL, nbrep = 5, prob = 1, d = 1, 
-                   gens = NULL, limit.sim = FALSE, 
-                   coeff.lim.sim = 1, type.assemb = "death", sigm = 0.1, filt = NULL, 
-                   add = F, var.add = NULL, prob.death = NULL, 
+        pool = NULL, traits = NULL, filt = NULL, limit.sim = FALSE, 
+        coeff.lim.sim = 1, type.filt = "immig", type.limit = "death", 
+        sigm = 0.1, add = F, var.add = NULL, prob.death = NULL, 
+        method.dist = "euclidean", plot_gens = FALSE)
+get_number_of_gens(given_size, pool, traits = NULL, nbrep = 5, prob = 1, 
+                   d = 1, gens = NULL, filt = NULL,  limit.sim = FALSE, 
+                   coeff.lim.sim = 1, type.filt = "immig", type.limit = "death", 
+                   sigm = 0.1, add = F, var.add = NULL, prob.death = NULL, 
                    method.dist = "euclidean", plot_gens = FALSE)
 pick(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
-     limit.sim = NULL, coeff.lim.sim = 1, type.assemb = "death", sigm = 0.1, filt = NULL, 
-     new.index = new.index, method.dist = "euclidean")
+     filt = NULL, limit.sim = NULL, coeff.lim.sim = 1, type.filt = "immig", 
+     type.limit = "death", sigm = 0.1, new.index = new.index, 
+     method.dist = "euclidean")
 pick.mutate(com, d = 1, prob.of.mutate = 0, new.index = 0)
 pick.immigrate(com, d = 1, prob.of.immigrate = 0, pool, prob.death = NULL, 
-              limit.sim = NULL, coeff.lim.sim = 1, type.assemb = "death", sigm = 0.1, 
-              filt = NULL, method.dist = "euclidean")
+              filt = NULL, limit.sim = NULL, coeff.lim.sim = 1, 
+              type.filt = "immig", type.limit = "death", sigm = 0.1, 
+              method.dist = "euclidean")
 }
 
 \arguments{
@@ -83,13 +86,19 @@ overlapping function.
  \item{coeff.lim.sim}{
 adjust the intensity of limiting similarity. 
 }
- \item{type.assemb}{
-indicate how limiting similarity and/or habitat filtering play in community assembly. 
-If \code{type.assemb="death"} (default), it plays on mortality events.
-If \code{type.assemb="estab"}, it plays at the establishment of immigrants
-and local offspring.
-If \code{type.assemb="both"}, it plays at both mortality and establishment.
-If \code{type.assemb="immig"}, it plays only at the establishment of immigrants.
+ \item{type.filt}{
+indicates how habitat filtering plays in community assembly. 
+If \code{type.filt="death"}, it plays on mortality events.
+If \code{type.filt="immig"} (default), it plays at the establishment of immigrants,
+If \code{type.filt="loc.recr"}, it plays at the establishment of local offspring.
+\code{type.filt} can be any combination of these three values.
+}
+\item{type.limit}{
+indicates how limiting similarity plays in community assembly. 
+If \code{type.limit="death"} (default), it plays on mortality events.
+If \code{type.limit="immig"}, it plays at the establishment of immigrants,
+If \code{type.limit="loc.recr"}, it plays at the establishment of local offspring.
+\code{type.limit} can be any combination of these three values.
 }
  \item{sigm}{
 adjust the variance of the overlap function used to calculate limiting
@@ -125,11 +134,20 @@ plot the number of unique individuals and species over generations.
 }
 }
 \details{
-It is a zero-sum game, so that the number of individuals of the community is
-fixed to the number of individuals in initial community.
+The model of community assembly is a zero-sum game, so that the number of individuals 
+of the community is fixed to the number of individuals in initial community.
 
-When niche-based dynamics are simulated, the niche-based constraints influence
-both immigration and mortality.
+Two types of niche-based processes, habitat filtering and limiting similarity
+can affect (i) immigration, (ii) mortality, and (iii) recruitment of local offspring.
+The user can define on each of the three components the processes play, by defining 
+\code{type.filt} and  \code{type.limit}. These parameters can combine one of several
+values in "immig", "death" and "loc.recr" depending on either the process plays on 
+immigration, (ii) mortality, and (iii) recruitment of local offspring, respectively.
+For instance, defining \code{type.filt = c("immig", "death")} would mean that habitat 
+filtering plays on both immigration and on death events. By default, \code{type.filt = "immig"}
+and \code{type.simil = "death"}, which corresponds to a classical conception of 
+the hierarchical influence of habitat filtering and limiting similarity on immigration success
+and local survival.
 
 Function \code{get_number_of_gen()} allows determining the number of generations
 needed to reach stationary richness for given parameterization of
@@ -209,17 +227,18 @@ initial2 <- data.frame(sp = rep(as.character(1:10), each = 10),
 # Simulation of stabilizing hab. filtering around t = 0.5, over 2000 time steps
 sigm <- 0.1
 filt_gaussian <- function(t,x) exp(-(x - t)^2/(2*sigm^2))
-# Filtering only plays on mortality (default type.assemb = "death")
+# Filtering only plays only on immigration (default type.filt = "immig")
 final3 <- forward(initial = initial2, prob = 0.1, gens = 2000, pool = pool, 
                  filt = function(x) filt_gaussian(0.5,x))
 plot_comm(final3) # trait distribution in final community
-# Filtering also plays on establishment (default type.assemb = "both")
+# Filtering also plays on local mortality and recruitment
 final4 <- forward(initial = initial2, prob = 0.1, gens = 2000, pool = pool, 
-                 filt = function(x) filt_gaussian(0.5,x), type.assemb = "both")
+                 filt = function(x) filt_gaussian(0.5,x), 
+                 type.filt = c("immig", "death", "loc.recr"))
 plot_comm(final4) # Stronger convergence around 0.5 
 
-# Simulation of limiting similarity, over 1000 time steps
-final5 <- forward(initial = initial2, prob = 0.1, gens = 1000, pool = pool, 
+# Simulation of limiting similarity, over 2000 time steps
+final5 <- forward(initial = initial2, prob = 0.1, gens = 2000, pool = pool, 
                  limit.sim = TRUE)
 plot_comm(final5)
 # Check temporal changes
@@ -227,21 +246,21 @@ plot(final5$sp_t, xlab = "Time step", ylab = "Community richness")
 # Index of limiting similarity over time
 plot(final5$dist.t, xlab = "Time step", ylab = "Limiting similarity")
 
-# Higher migration rate
-# Without limiting similarity on establishment
-final6 <- forward(initial = initial2, prob = 0.8, gens = 1000, pool = pool, 
+# Higher migration rate, 5000 time steps
+# Limiting similarity only plays on mortality
+final6 <- forward(initial = initial2, prob = 0.7, gens = 5000, pool = pool, 
                  limit.sim = TRUE)
 plot_comm(final6) # should be closer to regional distribution
-# With limiting similarity on establishment
-final7 <- forward(initial = initial2, prob = 0.8, gens = 1000, pool = pool, 
-                 limit.sim = TRUE, type.assemb = "both")
+# Limiting similarity plays on immigration, mortality and local recruitment
+final7 <- forward(initial = initial2, prob = 0.7, gens = 5000, pool = pool, 
+                 limit.sim = TRUE, type.limit = c("immig", "death", "loc.recr"))
 plot_comm(final7)
 # Check temporal changes
 plot(final7$sp_t, xlab = "Time step", ylab = "Community richness")
-points(1:1000, final6$sp_t, col="blue")
+points(1:5000, final6$sp_t, col="blue")
 # Index of limiting similarity over time
 plot(final7$dist.t, xlab = "Time step", ylab = "Limiting similarity")
-points(1:1000, final6$dist.t, col="blue")
+points(1:5000, final6$dist.t, col="blue")
 }
 }
 
