@@ -82,6 +82,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     }   
   }
   
+  if(!is.null(nb.core) & nb.core == 1) parallel <- F
+  
   # Community size
   if (!(multi %in% c("single", "tab", "seqcom"))){
     stop("multi parameter must be either single, tab or seqcom.")

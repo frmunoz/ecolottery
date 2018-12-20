@@ -159,6 +159,7 @@
   \item{nb.core}{
    number of cores to be used in parallel computation if \code{parallel = TRUE}. 
    If \code{NULL}, all the cores minus 1 are used.
+   If \code{1}, only one core is used (i.e., no parallel computing).
   }
   \item{tol}{
     the tolerance value used in ABC estimation (see help in

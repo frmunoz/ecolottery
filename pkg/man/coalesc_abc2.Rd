@@ -15,8 +15,8 @@
 }
 \usage{
   coalesc_abc2(comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats,
-  filt.abc, params,  theta.max = NULL, nb.samp = 10^6, parallel = T, tol = NULL, 
-  type = "seq", method.seq = "Beaumont", method.mcmc = "Marjoram",
+  filt.abc, params,  theta.max = NULL, nb.samp = 10^6, parallel = T, nb.core = NULL,
+  tol = NULL, type = "seq", method.seq = "Beaumont", method.mcmc = "Marjoram",
   method.abc = NULL)
 }
 \arguments{
@@ -89,6 +89,11 @@
    boolean. If \code{parallel = TRUE}, the function will perform parallel
    processing using the \code{\link[=parLapply]{parLapply()}} function of
    package \code{parallel}.
+  }
+  \item{nb.core}{
+   number of cores to be used in parallel computation if \code{parallel = TRUE}. 
+   If \code{NULL} (default), all the cores minus 1 are used.
+   If \code{1}, only one core is used (i.e., no parallel computing).
   }
   \item{tol}{
     the tolerance value used in ABC estimation (see help in

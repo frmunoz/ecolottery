@@ -1,5 +1,5 @@
 coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats, filt.abc, params,
-                          theta.max = NULL, nb.samp = 10^6, parallel = T, nb.core = 1, tol = NULL, type = "seq", 
+                          theta.max = NULL, nb.samp = 10^6, parallel = T, nb.core = NULL, tol = NULL, type = "seq", 
                           method.seq = "Beaumont", method.mcmc = "Marjoram", method.abc = NULL) 
 {
   # This alternative function uses the sequential algorithms provided in EasyABC
@@ -31,6 +31,8 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
   
   if(type=="mcmc") if(!method.mcmc%in%c("Marjoram_original", "Marjoram", "Wegmann"))
     stop("method.mcmc should be either Marjoram_original, Marjoram or Wegmann")
+  
+  if(!is.null(nb.core) & nb.core == 1) parallel <- F
   
   if(!is.null(method.abc)) if(!method.abc%in%c("rejection", "loclinear", "neuralnet", "ridge"))
     stop("method.abc should be either rejection, loclinear, neuralnet or ridge")
