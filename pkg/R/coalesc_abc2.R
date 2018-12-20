@@ -1,5 +1,5 @@
 coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats, filt.abc, params,
-                          theta.max = NULL, nb.samp = 10^6, parallel = T, tol = NULL, type = "seq", 
+                          theta.max = NULL, nb.samp = 10^6, parallel = T, nb.core = 1, tol = NULL, type = "seq", 
                           method.seq = "Beaumont", method.mcmc = "Marjoram", method.abc = NULL) 
 {
   # This alternative function uses the sequential algorithms provided in EasyABC
@@ -123,24 +123,25 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
       pacc=0.05 # Can be set by user (to be included in input)
       res <- EasyABC::ABC_sequential(method=method.seq, model=function(par) coalesc_model(par, traits, prop, J, pool, 
           filt.abc, f.sumstats), prior=prior, nb_simul=nb.samp, summary_stat_target=stats.obs, 
-          p_acc_min=pacc, use_seed=F)
+          p_acc_min=pacc, use_seed=F, n_cluster=nb.core)
     } else if(method.seq=="Beaumont") 
       {
       tol_tab <- c(tol,tol/2,tol/5)
       res <- EasyABC::ABC_sequential(method=method.seq, 
           model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats), prior=prior, 
-          nb_simul=nb.samp, summary_stat_target=stats.obs, tolerance_tab=tol_tab, use_seed=F)
+          nb_simul=nb.samp, summary_stat_target=stats.obs, tolerance_tab=tol_tab, use_seed=F, n_cluster=nb.core)
     } else if(method.seq=="Drovandi") 
     {
      res <- EasyABC::ABC_sequential(method=method.seq, 
                                      model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats), prior=prior, 
-                                     nb_simul=nb.samp, summary_stat_target=stats.obs, first_tolerance_level_auto = T, use_seed=F)
+                                     nb_simul=nb.samp, summary_stat_target=stats.obs, first_tolerance_level_auto = T, use_seed=F, 
+                                     n_cluster=nb.core)
     }
     
   } else if(type=="mcmc")
   {
     res <- EasyABC::ABC_mcmc(method=method.mcmc, model=function(par) coalesc_model(par, traits, prop, J, pool, 
-          filt.abc, f.sumstats), prior=prior, summary_stat_target=stats.obs)
+          filt.abc, f.sumstats), prior=prior, summary_stat_target=stats.obs, n_cluster=nb.core)
   } else if(type=="annealing")
   {
     stop("SABC is not implemented - ongoing work")
