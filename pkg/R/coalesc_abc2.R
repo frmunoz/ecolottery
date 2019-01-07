@@ -3,8 +3,9 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
                           method.seq = "Beaumont", method.mcmc = "Marjoram", method.abc = NULL) 
 {
   # This alternative function uses the sequential algorithms provided in EasyABC
+  if(is.null(type)) error("Standard ABC analysis with coalesc_abc")
   
-   if (is.null(pool)) {
+  if (is.null(pool)) {
     warning(paste0("No species pool provided: pool will be simulated ",
                    "and logseries theta estimated"))
     if (is.null(theta.max))
