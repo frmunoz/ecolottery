@@ -1,6 +1,6 @@
 coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats, filt.abc, params,
-                          theta.max = NULL, nb.samp = 10^6, parallel = T, nb.core = NULL, tol = NULL, type = "seq", 
-                          method.seq = "Beaumont", method.mcmc = "Marjoram", method.abc = NULL) 
+                          theta.max = NULL, nb.samp = 10^6, parallel = T, nb.core = NULL, tol = NULL, type = "standard", 
+                          method.seq = "Beaumont", method.mcmc = "Marjoram", method.abc = NULL, scale = F) 
 {
   # This alternative function uses the sequential algorithms provided in EasyABC
   if(is.null(type)) error("Standard ABC analysis with coalesc_abc")
@@ -118,7 +118,36 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
   #if(multi!="single") stop("multi option is not implemented - ongoing work")
   
   set.seed(1)
-
+  if(type == "standard"){ # performing standard abc with chosen abc.method 
+    comm.sim <- ABC_rejection(model = function(x) coalesc_model(x, traits, prop,J,pool,filt.abc,f.sumstats),
+                              prior = prior, 
+                              nb_simul = nb.samp, 
+                              n_cluster = nb.core)
+    if(scale){
+      
+      stats.mean <- apply(comm.sim$stats,2, function(x) mean(x, na.rm =T))
+      stats.sd <- apply(comm.sim$stats,2, function(x) sd(x, na.rm =T))
+      comm.sim$stats.scaled <- t(apply(comm.sim$stats, 1, function(x) (x - stats.mean/stats.sd)))
+      stats.obs.scaled <- (stats.obs - stats.mean) / stats.sd
+      
+      res.abc <- abc::abc(stats.obs.scaled, comm.sim$param, comm.sim$stats.scaled, tol= tol, method = method.abc)
+      
+      comm.abc <- list(par = comm.sim$param,
+                       obs = stats.obs,
+                       obs.scaled = stats.obs.scaled,
+                       ss = comm.sim$stats,
+                       ss.scaled = comm.sim$stats.scaled,
+                       scale = t(data.frame(mean = stats.mean, sd = stats.sd)),
+                       abc = res.abc)
+      
+    } else {res.abc <- abc::abc(stats.obs, comm.sim$param, comm.sim$stats, tol= tol, method = method.abc) 
+    
+    comm.abc <- list(par = comm.sim$param,
+                     obs = stats.obs,
+                     ss = comm.sim$stats,
+                     abc = res.abc) }
+  }
+  
   if(type=="seq")
   {
     if(method.seq=="Lenormand") 

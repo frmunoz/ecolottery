@@ -110,7 +110,7 @@
   %  number of communities.
   %}
   \item{type}{
-    the type of algorithm to be used in EasyABC. Can be either "seq" (sequential, default), "mcmc" or "annealing".
+    the type of algorithm to be used in EasyABC. Can be either "standard" (using package abc, default)" "seq" (sequential), "mcmc" or "annealing". Three later options are based on the EasyABC package.
   }
   \item{method.seq}{
     when type = "seq", gives the algorithm for sequential sampling scheme, which is passed to \code{\link[=EasyABC]{
@@ -124,6 +124,9 @@
     the method to be used in ABC estimation (see help on
     \code{\link[=abc]{abc()}} function  of package \code{abc} for further
     information). Can be "rejection", "loclinear", "neuralnet" or "ridge". Default is NULL.
+  }
+  \item{scale}{
+    should the summary statistics be scaled for standard abc analysis. Default is \code{FALSE}.
   }
 
 }
