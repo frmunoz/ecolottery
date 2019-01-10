@@ -16,7 +16,7 @@
 \usage{
   coalesc_abc2(comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats,
   filt.abc, params,  theta.max = NULL, nb.samp = 10^6, parallel = T, nb.core = NULL,
-  tol = NULL, type = "standard", method.seq = "Beaumont", method.mcmc = "Marjoram",
+  tol = NULL, type = "standard", method.seq = "Lenormand", method.mcmc = "Marjoram_original",
   method.abc = NULL, scale = F)
 }
 \arguments{
@@ -118,7 +118,7 @@
   }
   \item{method.mcmc}{
     when type = "mcmc", gives the algorithm for MCMC sampling scheme, which is passed to \code{\link[=EasyABC]{
-    ABC_mcmc}}. Can be "Marjoram_original", "Marjoram" (Default) or "Wegmann". The method "Marjoram_original" cannot      be used with multiple cores.
+    ABC_mcmc}}. Can be "Marjoram_original"(Default), "Marjoram" or "Wegmann". The method "Marjoram_original" cannot      be used with multiple cores.
   }
  \item{method.abc}{
     the method to be used in ABC estimation (see help on

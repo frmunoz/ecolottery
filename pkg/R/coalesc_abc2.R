@@ -1,6 +1,6 @@
 coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats, filt.abc, params,
                           theta.max = NULL, nb.samp = 10^6, parallel = T, nb.core = NULL, tol = NULL, type = "standard", 
-                          method.seq = "Lenormand", method.mcmc = "Marjoram", method.abc = NULL, scale = F) 
+                          method.seq = "Lenormand", method.mcmc = "Marjoram_original", method.abc = NULL, scale = F) 
 {
   # This alternative function uses the sequential algorithms provided in EasyABC
   if(is.null(type)) error("Standard ABC analysis with coalesc_abc")
@@ -181,12 +181,14 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
     }
     
   } else if(type=="mcmc")
-  {
-    res.abc <- EasyABC::ABC_mcmc(method=method.mcmc,
-                                 model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats),
-                                 prior=prior,
+  { if(method.mcmc == "Marjoram_original"){
+    res.abc <- EasyABC::ABC_mcmc(method=method.mcmc, 
+                                 model=function(x) coalesc_model(x, traits, prop, J, pool,filt.abc, f.sumstats),
+                                 prior=prior, 
                                  summary_stat_target=stats.obs,
-                                 n_cluster=nb.core)
+                                 n_cluster=nb.core,
+                                 n_rec = nb.samp) } else stop("mcmc methods other than Marjoram_original are not implemented - ongoing work")
+    
   } else if(type=="annealing")
   { stop("SABC is not implemented - ongoing work")
     #res <- EasyABC::SABC(r.model, r.prior, d.prior, n.sample, eps.init, iter.max,
