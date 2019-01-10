@@ -161,7 +161,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
                                      use_seed=F, 
                                      n_cluster=nb.core)
     } else if(method.seq=="Beaumont") 
-      { 
+      { stop("Beaumont method not implemented - ongoing work")
       tol_tab <- c(tol,tol/2,tol/5)
       res.abc <- EasyABC::ABC_sequential(method=method.seq,
                                          model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats),
@@ -172,7 +172,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
                                          use_seed=F, 
                                          n_cluster=nb.core)
     } else if(method.seq=="Drovandi") 
-    {
+    {stop("Drovandi method not implemented - ongoing work")
      res.abc <- EasyABC::ABC_sequential(method=method.seq, 
                                     model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats),
                                     prior=prior, 
