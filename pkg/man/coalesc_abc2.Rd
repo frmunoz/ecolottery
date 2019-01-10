@@ -16,8 +16,8 @@
 \usage{
   coalesc_abc2(comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats,
   filt.abc, params,  theta.max = NULL, nb.samp = 10^6, parallel = T, nb.core = NULL,
-  tol = NULL, type = "seq", method.seq = "Beaumont", method.mcmc = "Marjoram",
-  method.abc = NULL)
+  tol = NULL, type = "standard", method.seq = "Beaumont", method.mcmc = "Marjoram",
+  method.abc = NULL, scale = F)
 }
 \arguments{
   \item{comm.obs}{
@@ -114,7 +114,7 @@
   }
   \item{method.seq}{
     when type = "seq", gives the algorithm for sequential sampling scheme, which is passed to \code{\link[=EasyABC]{
-    ABC_sequential}}. Can be "Beaumont" (Default), "Drovandi", "Delmoral", "Lenormand" or "Emulation".
+    ABC_sequential}}. Can be "Lenormand" (Default), "Drovandi", "Delmoral", "Beaumont" or "Emulation".
   }
   \item{method.mcmc}{
     when type = "mcmc", gives the algorithm for MCMC sampling scheme, which is passed to \code{\link[=EasyABC]{
