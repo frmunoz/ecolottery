@@ -24,8 +24,8 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
   #for (i in 1:length(pkg)) if (!requireNamespace(pkg[i], quietly = TRUE)) 
   #  stop(paste("Package ", pkg[i], " is not available", sep = ""))
 
-  if(!type%in%c("seq","mcmc","annealing"))
-    stop("type should be either seq, mcmc or annealing")
+  if(!type%in%c("seq","mcmc","annealing","standard"))
+    stop("type should be either standard, seq, mcmc or annealing")
   
   if(type=="seq") if(!method.seq%in%c("Beaumont", "Drovandi", "Delmoral", "Lenormand", "Emulation"))
     stop("method.seq should be either Beaumont, Drovandi, Delmoral, Lenormand or Emulation")
