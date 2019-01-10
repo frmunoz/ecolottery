@@ -150,33 +150,45 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
   
   if(type=="seq")
   {
-    if(method.seq=="Lenormand") 
-    {
+    if(method.seq=="Lenormand"){
       pacc=0.05 # Can be set by user (to be included in input)
-      res <- EasyABC::ABC_sequential(method=method.seq, model=function(par) coalesc_model(par, traits, prop, J, pool, 
-          filt.abc, f.sumstats), prior=prior, nb_simul=nb.samp, summary_stat_target=stats.obs, 
-          p_acc_min=pacc, use_seed=F, n_cluster=nb.core)
+      res.abc <- EasyABC::ABC_sequential(method=method.seq, 
+                                     model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats),
+                                     prior=prior, 
+                                     nb_simul=nb.samp,
+                                     summary_stat_target=stats.obs, 
+                                     p_acc_min=pacc, 
+                                     use_seed=F, 
+                                     n_cluster=nb.core)
     } else if(method.seq=="Beaumont") 
-      {
+      { 
       tol_tab <- c(tol,tol/2,tol/5)
-      res <- EasyABC::ABC_sequential(method=method.seq, 
-          model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats), prior=prior, 
-          nb_simul=nb.samp, summary_stat_target=stats.obs, tolerance_tab=tol_tab, use_seed=F, n_cluster=nb.core)
+      res.abc <- EasyABC::ABC_sequential(method=method.seq,
+                                         model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats),
+                                         prior=prior,
+                                         nb_simul=nb.samp, 
+                                         summary_stat_target=stats.obs,
+                                         tolerance_tab=tol_tab, 
+                                         use_seed=F, 
+                                         n_cluster=nb.core)
     } else if(method.seq=="Drovandi") 
     {
-     res <- EasyABC::ABC_sequential(method=method.seq, 
-                                     model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats), prior=prior, 
-                                     nb_simul=nb.samp, summary_stat_target=stats.obs, first_tolerance_level_auto = T, use_seed=F, 
-                                     n_cluster=nb.core)
+     res.abc <- EasyABC::ABC_sequential(method=method.seq, 
+                                    model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats),
+                                    prior=prior, 
+                                    nb_simul=nb.samp, summary_stat_target=stats.obs, first_tolerance_level_auto = T, use_seed=F, 
+                                    n_cluster=nb.core)
     }
     
   } else if(type=="mcmc")
   {
-    res <- EasyABC::ABC_mcmc(method=method.mcmc, model=function(par) coalesc_model(par, traits, prop, J, pool, 
-          filt.abc, f.sumstats), prior=prior, summary_stat_target=stats.obs, n_cluster=nb.core)
+    res.abc <- EasyABC::ABC_mcmc(method=method.mcmc,
+                                 model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats),
+                                 prior=prior,
+                                 summary_stat_target=stats.obs,
+                                 n_cluster=nb.core)
   } else if(type=="annealing")
-  {
-    stop("SABC is not implemented - ongoing work")
+  { stop("SABC is not implemented - ongoing work")
     #res <- EasyABC::SABC(r.model, r.prior, d.prior, n.sample, eps.init, iter.max,
     #     v=ifelse(method=="informative",0.4,1.2), beta=0.8,
     #     delta=0.1, resample=5*n.sample, verbose=n.sample,
@@ -184,9 +196,8 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
     #     summarystats=FALSE, y=NULL, f.summarystats=NULL)
   }
   
-  if(!is.null(method.abc))
-  {
-    res.abc <- abc(stats.obs, res$param, res$stats, tol=tol, method=method.abc)
-    return(list(res=res, stats.obs=stats.obs, abc=res.abc))
-  } else return(list(res=res, stats.obs=stats.obs))
+  if(type != "standard"){
+    comm.abc <- list(obs = stats.obs,
+                   abc = res.abc) }
+  return(comm.abc)
 }
