@@ -88,7 +88,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
   # Definition of prior distribution to be improved
   prior=c();
   for(i in 1:nrow(params)) prior[[i]] <- c("unif",params[i,1],params[i,2])
-  prior[[length(prior)+1]] <- c("unif",0.1,1)
+  prior[[length(prior)+1]] <- c("unif",0.1,1) # m 
   if(prop) 
   {
     prior[[length(prior)+1]] <- c("unif",100,1000)
@@ -96,41 +96,41 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
   }
 
   coalesc_model <- function(par, traits, prop, J, pool, filt.abc, f.sumstats, parallel) {
-      stats.samp <- NA
-      try({
-            if(!prop) {
-              if(parallel){
-                set.seed(par[1])
-                comm.samp <- coalesc(J, m = par[2], filt = function(x) filt.abc(par[c(3:length(par))],x),
-                                     add = F,  var.add =NULL, pool = pool, 
-                                     traits = NULL, Jpool = 50 * J, verbose = FALSE)
-                if (length(formals(f.sumstats))==1) {
-                  stats.samp <- as.vector(f.sumstats(comm.samp$com))
-                } else {
-                  stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
-                }} else {
-                  comm.samp <- coalesc(J, m = par[1], filt = function(x) filt.abc(par[c(2:length(par))],x),
-                                       add = F,  var.add =NULL, pool = pool, 
-                                       traits = NULL)
-                  if (length(formals(f.sumstats))==1) {
-                    stats.samp <- as.vector(f.sumstats(comm.samp$com))
-                  } else {
-                    stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
-                  }
-                }
-            } else {
-              comm.samp <- coalesc(par[length(par)], m = par[length(par)-1], 
-                                      filt = function(x) filt.abc(x, par[-((length(par)-1):length(par))]), 
-                                      pool = pool, traits = traits)
-              comm.samp$com <- t(table(comm.samp$com[,2])/par[length(par)])
-            }
+    stats.samp <- NA
+    try({
+      if(!prop) {
+        if(parallel){
+          set.seed(par[1])
+          comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(par[2:(length(par)-1)],x),
+                               add = F,  var.add =NULL, pool, 
+                               traits = NULL, Jpool = 50 * J, verbose = FALSE)
+          if (length(formals(f.sumstats))==1) {
+            stats.samp <- as.vector(f.sumstats(comm.samp$com))
+          } else {
+            stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
+          }} else {
+            comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(par[1:(length(par)-1)],x),
+                                 add = F,  var.add =NULL, pool, 
+                                 traits = NULL)
             if (length(formals(f.sumstats))==1) {
               stats.samp <- as.vector(f.sumstats(comm.samp$com))
             } else {
               stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
             }
-          })
-      return(stats.samp)
+          }
+      } else {
+        comm.samp <- coalesc(par[length(par)], m = par[length(par)-1], 
+                             filt = function(x) filt.abc(x, par[-((length(par)-1):length(par))]), 
+                             pool = pool, traits = traits)
+        comm.samp$com <- t(table(comm.samp$com[,2])/par[length(par)])
+      }
+      if (length(formals(f.sumstats))==1) {
+        stats.samp <- as.vector(f.sumstats(comm.samp$com))
+      } else {
+        stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
+      }
+    })
+    return(stats.samp)
   }
   
   # For debug
@@ -144,7 +144,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
     comm.sim <- EasyABC::ABC_rejection(model = function(par) coalesc_model(par, traits, prop,J,pool,filt.abc,f.sumstats,parallel),
                               prior = prior, 
                               nb_simul = nb.samp, 
-                              n_cluster = nb.core)
+                              n_cluster = nb.core); print(comm.sim)
     if(scale){
       
       stats.mean <- apply(comm.sim$stats,2, function(x) mean(x, na.rm =T))
