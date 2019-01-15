@@ -1,9 +1,13 @@
 coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats, filt.abc, params,
-                          theta.max = NULL, nb.samp = 10^6, parallel = T, nb.core = NULL, tol = NULL, type = "standard", 
+                          theta.max = NULL, nb.samp = 10^6, parallel = F, nb.core = NULL, tol = NULL, type = "standard", 
                           method.seq = "Lenormand", method.mcmc = "Marjoram_original", method.abc = NULL, scale = F) 
 {
   # This alternative function uses the sequential algorithms provided in EasyABC
   if(is.null(type)) error("Standard ABC analysis with coalesc_abc")
+  
+  if(parallel){
+    stop("parallel computation not implemented - ongoing work")
+  }
   
   if (is.null(pool)) {
     warning(paste0("No species pool provided: pool will be simulated ",
@@ -33,7 +37,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
   if(type=="mcmc") if(!method.mcmc%in%c("Marjoram_original", "Marjoram", "Wegmann"))
     stop("method.mcmc should be either Marjoram_original, Marjoram or Wegmann")
   
-  if(!is.null(nb.core) & nb.core == 1) parallel <- F
+  #if(!is.null(nb.core) & nb.core == 1) parallel <- F
   
   if(!is.null(method.abc)) if(!method.abc%in%c("rejection", "loclinear", "neuralnet", "ridge"))
     stop("method.abc should be either rejection, loclinear, neuralnet or ridge")
@@ -153,13 +157,13 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
     if(method.seq=="Lenormand"){
       pacc=0.05 # Can be set by user (to be included in input)
       res.abc <- EasyABC::ABC_sequential(method=method.seq, 
-                                     model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats),
-                                     prior=prior, 
-                                     nb_simul=nb.samp,
-                                     summary_stat_target=stats.obs, 
-                                     p_acc_min=pacc, 
-                                     use_seed=F, 
-                                     n_cluster=nb.core)
+                                         model= function(x) coalesc_model(x, traits,J,pool,filt.abc,f.sumstats, parallel),
+                                         prior=prior, 
+                                         nb_simul=nb.samp,
+                                         summary_stat_target=stats.obs, 
+                                         p_acc_min=pacc, 
+                                         use_seed=F, 
+                                         n_cluster=nb.core)
     } else if(method.seq=="Beaumont") 
       { stop("Beaumont method not implemented - ongoing work")
       tol_tab <- c(tol,tol/2,tol/5)

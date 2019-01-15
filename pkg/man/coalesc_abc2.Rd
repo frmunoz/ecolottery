@@ -15,7 +15,7 @@
 }
 \usage{
   coalesc_abc2(comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats,
-  filt.abc, params,  theta.max = NULL, nb.samp = 10^6, parallel = T, nb.core = NULL,
+  filt.abc, params,  theta.max = NULL, nb.samp = 10^6, parallel = F, nb.core = NULL,
   tol = NULL, type = "standard", method.seq = "Lenormand", method.mcmc = "Marjoram_original",
   method.abc = NULL, scale = F)
 }
@@ -88,7 +88,7 @@
   \item{parallel}{
    boolean. If \code{parallel = TRUE}, the function will perform parallel
    processing using the \code{\link[=parLapply]{parLapply()}} function of
-   package \code{parallel}.
+   package \code{parallel}. Default is \code{parallel = FALSE}.
   }
   \item{nb.core}{
    number of cores to be used in parallel computation if \code{parallel = TRUE}. 
