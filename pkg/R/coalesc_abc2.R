@@ -42,6 +42,8 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
   if(!is.null(method.abc)) if(!method.abc%in%c("rejection", "loclinear", "neuralnet", "ridge"))
     stop("method.abc should be either rejection, loclinear, neuralnet or ridge")
   
+  if(method.abc!="rejection") stop("only abc method rejection is implemented - ongoing work")
+  
   if (ncol(pool) >= 3) 
     traits <- data.frame(apply(data.frame(pool[, -(1:2)]), 2, function(x) tapply(x, pool[, 2], mean))) else if (is.null(traits) & ncol(pool) < 3) 
     warning("Trait information is not provided")
@@ -93,13 +95,29 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
     warning("The prior of community size is uniform between 100 and 1000")
   }
 
-  coalesc_model <- function(par, traits, prop, J, pool, filt.abc, f.sumstats) {
+  coalesc_model <- function(par, traits, prop, J, pool, filt.abc, f.sumstats, parallel) {
       stats.samp <- NA
       try({
             if(!prop) {
-              comm.samp <- coalesc(J, m = par[length(par)], 
-                                 filt = function(x) filt.abc(x, par[-length(par)]), 
-                                 pool = pool, traits = traits)
+              if(parallel){
+                set.seed(par[1])
+                comm.samp <- coalesc(J, m = par[2], filt = function(x) filt.abc(par[c(3:length(par))],x),
+                                     add = F,  var.add =NULL, pool = pool, 
+                                     traits = NULL, Jpool = 50 * J, verbose = FALSE)
+                if (length(formals(f.sumstats))==1) {
+                  stats.samp <- as.vector(f.sumstats(comm.samp$com))
+                } else {
+                  stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
+                }} else {
+                  comm.samp <- coalesc(J, m = par[1], filt = function(x) filt.abc(par[c(2:length(par))],x),
+                                       add = F,  var.add =NULL, pool = pool, 
+                                       traits = NULL)
+                  if (length(formals(f.sumstats))==1) {
+                    stats.samp <- as.vector(f.sumstats(comm.samp$com))
+                  } else {
+                    stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
+                  }
+                }
             } else {
               comm.samp <- coalesc(par[length(par)], m = par[length(par)-1], 
                                       filt = function(x) filt.abc(x, par[-((length(par)-1):length(par))]), 
@@ -123,7 +141,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
   
   set.seed(1)
   if(type == "standard"){ # performing standard abc with chosen abc.method 
-    comm.sim <- ABC_rejection(model = function(x) coalesc_model(x, traits, prop,J,pool,filt.abc,f.sumstats),
+    comm.sim <- EasyABC::ABC_rejection(model = function(par) coalesc_model(par, traits, prop,J,pool,filt.abc,f.sumstats,parallel),
                               prior = prior, 
                               nb_simul = nb.samp, 
                               n_cluster = nb.core)
