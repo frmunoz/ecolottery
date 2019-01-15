@@ -175,7 +175,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
     if(method.seq=="Lenormand"){
       pacc=0.05 # Can be set by user (to be included in input)
       res.abc <- EasyABC::ABC_sequential(method=method.seq, 
-                                         model= function(x) coalesc_model(x, traits,J,pool,filt.abc,f.sumstats, parallel),
+                                         model= function(x) coalesc_model(x, traits,prop,J,pool,filt.abc,f.sumstats, parallel),
                                          prior=prior, 
                                          nb_simul=nb.samp,
                                          summary_stat_target=stats.obs, 
@@ -186,7 +186,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
       { stop("Beaumont method not implemented - ongoing work")
       tol_tab <- c(tol,tol/2,tol/5)
       res.abc <- EasyABC::ABC_sequential(method=method.seq,
-                                         model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats),
+                                         model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats, parallel),
                                          prior=prior,
                                          nb_simul=nb.samp, 
                                          summary_stat_target=stats.obs,
@@ -196,7 +196,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
     } else if(method.seq=="Drovandi") 
     {stop("Drovandi method not implemented - ongoing work")
      res.abc <- EasyABC::ABC_sequential(method=method.seq, 
-                                    model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats),
+                                    model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats, parallel),
                                     prior=prior, 
                                     nb_simul=nb.samp, summary_stat_target=stats.obs, first_tolerance_level_auto = T, use_seed=F, 
                                     n_cluster=nb.core)
@@ -205,7 +205,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
   } else if(type=="mcmc")
   { if(method.mcmc == "Marjoram_original"){
     res.abc <- EasyABC::ABC_mcmc(method=method.mcmc, 
-                                 model=function(x) coalesc_model(x, traits, prop, J, pool,filt.abc, f.sumstats),
+                                 model=function(x) coalesc_model(x, traits, prop, J, pool,filt.abc, f.sumstats, parallel),
                                  prior=prior, 
                                  summary_stat_target=stats.obs,
                                  n_cluster=nb.core,
