@@ -1,6 +1,6 @@
 coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats, filt.abc, params,
                           theta.max = NULL, nb.samp = 10^6, parallel = F, nb.core = NULL, tol = NULL, type = "standard", 
-                          method.seq = "Lenormand", method.mcmc = "Marjoram_original", method.abc = NULL, scale = F) 
+                          method.seq = "Lenormand", method.mcmc = "Marjoram_original", method.abc = NULL, scale = F, alpha=0.5) 
 {
   # This alternative function uses the sequential algorithms provided in EasyABC
   if(is.null(type)) error("Standard ABC analysis with coalesc_abc")
@@ -102,7 +102,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
         if(parallel){
           set.seed(par[1])
           comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(par[2:(length(par)-1)],x),
-                               add = F,  var.add =NULL, pool, 
+                               add = F,  var.add =NULL, pool=pool, 
                                traits = NULL, Jpool = 50 * J, verbose = FALSE)
           if (length(formals(f.sumstats))==1) {
             stats.samp <- as.vector(f.sumstats(comm.samp$com))
@@ -110,7 +110,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
             stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
           }} else {
             comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(par[1:(length(par)-1)],x),
-                                 add = F,  var.add =NULL, pool, 
+                                 add = F,  var.add =NULL, pool=pool, 
                                  traits = NULL)
             if (length(formals(f.sumstats))==1) {
               stats.samp <- as.vector(f.sumstats(comm.samp$com))
@@ -144,7 +144,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
     comm.sim <- EasyABC::ABC_rejection(model = function(par) coalesc_model(par, traits, prop,J,pool,filt.abc,f.sumstats,parallel),
                               prior = prior, 
                               nb_simul = nb.samp, 
-                              n_cluster = nb.core); print(comm.sim)
+                              n_cluster = nb.core)
     if(scale){
       
       stats.mean <- apply(comm.sim$stats,2, function(x) mean(x, na.rm =T))
@@ -181,7 +181,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
                                          summary_stat_target=stats.obs, 
                                          p_acc_min=pacc, 
                                          use_seed=F, 
-                                         n_cluster=nb.core)
+                                         n_cluster=nb.core, alpha = alpha)
     } else if(method.seq=="Beaumont") 
       { stop("Beaumont method not implemented - ongoing work")
       tol_tab <- c(tol,tol/2,tol/5)

@@ -128,6 +128,9 @@
   \item{scale}{
     should the summary statistics be scaled for standard abc analysis. Default is \code{FALSE}.
   }
+  \item{alpha}{
+    a positive number between 0 and 1 (strictly) used when performing sequential ABC method. \code{alpha}     is the proportion of particles rejected at each step in the algorithm "Drovandi". This is the             proportion of particles kept at each step in the algorithms "Delmoral", "Lenormand" and "Emulation".      Default value is 0.5
+  }
 
 }
 \details{
