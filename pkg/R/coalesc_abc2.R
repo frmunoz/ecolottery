@@ -87,48 +87,68 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
   
   # Definition of prior distribution to be improved
   prior=c();
-  for(i in 1:nrow(params)) prior[[i]] <- c("unif",params[i,1],params[i,2])
-  prior[[length(prior)+1]] <- c("unif",0.1,1) # m 
-  if(prop) 
-  {
-    prior[[length(prior)+1]] <- c("unif",100,1000)
-    warning("The prior of community size is uniform between 100 and 1000")
+  if(is.null(filt.abc)){
+    warning("No habitat filtering function provided. Neutral communities will be simulated and only m will be estimated")
+    prior[[length(prior)+1]]  <- c("unif",0.1,1)
+  }else{
+    for(i in 1:nrow(params)) prior[[i]] <- c("unif",params[i,1],params[i,2])
+    prior[[length(prior)+1]] <- c("unif",0.1,1) # m 
+    if(prop) 
+    {
+      prior[[length(prior)+1]] <- c("unif",100,1000)
+      warning("The prior of community size is uniform between 100 and 1000")
+    }
   }
+  
 
   coalesc_model <- function(par, traits, prop, J, pool, filt.abc, f.sumstats, parallel) {
     stats.samp <- NA
     try({
-      if(!prop) {
-        if(parallel){
-          set.seed(par[1])
-          comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(par[2:(length(par)-1)],x),
+      if(is.null(filt.abc)){
+        if(!prop){
+          comm.samp <- coalesc(J, m = par[length(par)], filt = NULL,
                                add = F,  var.add =NULL, pool=pool, 
-                               traits = NULL, Jpool = 50 * J, verbose = FALSE)
+                               traits = NULL)
           if (length(formals(f.sumstats))==1) {
             stats.samp <- as.vector(f.sumstats(comm.samp$com))
           } else {
             stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
-          }} else {
-            comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(par[1:(length(par)-1)],x),
+          }
+        }
+      }else{
+        if(!prop) {
+          if(parallel){
+            set.seed(par[1])
+            comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(par[2:(length(par)-1)],x),
                                  add = F,  var.add =NULL, pool=pool, 
-                                 traits = NULL)
+                                 traits = NULL, Jpool = 50 * J, verbose = FALSE)
             if (length(formals(f.sumstats))==1) {
               stats.samp <- as.vector(f.sumstats(comm.samp$com))
             } else {
               stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
+            }} else {
+              comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(par[1:(length(par)-1)],x),
+                                   add = F,  var.add =NULL, pool=pool, 
+                                   traits = NULL)
+              if (length(formals(f.sumstats))==1) {
+                stats.samp <- as.vector(f.sumstats(comm.samp$com))
+              } else {
+                stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
+              }
             }
-          }
-      } else {
-        comm.samp <- coalesc(par[length(par)], m = par[length(par)-1], 
-                             filt = function(x) filt.abc(x, par[-((length(par)-1):length(par))]), 
-                             pool = pool, traits = traits)
-        comm.samp$com <- t(table(comm.samp$com[,2])/par[length(par)])
+        } else {
+          comm.samp <- coalesc(par[length(par)], m = par[length(par)-1], 
+                               filt = function(x) filt.abc(x, par[-((length(par)-1):length(par))]), 
+                               pool = pool, traits = traits)
+          comm.samp$com <- t(table(comm.samp$com[,2])/par[length(par)])
+        }
+        if (length(formals(f.sumstats))==1) {
+          stats.samp <- as.vector(f.sumstats(comm.samp$com))
+        } else {
+          stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
+        }
       }
-      if (length(formals(f.sumstats))==1) {
-        stats.samp <- as.vector(f.sumstats(comm.samp$com))
-      } else {
-        stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
-      }
+      
     })
     return(stats.samp)
   }
