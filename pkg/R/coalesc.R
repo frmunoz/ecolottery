@@ -158,12 +158,12 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     } else 
     {
       #env_filter <- function(x, var.add) t(apply(x, 1, function(y) filt(y, var.add)))
-      #env_filter <- function(x) unlist(sapply(1:nrow(x), function(i) filt(x[i,], var.add)))
+      env_filter <- function(x) unlist(sapply(1:nrow(x), function(i) filt(x[i,], var.add)))
       
     }
   } else {
      #env_filter <- function(x) t(apply(x, 1, function(y) 1))
-     #env_filter <- function(x) unlist(sapply(1:nrow(x), function(i) 1))
+     env_filter <- function(x) unlist(sapply(1:nrow(x), function(i) 1))
     
   }
   
