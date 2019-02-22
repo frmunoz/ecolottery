@@ -131,7 +131,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
           stop("Species names in traits must match those in pool")
       }
       
-      ind_pool_traits <- data.frame(traits[ind_pool_sp,1:ncol(traits)])
+      ind_pool_traits <- data.frame(traits[ind_pool_sp,1:ncol(traits)], stringsAsFactors = F)
       
       if (!is.null(traits)) {
         colnames(ind_pool_traits) <- colnames(traits)
@@ -152,14 +152,19 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
         
   if (!is.null(filt)) {
     if(!add)
-    {
-      env_filter <- function(x) t(apply(x, 1, function(y) filt(y)))
+    { #env_filter <- function(x) t(apply(x, 1, function(y) filt(y)))
+      env_filter <- function(x) unlist(sapply(1:nrow(x), function(i) filt(x[i,])))
+      
     } else 
     {
-      env_filter <- function(x, var.add) t(apply(x, 1, function(y) filt(y, var.add)))
+      #env_filter <- function(x, var.add) t(apply(x, 1, function(y) filt(y, var.add)))
+      #env_filter <- function(x) unlist(sapply(1:nrow(x), function(i) filt(x[i,], var.add)))
+      
     }
   } else {
-    env_filter <- function(x) t(apply(x, 1, function(y) 1))
+     #env_filter <- function(x) t(apply(x, 1, function(y) 1))
+     #env_filter <- function(x) unlist(sapply(1:nrow(x), function(i) 1))
+    
   }
   
   # Environmental filter should not provide negative values
@@ -260,6 +265,6 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   if (m == 1 & is.null(filt)) {
     return(list(pool = com, call = match.call()))
   } else {
-    return(list(com = com, pool = pool, call = match.call()))
+    return(list(com = as.data.frame(com), pool = as.data.frame(pool), call = match.call()))
   }
 }
