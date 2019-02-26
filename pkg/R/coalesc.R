@@ -147,7 +147,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   for (i in which(unlist(lapply(pool,is.factor)))) {
     pool[,i] <- as.character(pool[,i])
   }
-
+  
   ## Define environmental filter
         
   if (!is.null(filt)) {
@@ -260,7 +260,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     stop("NA in simulated community")
   }
     
-  com <- data.frame(ind = ind_com_lab, sp = ind_com_sp, ind_com_traits)
+  com <- data.frame(ind = ind_com_lab, sp = ind_com_sp, ind_com_traits, stringsAsFactors = F)
   
   if (m == 1 & is.null(filt)) {
     return(list(pool = com, call = match.call()))
