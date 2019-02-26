@@ -44,8 +44,26 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
   
   if(method.abc!="rejection") stop("only abc method rejection is implemented - ongoing work")
   
-  if (ncol(pool) >= 3) 
-    traits <- data.frame(apply(data.frame(pool[, -(1:2)]), 2, function(x) tapply(x, pool[, 2], mean))) else if (is.null(traits) & ncol(pool) < 3) 
+  if(!is.null(pool)) {
+    # Avoid factors in columns of pool
+    sel <- which(lapply(pool, class) == "factor")
+    for(i in sel) pool[,i] <- as.character(pool[,i])
+  }
+  
+  if (ncol(pool) >= 3) {
+    if (length(formals(f.sumstats))>1) {
+    # In this case, traits needs to be defined
+    # Compute mean or most frequent trait value per species
+    sel <- which(lapply(pool, class) == "numeric") 
+    traits <- data.frame(
+      sapply(3:ncol(pool), function(x) 
+        if(sel[x]) {
+          tapply(data.frame(pool[,x]), pool[, 2], mean)
+      } else tapply(data.frame(pool[,x]), pool[, 2], function(y) names(y[which.max(table(y))]))), 
+      stringsAsFactors = F)
+    }
+  }
+  else if (is.null(traits) & ncol(pool) < 3) 
     warning("Trait information is not provided")
   
   # Community size
@@ -100,7 +118,6 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
     }
   }
   
-
   coalesc_model <- function(par, traits, prop, J, pool, filt.abc, f.sumstats, parallel) {
     stats.samp <- NA
     try({
