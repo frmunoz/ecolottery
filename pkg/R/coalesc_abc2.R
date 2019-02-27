@@ -1,6 +1,6 @@
 coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats, filt.abc, params,
                           theta.max = NULL, nb.samp = 10^6, parallel = F, nb.core = NULL, tol = NULL, type = "standard", 
-                          method.seq = "Lenormand", method.mcmc = "Marjoram_original", method.abc = NULL, scale = F, alpha=0.5) 
+                          method.seq = "Lenormand", method.mcmc = "Marjoram_original", method.abc = NULL, scale = F, alpha = 0.5) 
 {
   # This alternative function uses the sequential algorithms provided in EasyABC
   if(is.null(type)) error("Standard ABC analysis with coalesc_abc")

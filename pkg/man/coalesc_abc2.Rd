@@ -16,8 +16,8 @@
 \usage{
   coalesc_abc2(comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats,
   filt.abc, params,  theta.max = NULL, nb.samp = 10^6, parallel = F, nb.core = NULL,
-  tol = NULL, type = "standard", method.seq = "Lenormand", method.mcmc = "Marjoram_original",
-  method.abc = NULL, scale = F)
+  tol = NULL, type = "standard", method.seq = "Lenormand", 
+  method.mcmc = "Marjoram_original", method.abc = NULL, scale = F, alpha = 0.5)
 }
 \arguments{
   \item{comm.obs}{
@@ -159,7 +159,8 @@ and is not intended to be used directly.
     values listed in \code{par}.
   }
   \item{ss.scale}{
-    data frame including the mean and the standard deviation used for standardization of       observed and summary statistics.
+    data frame including the mean and the standard deviation used for standardization of  
+    observed and summary statistics.
   }
   \item{abc}{
     a single (if \code{multi = FALSE}, default) or a list of abc objects
