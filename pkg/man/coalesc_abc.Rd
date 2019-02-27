@@ -214,6 +214,11 @@ and is not intended to be used directly.
     including ABC estimation information for each community provided in input
     (\code{comm.obs}).
   }
+  \item{pca}{
+    if PCA or SVD analysis is performed on the summary statistics, the result of this analysis 
+    is returned with the corresponding object class (see \code{\link[=pca]{ade4::dudi.pca()}} 
+    and \code{\link[=svd]{svd()}}).
+  }
   \item{call}{
     the call function.
   }
