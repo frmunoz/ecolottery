@@ -10,3 +10,5 @@ apt_packages:
 
 cache: packages
 
+warnings_are_errors: false
+
