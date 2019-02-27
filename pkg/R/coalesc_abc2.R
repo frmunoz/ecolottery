@@ -3,7 +3,10 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
                           method.seq = "Lenormand", method.mcmc = "Marjoram_original", method.abc = NULL, scale = F, alpha = 0.5) 
 {
   # This alternative function uses the sequential algorithms provided in EasyABC
-  if(is.null(type)) error("Standard ABC analysis with coalesc_abc")
+  if(is.null(type)) {
+    warning("Standard ABC analysis (type = standard)")
+    type <- "standard"
+  }
   
   if(parallel){
     stop("parallel computation not implemented - ongoing work")
