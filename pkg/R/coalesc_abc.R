@@ -173,14 +173,17 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   {
     if(!svd)
     {
-        stats.pca <- ade4::dudi.pca(rbind(sim$stats, stats.obs), scannf = F, nf = dim.pca) 
+        tab.ss <- rbind(sim$stats, stats.obs)
+        rownames(tab.ss) <- c(paste0("sim", seq(1:nrow(sim$stat))), "obs")
+        stats.pca <- ade4::dudi.pca(tab.ss, scannf = F, nf = dim.pca) 
         # Use scores on PCA dimensions
-        sim$stats.scaled <- sim$stats.pca$l1
+        sim$stats.scaled <- stats.pca$l1
     } else
     {
-      bigtab <- rbind(sim$stats, stats.obs)
-      bigtab <- scale(bigtab)
-      stats.svd <- svd(bigtab)
+      tab.ss <- rbind(sim$stats, stats.obs)
+      rownames(tab.ss) <- c(paste0("sim", seq(1:nrow(sim$stat))), "obs")
+      tab.ss <- scale(tab.ss)
+      stats.svd <- svd(tab.ss)
       # Use scores derived from SVD
       sim$stats.scaled <- (stats.svd$u%*%diag(stats.svd$d))[,1:dim.pca]
     }
@@ -254,10 +257,11 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     if(scale) {
       return(list(par = sim$params.sim, obs = stats.obs,
                 obs.scaled = stats.obs.scaled, ss = sim$stats.scaled,
-                abc = res.abc, call = match.call()))
+                pca = ifelse(svd, stats.svd, stats.pca), abc = res.abc, call = match.call()))
     } else {
       return(list(par = sim$params.sim, obs = stats.obs,
-                  ss = sim$stats, abc = res.abc, call = match.call()))
+                  ss = sim$stats, abc = res.abc, pca = ifelse(svd, stats.svd, stats.pca),
+                  call = match.call()))
     }
   }
 }
