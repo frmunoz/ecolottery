@@ -115,7 +115,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     ind_pool_lab <- pool[,1]; ind_pool_sp <- pool[,2]
     
     if (ncol(pool) >= 3)  {
-      ind_pool_traits <- data.frame(pool[,-(1:2)])
+      ind_pool_traits <- data.frame(pool[,-(1:2)], stringsAsFactors = F)
       if(any(is.na(ind_pool_traits)))
         stop("There should not be any NA in trait values of the individuals of the pool")
       if(!is.null(traits))  
