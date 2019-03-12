@@ -17,7 +17,7 @@
   coalesc_abc2(comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats,
   filt.abc, params,  theta.max = NULL, nb.samp = 10^6, parallel = F, nb.core = NULL,
   tol = NULL, type = "standard", method.seq = "Lenormand", 
-  method.mcmc = "Marjoram_original", method.abc = NULL, scale = F, alpha = 0.5)
+  method.mcmc = "Marjoram_original", method.abc = "rejection", scale = F, alpha = 0.5)
 }
 \arguments{
   \item{comm.obs}{
@@ -125,7 +125,7 @@
  \item{method.abc}{
     the method to be used in ABC estimation (see help on
     \code{\link[=abc]{abc()}} function  of package \code{abc} for further
-    information). Can be "rejection", "loclinear", "neuralnet" or "ridge". Default is NULL.
+    information). Can be "rejection", "loclinear", "neuralnet" or "ridge". Default is "rejection".
   }
   \item{scale}{
     should the summary statistics be scaled for standard abc analysis. Default is \code{FALSE}.
