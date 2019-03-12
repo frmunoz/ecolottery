@@ -115,17 +115,18 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   # Trait values can be provided with community composition
   # Mean trait values of pool are stored in traits in absence of trait
   # information in local community
-  if (!is.null(pool.glob)){
-    if(ncol(pool.glob) >= 3) {
-      #Using matrix instead of data.frame
-      traits <- apply(data.frame(pool.glob[,-(1:2)]), 2,
-                                 function(x) {
-                                   tapply(x, pool.glob[, 2],
-                                          function(y)
-                                            mean(y, na.rm = TRUE)
-                                   )})
-    }
-  }
+  # Should be unnecessary since it is managed in do.simul.coalesc (TO BE CONFIRMED)
+  #if (!is.null(pool.glob)){
+  #  if(ncol(pool.glob) >= 3) {
+  #    #Using matrix instead of data.frame
+  #    traits <- apply(data.frame(pool.glob[,-(1:2)]), 2,
+  #                               function(x) {
+  #                                 tapply(x, pool.glob[, 2],
+  #                                        function(y)
+  #                                          mean(y, na.rm = TRUE)
+  #                                 )})
+  #  }
+  #}
   
   if (multi == "tab"){
     if(is.null(colnames(comm.obs)))
