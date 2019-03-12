@@ -1,6 +1,6 @@
 coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = NULL, f.sumstats, filt.abc, params,
                           theta.max = NULL, nb.samp = 10^6, parallel = F, nb.core = NULL, tol = NULL, type = "standard", 
-                          method.seq = "Lenormand", method.mcmc = "Marjoram_original", method.abc = NULL, scale = F, alpha = 0.5) 
+                          method.seq = "Lenormand", method.mcmc = "Marjoram_original", method.abc = "rejection", scale = F, alpha = 0.5) 
 {
   # This alternative function uses the sequential algorithms provided in EasyABC
   if(is.null(type)) {
@@ -40,7 +40,8 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
   if(type=="mcmc") if(!method.mcmc%in%c("Marjoram_original", "Marjoram", "Wegmann"))
     stop("method.mcmc should be either Marjoram_original, Marjoram or Wegmann")
   
-  #if(!is.null(nb.core) & nb.core == 1) parallel <- F
+  if(!is.null(nb.core)) if(nb.core == 1) parallel <- F
+  if(is.null(nb.core) & !parallel) nb.core <- 1
   
   if(!is.null(method.abc)) if(!method.abc%in%c("rejection", "loclinear", "neuralnet", "ridge"))
     stop("method.abc should be either rejection, loclinear, neuralnet or ridge")
@@ -192,7 +193,9 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
       comm.sim$stats.scaled <- t(apply(comm.sim$stats, 1, function(x) (x - stats.mean/stats.sd)))
       stats.obs.scaled <- (stats.obs - stats.mean) / stats.sd
       
-      res.abc <- abc::abc(stats.obs.scaled, comm.sim$param, comm.sim$stats.scaled, tol= tol, method = method.abc)
+      if(!is.null(tol))
+        res.abc <- abc::abc(stats.obs.scaled, comm.sim$param, comm.sim$stats.scaled, tol= tol, method = method.abc)
+      else res.abc <- NA
       
       comm.abc <- list(par = comm.sim$param,
                        obs = stats.obs,
@@ -202,9 +205,12 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
                        scale = t(data.frame(mean = stats.mean, sd = stats.sd)),
                        abc = res.abc)
       
-    } else {res.abc <- abc::abc(stats.obs, comm.sim$param, comm.sim$stats, tol= tol, method = method.abc) 
+    } else {
+      if(!is.null(tol))
+        res.abc <- abc::abc(stats.obs, comm.sim$param, comm.sim$stats, tol= tol, method = method.abc) 
+      else res.abc <- NA
     
-    comm.abc <- list(par = comm.sim$param,
+      comm.abc <- list(par = comm.sim$param,
                      obs = stats.obs,
                      ss = comm.sim$stats,
                      abc = res.abc) }

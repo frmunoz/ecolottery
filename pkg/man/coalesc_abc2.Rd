@@ -225,7 +225,7 @@ row.names(params) <- c("topt", "sigmaopt")
 nb.samp <- 1000 # Should be large
 
 comm.abc2 <- coalesc_abc2(comm$com, comm$pool, f.sumstats=f.sumstats, filt.abc=filt_gaussian,
-params=params, nb.samp=nb.samp)
+params=params, nb.samp=nb.samp, tol=0.1)
 }
 }
 
