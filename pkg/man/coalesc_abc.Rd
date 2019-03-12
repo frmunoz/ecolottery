@@ -68,10 +68,14 @@
     be included in \code{traits}.
   }
   \item{f.sumstats}{
-    a function allowing to calculate the summary statistics of local community
-    composition. Will be used to compare observed and simulated community
-    composition in the ABC estimation. It should take a community as input and
-    output a list of summary statistics.
+    a function to calculate the summary statistics of local community composition. 
+    Will be used to compare observed and simulated community composition in the ABC estimation. 
+    It should return a vector of summary statistics.
+    There must be at least one input, i.e., the local community composition with individual and 
+    species labels as first columns and (optionally) trait values as subsequent columns. 
+    There can be a second argument taking the average trait values per species (derived from \code{pool}
+    if not provided in \code{traits}, see above), and \code{var.add} (see below) can be sent 
+    as a third argument. See examples of different options below.
   }
   \item{filt.abc}{
     the hypothesized environmental filtering function. It is a function of
@@ -216,8 +220,7 @@ and is not intended to be used directly.
   }
   \item{pca}{
     if PCA or SVD analysis is performed on the summary statistics, the result of this analysis 
-    is returned with the corresponding object class (see \code{\link[=pca]{ade4::dudi.pca()}} 
-    and \code{\link[=svd]{svd()}}).
+    is returned (see \code{\link[=dudi.pca]{ade4::dudi.pca()}} and \code{\link[=svd]{svd()}}).
   }
   \item{call}{
     the call function.

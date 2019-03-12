@@ -82,7 +82,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     }   
   }
   
-  if(!is.null(nb.core) & nb.core == 1) parallel <- F
+  if(!is.null(nb.core)) if(nb.core == 1) parallel <- F
   
   # Community size
   if (!(multi %in% c("single", "tab", "seqcom"))){
@@ -292,6 +292,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     stop("You must provide range limit values of the parameters.")
   }
   
+  # This part is problematic if the user wanst that the second argument of f.sumstats
+  # incorporates intraspecific trait variation
   if(length(formals(f.sumstats))>1 & is.null(traits))
   {
     if(ncol(pool) >= 3) {
