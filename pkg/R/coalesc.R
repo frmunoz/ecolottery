@@ -174,6 +174,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     prob <- env_filter(ind_pool_traits)
   } else prob <- env_filter(ind_pool_traits, var.add)
   
+  if(length(prob) < nrow(ind_pool_traits)) stop("Incorrect output of the filtering function")
+  
   if (any(prob < 0)) {
       if (verbose) {
         warning("Negative weights yielded by filtering function are set to ",
