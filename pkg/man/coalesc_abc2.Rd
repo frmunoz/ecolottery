@@ -64,7 +64,8 @@
   }
   \item{filt.abc}{
     the hypothesized environmental filtering function. It is a function of
-    individual trait values and additional parameters to be estimated. 
+    individual trait values (first argument) and additional parameters (second argument)
+    to be estimated. 
     If \code{NULL}, neutral communities will be simulated and only m will be estimated. 
   }
   \item{params}{

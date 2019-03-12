@@ -139,7 +139,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
         if(!prop) {
           if(parallel){
             set.seed(par[1])
-            comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(par[2:(length(par)-1)],x),
+            comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(x, par[2:(length(par)-1)]),
                                  add = F,  var.add =NULL, pool=pool, 
                                  traits = NULL, Jpool = 50 * J, verbose = FALSE)
             if (length(formals(f.sumstats))==1) {
@@ -147,7 +147,7 @@ coalesc_abc2 <- function (comm.obs, pool, multi = "single", prop = F, traits = N
             } else {
               stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
             }} else {
-              comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(par[1:(length(par)-1)],x),
+              comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(x, par[1:(length(par)-1)]),
                                    add = F,  var.add =NULL, pool=pool, 
                                    traits = NULL)
               if (length(formals(f.sumstats))==1) {
