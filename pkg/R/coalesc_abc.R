@@ -81,9 +81,9 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
       stop(paste("Package ", pkg, " is not available", sep = ""))
     }   
   }
-  
-  if(!is.null(nb.core)){if(nb.core == 1){parallel <- F}} 
-  
+
+  if(!is.null(nb.core)) if(nb.core == 1) parallel <- F
+
   # Community size
   if (!(multi %in% c("single", "tab", "seqcom"))){
     stop("multi parameter must be either single, tab or seqcom.")
@@ -115,17 +115,18 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   # Trait values can be provided with community composition
   # Mean trait values of pool are stored in traits in absence of trait
   # information in local community
-  if (!is.null(pool.glob)){
-    if(ncol(pool.glob) >= 3) {
-      #Using matrix instead of data.frame
-      traits <- apply(data.frame(pool.glob[,-(1:2)]), 2,
-                                 function(x) {
-                                   tapply(x, pool.glob[, 2],
-                                          function(y)
-                                            mean(y, na.rm = TRUE)
-                                   )})
-    }
-  }
+  # Should be unnecessary since it is managed in do.simul.coalesc (TO BE CONFIRMED)
+  #if (!is.null(pool.glob)){
+  #  if(ncol(pool.glob) >= 3) {
+  #    #Using matrix instead of data.frame
+  #    traits <- apply(data.frame(pool.glob[,-(1:2)]), 2,
+  #                               function(x) {
+  #                                 tapply(x, pool.glob[, 2],
+  #                                        function(y)
+  #                                          mean(y, na.rm = TRUE)
+  #                                 )})
+  #  }
+  #}
   
   if (multi == "tab"){
     if(is.null(colnames(comm.obs)))
@@ -288,6 +289,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     stop("You must provide range limit values of the parameters.")
   }
   
+  # This part is problematic if the user wanst that the second argument of f.sumstats
+  # incorporates intraspecific trait variation
   if(length(formals(f.sumstats))>1 & is.null(traits))
   {
     if(ncol(pool) >= 3) {
