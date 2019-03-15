@@ -6,6 +6,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     stop("You must provide either regional pool composition or a theta value")
   }
   
+  if(!is.null(filt)) if(is.na(filt)) filt <- NULL
+  
   if((add & is.null(var.add)) | (!add & !is.null(var.add))) {
     warning("No additional variables are passed to filt")
   }
@@ -52,7 +54,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   if (is.null(pool)) {
     # If m = 1 and no environmental filtering, directly simulates a sample from
     # the pool of size J
-    if (m == 1 & (is.null(filt) | is.na(filt))) pool_size <- J else  pool_size <- Jpool
+    if (m == 1 & is.null(filt)) pool_size <- J else  pool_size <- Jpool
     ind_pool_lab <- 1:pool_size  # Labels of individuals
     ind_pool_sp <- array(NA, c(pool_size, 1))  # Species labels
     
@@ -98,7 +100,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
                                          sep = "")
     }
     
-    if (m == 1 & (is.null(filt) | is.na(filt))) {
+    if (m == 1 & is.null(filt)) {
       return(list(pool = data.frame(ind = ind_pool_lab, sp = ind_pool_sp,
                                     ind_pool_traits), call = match.call()))
     }
@@ -150,7 +152,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   
   ## Define environmental filter
         
-  if (!is.null(filt) & !is.na(filt)) {
+  if (!is.null(filt)) {
     if(!add)
     { #env_filter <- function(x) t(apply(x, 1, function(y) filt(y)))
       env_filter <- function(x) unlist(sapply(1:nrow(x), function(i) filt(x[i,])))
@@ -264,7 +266,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     
   com <- data.frame(ind = ind_com_lab, sp = ind_com_sp, ind_com_traits, stringsAsFactors = F)
   
-  if (m == 1 & (is.null(filt) | is.na(filt))) {
+  if (m == 1 & is.null(filt)) {
     return(list(pool = com, call = match.call()))
   } else {
     return(list(com = as.data.frame(com), pool = as.data.frame(pool), call = match.call()))
