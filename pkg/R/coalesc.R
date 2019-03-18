@@ -6,7 +6,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     stop("You must provide either regional pool composition or a theta value")
   }
   
-  if(!is.null(filt)) if(is.na(filt)) filt <- NULL
+  # Need to define a function for environmental filtering
+  if(!is.null(filt)) if(!is.function(filt)) filt <- NULL
   
   if((add & is.null(var.add)) | (!add & !is.null(var.add))) {
     warning("No additional variables are passed to filt")
@@ -169,8 +170,6 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     
   }
   
-  # Environmental filter should not provide negative values
-  
   if (!add) 
   {
     prob <- env_filter(ind_pool_traits)
@@ -178,6 +177,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   
   if(length(prob) < nrow(ind_pool_traits)) stop("Incorrect output of the filtering function")
   
+  # Environmental filter should not provide negative values
   if (any(prob < 0)) {
       if (verbose) {
         warning("Negative weights yielded by filtering function are set to ",
