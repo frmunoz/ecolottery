@@ -1,5 +1,5 @@
 coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL, f.sumstats, 
-                         filt.abc = NULL, migr.abc = NULL, size.abc = NULL, params  = NULL, par.filt = NULL,
+                         filt.abc = NULL, migr.abc = NULL, size.abc = NULL, add = F, var.add = NULL, params  = NULL, par.filt = NULL,
                          par.migr = NULL, par.size = NULL, scale = F, theta.max = NULL, nb.samp = 10^6, 
                          parallel = F, nb.core = NULL, tol = NULL, type = "standard", method.seq = "Lenormand", 
                          method.mcmc = "Marjoram_original", method.abc = "rejection", alpha = 0.5, pkg = NULL) 
@@ -22,11 +22,16 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   
   if (multi == "tab"){
     if(is.null(colnames(comm.obs)))
-      stop("Missing species names in species-by-site table")
-    if(any(!colnames(comm.obs)%in%rownames(traits)))
+      warning("Missing species names in species-by-site table")
+    if(any(!colnames(comm.obs)%in%unique(pool$sp)))
       stop("Mismatch of species names in pool and comm.obs")
-    # Reorder species in comm.obs following the order in traits
-    comm.obs <- comm.obs[,rownames(traits)[rownames(traits)%in%colnames(comm.obs)]]
+    if(!is.null(traits))
+    {
+      if(any(!colnames(comm.obs)%in%row.names(traits)))
+        stop("Mismatch of species names in comm.obs and traits")
+      # Reorder species in comm.obs following the order in traits
+      comm.obs <- comm.obs[,rownames(traits)[rownames(traits)%in%colnames(comm.obs)]]
+    }
   }
   
   # Defining parameter ranges
@@ -54,13 +59,21 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   # par.size = NULL, constr = NULL, scale = T, dim.pca = NULL, svd = F, pkg = NULL
   # need to be included
   if(type == "standard")
-    return(coalesc_abc_std(comm.obs, pool, multi, prop, traits, f.sumstats, filt.abc, migr.abc, size.abc, add = F, 
-                           var.add = NULL, params, par.filt, par.migr, par.size, constr = NULL, scale = T, dim.pca = NULL, svd = F,
+    return(coalesc_abc_std(comm.obs, pool, multi, prop, traits, f.sumstats, filt.abc, migr.abc, size.abc, add, 
+                           var.add, params, par.filt, par.migr, par.size, constr = NULL, scale = T, dim.pca = NULL, svd = F,
                            theta.max, nb.samp, parallel, nb.core, tol, pkg, method.abc)) 
   else {
-    migr.abc <- NULL
-    size.abc <- NULL
-    warning("migr.abc, size.abc not available with other sampling approach than standard")
+    if(!is.null(migr.abc) | !is.null(size.abc))
+    {
+      migr.abc <- NULL
+      size.abc <- NULL
+      warning("migr.abc, size.abc not available with other sampling approach than standard")
+    }
+    if(add)
+    {
+      add <- F
+      warning("add and var.add not available with other sampling approach than standard")
+    }
     initial_checks(comm.obs = comm.obs, pool = pool, multi = multi, prop = prop, traits = traits,
                    f.sumstats = f.sumstats, filt.abc = filt.abc, migr.abc = migr.abc, size.abc = size.abc,
                    params = params, par.filt = par.filt, par.migr = par.migr, 
@@ -346,21 +359,16 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
     }
   }
   
-  # Trait values can be provided with community composition
-  # Mean trait values of pool are stored in traits in absence of trait
-  # information in local community
-  # Should be unnecessary since it is managed in do.simul.coalesc (TO BE CONFIRMED)
-  #if (!is.null(pool.glob)){
-  #  if(ncol(pool.glob) >= 3) {
-  #    #Using matrix instead of data.frame
-  #    traits <- apply(data.frame(pool.glob[,-(1:2)]), 2,
-  #                               function(x) {
-  #                                 tapply(x, pool.glob[, 2],
-  #                                        function(y)
-  #                                          mean(y, na.rm = TRUE)
-  #                                 )})
-  #  }
-  #}
+  if (!is.null(pool.glob) & is.null(traits))
+  if(ncol(pool.glob) >= 3) {
+      # Takes average trait values for species defined in pool
+      traits <- apply(data.frame(pool.glob[,-(1:2)]), 2,
+                               function(x) {
+                                 tapply(x, pool.glob[, 2],
+                                        function(y)
+                                          mean(y, na.rm = TRUE)
+                                 )})
+    } 
   
   if (length(formals(f.sumstats)) == 1) {
     stats.obs <- f.sumstats(comm.obs)
