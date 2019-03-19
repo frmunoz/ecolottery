@@ -23,8 +23,10 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   if (multi == "tab"){
     if(is.null(colnames(comm.obs)))
       warning("Missing species names in species-by-site table")
-    if(any(!colnames(comm.obs)%in%unique(pool$sp)))
+    if(length(pool)==1) if(any(!colnames(comm.obs)%in%unique(pool$sp))) 
       stop("Mismatch of species names in pool and comm.obs")
+    else if(any(!colnames(comm.obs)%in%unique(Reduce(rbind, pool)$sp)))
+      stop("Mismatch of species names in pools and comm.obs")
     if(!is.null(traits))
     {
       if(any(!colnames(comm.obs)%in%row.names(traits)))
