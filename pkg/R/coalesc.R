@@ -122,7 +122,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
       if(any(is.na(ind_pool_traits)))
         stop("There should not be any NA in trait values of the individuals of the pool")
       if(!is.null(traits))  
-        warning("Trait information already in 'pool', the 'traits' input is ignored")
+        if(verbose) warning("Trait information already in 'pool', the 'traits' input is ignored")
       colnames(ind_pool_traits) <- colnames(pool)[-(1:2)]
     } else {
       # Generation of trait values if not provided by the user
@@ -152,23 +152,10 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   }
   
   ## Define environmental filter
-        
-  if (!is.null(filt)) {
-    if(!add)
-    { #env_filter <- function(x) t(apply(x, 1, function(y) filt(y)))
-      env_filter <- function(x) unlist(sapply(1:nrow(x), function(i) filt(x[i,])))
-      
-    } else 
-    {
-      #env_filter <- function(x, var.add) t(apply(x, 1, function(y) filt(y, var.add)))
-      env_filter <- function(x) unlist(sapply(1:nrow(x), function(i) filt(x[i,], var.add)))
-      
-    }
-  } else {
-     #env_filter <- function(x) t(apply(x, 1, function(y) 1))
-     env_filter <- function(x) unlist(sapply(1:nrow(x), function(i) 1))
-    
-  }
+  env_filter <- ifelse(!is.null(filt), ifelse(!add,
+                                              function(x) unlist(sapply(1:nrow(x), function(i) filt(x[i,]))),
+                                              function(x, var.add) unlist(sapply(1:nrow(x), function(i) filt(x[i,], var.add)))),
+                       function(x) unlist(sapply(1:nrow(x), function(i) 1)))
   
   if (!add) 
   {
