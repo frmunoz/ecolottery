@@ -1,8 +1,9 @@
 coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL, f.sumstats, 
                          filt.abc = NULL, migr.abc = NULL, size.abc = NULL, add = F, var.add = NULL, params  = NULL, par.filt = NULL,
-                         par.migr = NULL, par.size = NULL, scale = F, theta.max = NULL, nb.samp = 10^6, 
-                         parallel = F, nb.core = NULL, tol = NULL, type = "standard", method.seq = "Lenormand", 
-                         method.mcmc = "Marjoram_original", method.abc = "rejection", alpha = 0.5, pkg = NULL) 
+                         par.migr = NULL, par.size = NULL, scale = F, dim.pca = NULL, svd = F, 
+                         theta.max = NULL, nb.samp = 10^6, parallel = F, nb.core = NULL, tol = NULL, 
+                         type = "standard", method.seq = "Lenormand", method.mcmc = "Marjoram_original", 
+                         method.abc = "rejection", alpha = 0.5, pkg = NULL) 
 {
   
   if (is.null(pool)) {
@@ -62,7 +63,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   # need to be included
   if(type == "standard")
     return(coalesc_abc_std(comm.obs, pool, multi, prop, traits, f.sumstats, filt.abc, migr.abc, size.abc, add, 
-                           var.add, params, par.filt, par.migr, par.size, constr = NULL, scale = T, dim.pca = NULL, svd = F,
+                           var.add, params, par.filt, par.migr, par.size, constr = NULL, scale = T, dim.pca, svd,
                            theta.max, nb.samp, parallel, nb.core, tol, pkg, method.abc)) 
   else {
     if(!is.null(migr.abc) | !is.null(size.abc))
@@ -76,6 +77,12 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
       add <- F
       warning("add and var.add not available with other sampling approach than standard")
     }
+    if(!is.null(dim.pca) | svd)
+    {
+      dim.pca <- NULL
+      svd <- F
+      warning("dim.pca and svd not available with other sampling approach than standard")
+    } 
     initial_checks(comm.obs = comm.obs, pool = pool, multi = multi, prop = prop, traits = traits,
                    f.sumstats = f.sumstats, filt.abc = filt.abc, migr.abc = migr.abc, size.abc = size.abc,
                    params = params, par.filt = par.filt, par.migr = par.migr, 
@@ -310,7 +317,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
 coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
                         f.sumstats, filt.abc = NULL, migr.abc = NULL, size.abc = NULL, add = F,
                         var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
-                        par.size = NULL, constr = NULL, scale = T, dim.pca = NULL, svd = F, theta.max = NULL, 
+                        par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = F, theta.max = NULL, 
                         nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
                         method.abc = "rejection")
 {

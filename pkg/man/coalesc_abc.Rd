@@ -19,21 +19,21 @@
   coalesc_abc(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL, 
   f.sumstats, filt.abc = NULL,  migr.abc = NULL, size.abc = NULL, add = F, 
   var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, par.size = NULL, 
-  scale = F, theta.max = NULL,  nb.samp = 10^6, parallel = F, nb.core = NULL, 
+  scale = F, dim.pca = NULL, svd = F, theta.max = NULL,  nb.samp = 10^6, parallel = F, nb.core = NULL, 
   tol = NULL, type = "standard", method.seq = "Lenormand", method.mcmc = "Marjoram_original",
   method.abc = "rejection", alpha = 0.5, pkg = NULL)
   
   coalesc_abc_std(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
   f.sumstats, filt.abc = NULL, migr.abc = NULL, size.abc = NULL, add = F, 
   var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
-  par.size = NULL, constr = NULL, scale = T, dim.pca = NULL, svd = F, 
+  par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = F, 
   theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
   tol = NULL, pkg = NULL, method.abc = "rejection")
   
   do.simul.coalesc(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
   traits = NULL, f.sumstats = NULL, filt.abc = NULL, migr.abc = NULL, 
   size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
-  par.migr, par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, 
+  par.migr = NULL, par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, 
   theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
   tol = NULL, pkg = NULL, method.abc = "rejection")
   
@@ -154,7 +154,7 @@
     \code{par.migr} and \code{par.size}. Default is \code{NULL} (no constraint).
   }
   \item{scale}{
-    should the summary statistics be scaled. Default is \code{TRUE}.
+    should the summary statistics be scaled. Default is \code{FALSE}.
   }
   \item{dim.pca}{
     gives a number of independent dimensions to calculate from the simulated summary statistics, 
