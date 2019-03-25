@@ -13,7 +13,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
       theta.max <- 500
   }
   
-  if (is.character(comm.obs)) {
+  if (is.character(comm.obs) & is.null(ncol(comm.obs))) {
     comm.obs <- data.frame(id = 1:length(comm.obs),
                            sp = comm.obs,
                            trait = rep(NA, length(comm.obs)),
@@ -371,12 +371,12 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
   if (!is.null(pool.glob) & is.null(traits))
   if(ncol(pool.glob) >= 3) {
       # Takes average trait values for species defined in pool
-      traits <- apply(data.frame(pool.glob[,-(1:2)]), 2,
+      traits <- data.frame(apply(pool.glob[,-(1:2)], 2,
                                function(x) {
                                  tapply(x, pool.glob[, 2],
                                         function(y)
                                           mean(y, na.rm = TRUE)
-                                 )})
+                                 )}), row.names = unique(pool.glob[, 2]))
     } 
   
   if (length(formals(f.sumstats)) == 1) {
@@ -515,7 +515,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     parallel <- FALSE
   }
   
-  # This part is problematic if the user wanst that the second argument of f.sumstats
+  # This part is problematic if the user wants that the second argument of f.sumstats
   # incorporates intraspecific trait variation
   if(length(formals(f.sumstats))>1 & is.null(traits))
   {
