@@ -13,6 +13,8 @@ Authors@R: c(person("François", "Munoz", role = c("aut", "cre"),
               person("Cyrille", "Violle", role = "ctb"))
 URL: https://github.com/frmunoz/ecolottery
 BugReports: https://github.com/frmunoz/ecolottery/issues
+BuildVignettes: true
+VignetteBuilder: knitr
 Depends:
     R (>= 3.0.2)
 Imports:
@@ -42,5 +44,4 @@ Description: Coalescent-Based Simulation of Ecological Communities as proposed
     Bayesian Computation.
 License: GPL (>= 2)
 Encoding: UTF-8
-VignetteBuilder: knitr
 RoxygenNote: 6.0.1

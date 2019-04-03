@@ -1,6 +1,7 @@
 ---
 title: "Appendix 1: basic functions and examples"
 author: "François MUNOZ and Pierre DENELLE"
+package: ecolottery
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >

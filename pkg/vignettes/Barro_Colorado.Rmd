@@ -1,6 +1,7 @@
 ---
 title: "`coalesc_abc` function with a site-species matrix: example with Barro-Colorado dataset."
 author: "François MUNOZ and Pierre DENELLE"
+package: ecolottery
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
