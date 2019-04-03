@@ -369,14 +369,18 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
   }
   
   if (!is.null(pool.glob) & is.null(traits))
-  if(ncol(pool.glob) >= 3) {
-      # Takes average trait values for species defined in pool
+    # Takes average trait values for species defined in pool
+    if(ncol(pool.glob) > 3) {
       traits <- data.frame(apply(pool.glob[,-(1:2)], 2,
                                function(x) {
                                  tapply(x, pool.glob[, 2],
                                         function(y)
                                           mean(y, na.rm = TRUE)
                                  )}), row.names = unique(pool.glob[, 2]))
+    } else if(ncol(pool.glob) == 3) {
+      traits <- data.frame(tapply(pool.glob[,-(1:2)], pool.glob[, 2],
+                                          function(y)
+                                            mean(y, na.rm = TRUE)), row.names = unique(pool.glob[, 2]))
     } 
   
   if (length(formals(f.sumstats)) == 1) {
@@ -504,7 +508,7 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
 do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
                              traits = NULL, f.sumstats = NULL, filt.abc = NULL, migr.abc = NULL, 
                              size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
-                             par.migr, par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, 
+                             par.migr = NULL, par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, 
                              theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, 
                              pkg = NULL, method.abc = "rejection") 
 {
@@ -790,8 +794,9 @@ generate_prior <- function(pool = NULL, prop = F, constr = NULL,
       }
     }
     if(!is.null(par.migr)) {
+      if(!is.null(par.filt)) incr <- nrow(par.filt) else incr <- 0
       for (i in 1:nrow(par.migr)) {
-        prior[[i+nrow(par.filt)]] <- c(prior[[i+nrow(par.filt)]], runif(samp, min = par.migr[i, 1], 
+        prior[[i+incr]] <- c(prior[[i+incr]], runif(samp, min = par.migr[i, 1], 
                                                                         max = par.migr[i, 2]))
       }
     } else {
