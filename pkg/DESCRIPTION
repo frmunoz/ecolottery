@@ -22,9 +22,11 @@ Imports:
     graphics,
     ggplot2,
     grDevices,
+    hillR,
     parallel,
     EasyABC,
-    lazyeval
+    lazyeval,
+    moments
 Suggests:
     ape,
     changepoint,
