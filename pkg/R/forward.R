@@ -452,7 +452,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     com <- com[-died, ]
     
     if (any(is.na(com[, 1]))) {
-      stop("Error: NA values in community composition (1)")
+      stop("NA values in community composition (1)")
       }
   
   } else {
@@ -491,7 +491,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     if("death" %in% type.filt & !is.null(filt))
     {
       if (any(is.na(hab_filter(com[, -(1:2)])))) {
-         stop("Error: NA values in habitat filter")
+         stop("NA values in habitat filter")
       }
       
       com_filter <- hab_filter(com[, -(1:2)])
@@ -507,7 +507,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     com <- com[-died, ] 
     
     if (sum(is.na(com[, 1])) != 0) {
-      stop("Error: NA values in community composition (2)")
+      stop("NA values in community composition (2)")
     }
   } 
   
@@ -529,7 +529,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     # Influence of habitat filtering on immigration
     if ("immig" %in% type.filt & !is.null(filt)) {
       if (any(is.na(hab_filter(pool[, -(1:2)])))) {
-        stop("Error: NA values in habitat filtering of immigrants")
+        stop("NA values in habitat filtering of immigrants")
       }
       
       prob <- prob * vapply(pool[, -(1:2)], hab_filter, 0)
@@ -559,7 +559,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
                                   prob = prob),])
     
     if (any(is.na(com[, 1]))) {
-      stop("Error: NA values in community composition (3)")
+      stop("NA values in community composition (3)")
       }
   }
   
@@ -572,7 +572,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     if("loc.recr" %in% type.filt & !is.null(filt)) {
       
       if (any(is.na(hab_filter(com.init[, -(1:2)])))) {
-        stop("Error: NA values in habitat filtering of local offspring")
+        stop("NA values in habitat filtering of local offspring")
       }
         
       prob <- prob * vapply(com.init[, -(1:2)], hab_filter, 0)
@@ -594,7 +594,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
      
     if (any(is.na(com[, 1]))) {
       print(J2)
-      stop("Error: NA values in community composition (4)")
+      stop("NA values in community composition (4)")
     }
   }
     
