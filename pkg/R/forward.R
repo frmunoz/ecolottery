@@ -494,8 +494,9 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
          stop("Error: NA values in habitat filter")
       }
       
-      prob.death <- prob.death * (1 - hab_filter(com[, -(1:2)]) /
-                                      sum(hab_filter(com[, -(1:2)])))
+      com_filter <- hab_filter(com[, -(1:2)])
+      
+      prob.death <- prob.death * (1 - com_filter / sum(com_filter))
     }
       
     # Giving names to prob.death
@@ -536,9 +537,11 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     
     # Influence of limiting similarity on immigration
     if("immig" %in% type.limit & limit.sim) {
-      # Establishment success depends on how distant is the candidate from local individuals
+      # Establishment success depends on how distant is the candidate from local
+      # individuals
       lim_sim_mig_function <- function(x) {
-        coeff.lim.sim * (sum(exp( -(x-com.init[,-(1:2)])^2 / (2 * (sigm^2))), na.rm = TRUE))
+        coeff.lim.sim * (sum(exp( -(x-com.init[,-(1:2)])^2 / (2 * (sigm^2))),
+                             na.rm = TRUE))
       }
       
       # Influence of limiting similarity on establishment
