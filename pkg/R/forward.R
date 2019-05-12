@@ -500,7 +500,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     # If communities contained several traits prob.death object is a one column
     # matrix that needs to be converted to a flat vector for further
     # transformation
-    if (is.matrix(prob.death)) {
+    if (is.matrix(prob.death) | is.data.frame(prob.death)) {
       prob.death <- prob.death[, 1]
     }
     
