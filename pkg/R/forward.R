@@ -484,7 +484,6 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
                             function(x) lim_sim_function(x))
       # Add baseline probability
       prob.death <- prob.death + 1/J
-      names(prob.death ) <- com[, 1]
     }
       
     # Influence of habitat filtering on mortality
@@ -497,7 +496,14 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       prob.death <- prob.death * (1 - hab_filter(com[, -(1:2)]) /
                                       sum(hab_filter(com[, -(1:2)])))
     }
-      
+    
+    # If communities contained several traits prob.death object is a one column
+    # matrix that needs to be converted to a flat vector for further
+    # transformation
+    if (is.matrix(prob.death)) {
+      prob.death <- prob.death[, 1]
+    }
+    
     # Giving names to prob.death
     names(prob.death) <- com[, 1]      
     
@@ -538,7 +544,8 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     if("immig" %in% type.limit & limit.sim) {
       # Establishment success depends on how distant is the candidate from local individuals
       lim_sim_mig_function <- function(x) {
-        coeff.lim.sim * (sum(exp( -(x-com.init[,-(1:2)])^2 / (2 * (sigm^2))), na.rm = TRUE))
+        coeff.lim.sim * (sum(exp( -(x-com.init[,-(1:2)])^2 / (2 * (sigm^2))),
+                             na.rm = TRUE))
       }
       
       # Influence of limiting similarity on establishment
