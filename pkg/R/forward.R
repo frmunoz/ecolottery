@@ -537,11 +537,12 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     
     # Influence of habitat filtering on immigration
     if ("immig" %in% type.filt & !is.null(filt)) {
-      if (any(is.na(hab_filter(pool[, -(1:2)])))) {
-        stop("NA values in habitat filtering of immigrants", call. = FALSE)
-      }
+      pool_filter <- apply(pool[, -(1:2), drop = FALSE], 1, hab_filter)
       
-      prob <- prob * vapply(pool[, -(1:2)], hab_filter, 0)
+      if (any(is.na(pool_filter))) {
+        stop("NA values in habitat filter", call. = FALSE)
+      }
+      prob <- prob * pool_filter
     }
     
     # Influence of limiting similarity on immigration
@@ -580,11 +581,12 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     # Influence of habitat filtering on recruitment
     if("loc.recr" %in% type.filt & !is.null(filt)) {
       
-      if (any(is.na(hab_filter(com.init[, -(1:2)])))) {
-        stop("NA values in habitat filtering of local offspring", call. = FALSE)
-      }
+      com_filter <- apply(com.init[, -(1:2), drop = FALSE], 1, hab_filter)
       
-      prob <- prob * vapply(com.init[, -(1:2)], hab_filter, 0)
+      if (any(is.na(com_filter))) {
+        stop("NA values in habitat filter", call. = FALSE)
+      }
+      prob <- prob * com_filter
     }
     
     # Influence of limiting similarity on recruitment
