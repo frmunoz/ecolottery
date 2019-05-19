@@ -16,10 +16,11 @@
   regional pool. 
 }
 \usage{
-  coalesc_abc(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL, 
-  f.sumstats, filt.abc = NULL,  migr.abc = NULL, size.abc = NULL, add = F, 
+  coalesc_abc(comm.obs, pool = NULL, multi = "single", prop = FALSE, traits = NULL, 
+  f.sumstats, filt.abc = NULL,  migr.abc = NULL, size.abc = NULL, add = FALSE, 
   var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, par.size = NULL, 
-  scale = F, dim.pca = NULL, svd = F, theta.max = NULL,  nb.samp = 10^6, parallel = F, 
+  scale = FALSE, dim.pca = NULL, svd = FALSE, theta.max = NULL,  nb.samp = 10^6,
+  parallel = FALSE, 
   nb.core = NULL, tol = NULL, type = "standard", method.seq = "Lenormand", 
   method.mcmc = "Marjoram_original",method.abc = "rejection", alpha = 0.5, 
   pkg = NULL)

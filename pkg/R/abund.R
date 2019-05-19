@@ -2,7 +2,7 @@
 # abundances per species
 abund <- function(x) {
   if (!is.list(x)) {
-    stop("The input argument must be a list of communities")
+    stop("The input argument must be a list of communities", call. = FALSE)
   }
   
     rel_abund_list <-  lapply(x, function(y) {
@@ -17,7 +17,8 @@ abund <- function(x) {
     })
     
     if (sum(is.na(rel_abund_list)) + sum(is.null(rel_abund_list)) != 0) {
-      warning("Some communities were undefined; returning NA abundances")
+      warning("Some communities were undefined; returning NA abundances",
+              call. = FALSE)
     }
     
     return(rel_abund_list)

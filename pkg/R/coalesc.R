@@ -1,33 +1,36 @@
-coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL, pool = NULL,
-                    traits = NULL, Jpool = 50*J, verbose = FALSE) {
+coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = FALSE,
+                    var.add = NULL, pool = NULL, traits = NULL, Jpool = 50*J,
+                    verbose = FALSE) {
   
   # Check parameters
   if (is.null(theta) & is.null(pool)) {
-    stop("You must provide either regional pool composition or a theta value")
+    stop("You must provide either regional pool composition or a theta value",
+         call. = FALSE)
   }
   
   # Need to define a function for environmental filtering
   if(!is.null(filt)) if(!is.function(filt)) filt <- NULL
   
   if((add & is.null(var.add)) | (!add & !is.null(var.add))) {
-    warning("No additional variables are passed to filt")
+    warning("No additional variables are passed to filt", call. = FALSE)
   }
     
   if(length(m)>1 | length(theta)>1) {
-    stop("m and theta cannot be vectors of length greater than 1")
+    stop("m and theta cannot be vectors of length greater than 1",
+         call. = FALSE)
   }
   
   if (m < 0 | m > 1) {
-    stop("The migration parameter takes values between 0 and 1")
+    stop("The migration parameter takes values between 0 and 1", call. = FALSE)
   }
   
   if (!is.null(theta)) {
     if (theta <= 0) {
-      stop("The theta parameter must be positive")
+      stop("The theta parameter must be positive", call. = FALSE)
     } else if (theta > 0 & !is.null(pool)) {
       if (verbose) {
         warning("Both a theta value and a regional pool provided, discarding ",
-                "theta")
+                "theta", call. = FALSE)
       }
     }
   }
@@ -37,7 +40,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   }
   
   if (is.null(traits) & (is.null(pool) | NCOL(pool) < 3)) {
-    if (verbose) warning("No trait information provided in the regional pool")
+    if (verbose) warning("No trait information provided in the regional pool",
+                         call. = FALSE)
   }
   
   if (!is.null(traits) & is.null(colnames(traits))) {
@@ -108,7 +112,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   } else { 
     
     if (ncol(pool) < 2) {
-      stop("The regional pool is misdefined (two columns required)")
+      stop("The regional pool is misdefined (two columns required)",
+           call. = FALSE)
     }
     
     # Handling of factors
@@ -120,9 +125,11 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     if (ncol(pool) >= 3)  {
       ind_pool_traits <- data.frame(pool[,-(1:2)], stringsAsFactors = F)
       if(any(is.na(ind_pool_traits)))
-        stop("There should not be any NA in trait values of the individuals of the pool")
+        stop("There should not be any NA in trait values of the individuals of",
+             " the pool", call. = FALSE)
       if(!is.null(traits))  
-        if(verbose) warning("Trait information already in 'pool', the 'traits' input is ignored")
+        if(verbose) warning("Trait information already in 'pool', the 'traits'",
+                            "input is ignored", call. = FALSE)
       colnames(ind_pool_traits) <- colnames(pool)[-(1:2)]
     } else {
       # Generation of trait values if not provided by the user
@@ -131,7 +138,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
         rownames(traits) <- levels(as.factor(pool[,2]))
       } else {
         if(!is.null(rownames(traits)) & any(!ind_pool_sp %in% rownames(traits))) 
-          stop("Species names in traits must match those in pool")
+          stop("Species names in traits must match those in pool",
+               call. = FALSE)
       }
       
       ind_pool_traits <- data.frame(traits[ind_pool_sp,1:ncol(traits)], stringsAsFactors = F)
@@ -152,9 +160,12 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   }
   
   ## Define environmental filter
-  env_filter <- ifelse(!is.null(filt), ifelse(!add,
-                                              function(x) unlist(sapply(1:nrow(x), function(i) filt(x[i,]))),
-                                              function(x, var.add) unlist(sapply(1:nrow(x), function(i) filt(x[i,], var.add)))),
+  env_filter <- ifelse(!is.null(filt),
+                       ifelse(!add,
+                              function(x) unlist(sapply(1:nrow(x),
+                                                        function(i) filt(x[i,]))),
+                              function(x, var.add) unlist(sapply(1:nrow(x),
+                                                                 function(i) filt(x[i,], var.add)))),
                        function(x) unlist(sapply(1:nrow(x), function(i) 1)))
   
   if (!add) 
@@ -162,14 +173,16 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
     prob <- env_filter(ind_pool_traits)
   } else prob <- env_filter(ind_pool_traits, var.add)
   
-  if(length(prob) < nrow(ind_pool_traits)) stop("Incorrect output of the filtering function")
+  if(length(prob) < nrow(ind_pool_traits)) {
+    stop("Incorrect output of the filtering function", call. = FALSE)
+  }
   
   # Environmental filter should not provide negative values
   if (any(prob < 0)) {
       if (verbose) {
         warning("Negative weights yielded by filtering function are set to ",
                 "0.\n", "Maybe better defining the filtering function in a ",
-                "different way!")
+                "different way!", call. = FALSE)
       }
       prob[prob < 0] <- 0
   }  
@@ -177,7 +190,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   if(all(prob == 0)) {
     if (verbose) {
       warning("Your filtering function does not allow any immigrant to enter ",
-              "the community")
+              "the community", call. = FALSE)
     }
     return(list(com = array(NA, c(J,3)), pool = pool, call = match.call()))
   }
@@ -222,7 +235,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   com_species <- length(assign_com) 
  
   if(com_species > sum(prob > 0)) {
-    warning("Sampling with replacement from the pool")
+    warning("Sampling with replacement from the pool", call. = FALSE)
     migrants <- sample(1:nrow(pool), com_species, replace = T, prob = prob)
   } else 
     migrants <- sample(1:nrow(pool), com_species, prob = prob)
@@ -248,14 +261,16 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL
   
   # For debug only
   if (any(is.na(ind_com_lab))) {
-    stop("NA in simulated community")
+    stop("NA in simulated community", call. = FALSE)
   }
     
-  com <- data.frame(ind = ind_com_lab, sp = ind_com_sp, ind_com_traits, stringsAsFactors = F)
+  com <- data.frame(ind = ind_com_lab, sp = ind_com_sp, ind_com_traits,
+                    stringsAsFactors = F)
   
   if (m == 1 & is.null(filt)) {
     return(list(pool = com, call = match.call()))
   } else {
-    return(list(com = as.data.frame(com), pool = as.data.frame(pool), call = match.call()))
+    return(list(com = as.data.frame(com), pool = as.data.frame(pool),
+                call = match.call()))
   }
 }

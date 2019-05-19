@@ -8,7 +8,7 @@ Coalescent-based simulation of ecological communities undergoing both neutral an
 Simulates the composition of a community based on immigration from a regional pool, habitat filtering depending on local environment and species traits, and local birth-death stochastic dynamics. 
 }
 \usage{
-coalesc(J, m = 1, theta = NULL, filt = NULL, add = F,  var.add =NULL, pool = NULL, 
+coalesc(J, m = 1, theta = NULL, filt = NULL, add = FALSE,  var.add =NULL, pool = NULL, 
         traits = NULL, Jpool = 50 * J, verbose = FALSE)
 }
 \arguments{
