@@ -491,13 +491,13 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     }
     
     # Influence of habitat filtering on mortality
-    if("death" %in% type.filt & !is.null(filt))
-    {
-      if (any(is.na(hab_filter(com[, -(1:2)])))) {
+    if("death" %in% type.filt & !is.null(filt)) { 
+      
+      com_filter <- apply(com[, -(1:2), drop = FALSE], 1, hab_filter)
+      
+      if (any(is.na(com_filter))) {
         stop("NA values in habitat filter", call. = FALSE)
       }
-      
-      com_filter <- hab_filter(com[, -(1:2)])
       
       prob.death <- prob.death * (1 - com_filter / sum(com_filter))
     }
