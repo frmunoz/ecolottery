@@ -44,4 +44,4 @@ Description: Coalescent-Based Simulation of Ecological Communities as proposed
     Bayesian Computation.
 License: GPL (>= 2)
 Encoding: UTF-8
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

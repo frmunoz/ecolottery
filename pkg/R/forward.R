@@ -14,16 +14,16 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   
   if (!is.numeric(prob) | prob < 0) {
     stop("Probability of migration or mutation must be a number belonging to ",
-         "[0; 1] interval.")
+         "[0; 1] interval.", call. = FALSE)
   }
   
   if (!is.numeric(d) | d < 0) {
     stop("Number of individuals that die in each time step must be a positive",
-         " number.")
+         " number.", call. = FALSE)
   }
   
   if (!is.numeric(gens) | gens <= 0) {
-    stop("Number of generations must be a positive number.")
+    stop("Number of generations must be a positive number.", call. = FALSE)
   }
   
   if (!is.logical(keep)) {
@@ -31,37 +31,40 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   }
   
   if (!is.logical(limit.sim)) {
-    stop("limiting similarity parameter must be a boolean.")
+    stop("limiting similarity parameter must be a boolean.", call. = FALSE)
   }
   
   if (!is.numeric(coeff.lim.sim)) {
-    stop("coeff.lim.sim parameter must be numeric.")
+    stop("coeff.lim.sim parameter must be numeric.", call. = FALSE)
   }
   
   if (!is.null(filt) & (is.null(type.filt) | !any(type.filt%in%c("immig","death","loc.recr"))))
-    stop("Type of environmental filtering should be immig, death and/or loc.recr")
+    stop("Type of environmental filtering should be immig, death and/or ",
+         "loc.recr", call. = FALSE)
   
   if (limit.sim & (is.null(type.limit) | !any(type.limit%in%c("immig","death","loc.recr"))))
-    stop("Type of limiting similarity should be immig, death and/or loc.recr")
+    stop("Type of limiting similarity should be immig, death and/or loc.recr",
+         call. = FALSE)
   
   if (!is.numeric(sigm) | sigm < 0) {
-    stop("sigm parameter must be a positive number.")
+    stop("sigm parameter must be a positive number.", call. = FALSE)
   }
   
   if (!is.null(filt) & !is.function(filt)) {
-    stop("filt() must be a function.")
+    stop("filt() must be a function.", call. = FALSE)
   }    
   
   if((add & is.null(var.add)) | (!add & !is.null(var.add))) 
-    warning("No additional variables are passed to filt")
+    warning("No additional variables are passed to filt", call. = FALSE)
   
   if ((method.dist %in% c("euclidean", "maximum", "manhattan", "canberra",
                           "binary", "minkowski")) == FALSE) {
-    stop("Provided distance does not exist. See stats::dist function for help.")
+    stop("Provided distance does not exist. See stats::dist function for help.",
+         call. = FALSE)
   }
   
   if (!is.logical(plot_gens)) {
-    stop("plot_gens parameter must be a boolean.")
+    stop("plot_gens parameter must be a boolean.", call. = FALSE)
   }
   
   # Stops if only a vector of species name is given as initial community with
@@ -69,14 +72,14 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   if ((is.character(initial) | is.vector(initial)) &
       (limit.sim | !is.null(filt))) {
     stop("Trait information must be provided along with species identity in",
-         " the initial community for niche - based dynamics")
+         " the initial community for niche - based dynamics", call. = FALSE)
   }
   
   # If environmental filtering or limiting similarity, the initial community
   # needs to be a matrix or a data.frame
   if (!is.matrix(initial) & !is.data.frame(initial) &
       (limit.sim | !is.null(filt))) {
-    stop("Misdefined initial community")
+    stop("Misdefined initial community", call. = FALSE)
   }
   
   # If no limiting similarity nor environmental filter -> community dynamics are
@@ -109,11 +112,11 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
       # Assign trait values to individuals of the pool
       pool[,3:(2+ncol(traits))] <- traits[pool[,2],]
       if(any(is.na(pool[,-(1:2)]))) 
-        stop("Mismatch of species names between pool and traits")
+        stop("Mismatch of species names between pool and traits", call. = FALSE)
     }
     if (ncol(pool) < 2) {
       stop("The regional pool is misdefined (at least two columns ",
-           "required when a matrix or data frame is provided)")
+           "required when a matrix or data frame is provided)", call. = FALSE)
     } else if (ncol(pool) == 2) {
       message("No trait information provided in the regional pool")
     }
@@ -135,7 +138,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   }
   
   if (is.null(traits) & (is.null(pool) | NCOL(pool) < 3)) {
-    warning("No trait information provided in the regional pool")
+    warning("No trait information provided in the regional pool", call. = FALSE)
   }
   
   if (!is.null(traits) & is.null(colnames(traits))) {
@@ -193,18 +196,18 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   }
   
   if (J < d) stop("The number of dead individuals per time step ",
-		  "cannot be greater than community size")
-	  
+                  "cannot be greater than community size", call. = FALSE)
+  
   if ((limit.sim | !is.null(filt))) if(any(is.na(init_comm[, 3]))) {
     stop("Trait information must be provided in initial community ",
-         "composition for niche-based dynamics")
+         "composition for niche-based dynamics", call. = FALSE)
   }
   
   # TODO: possibility to handle several traits
   if(ncol(init_comm)==3) colnames(init_comm) <- c("id", "sp", "trait")
   if(ncol(init_comm)==2) colnames(init_comm) <- c("id", "sp")
   
-    new.index <- 0
+  new.index <- 0
   
   ## Forward simulation with community
   
@@ -307,15 +310,15 @@ pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
                        d = d,
                        prob.of.mutate = prob,
                        new.index = new.index)) 
-  
+    
   } else {
-	  
+    
     if((!is.null(filt) | limit.sim) & prob > 0 & any(is.na(pool[,-(1:2)]))) {
-	    stop("With environmental filtering, NA trait values not allowed in ",
-	         "regional pool")
+      stop("With environmental filtering, NA trait values not allowed in ",
+           "regional pool", call. = FALSE)
     }
-	  
-  # If there is a species pool make an individual immigrates
+    
+    # If there is a species pool make an individual immigrates
     return(pick.immigrate(com, d = d, prob.of.immigrate = prob, pool = pool,
                           prob.death = prob.death, filt = filt, 
                           limit.sim = limit.sim, coeff.lim.sim = coeff.lim.sim, 
@@ -335,19 +338,19 @@ pick.mutate <- function(com, d = 1, prob.of.mutate = 0, new.index = 0) {
                       sp = as.character(com),
                       trait = rep(NA, J),
                       stringsAsFactors = FALSE)
-  
+    
   } else if (is.matrix(com) | is.data.frame(com)) {
     # If the community has defined traits
     J <- nrow(com)
     
     if (is.matrix(com)) {
-      	com <- as.data.frame(com, stringsAsFactors = FALSE)
- 	com[, 1] <- as.character(com[, 1])
-     	com[, 2] <- as.character(com[, 2])	  
+      com <- as.data.frame(com, stringsAsFactors = FALSE)
+      com[, 1] <- as.character(com[, 1])
+      com[, 2] <- as.character(com[, 2])	  
     }
     
   } else {
-    stop("pick.mutate: misdefined community composition")
+    stop("pick.mutate: misdefined community composition", call. = FALSE)
   }
   
   ## Simulate the dynamics of the community
@@ -378,7 +381,7 @@ pick.mutate <- function(com, d = 1, prob.of.mutate = 0, new.index = 0) {
     #com[died[mutated], 3] <- rep(NA, n_mutated)  # No trait values
     # Default = trait value drawn from uniform distribution between 0 and 1
     com[died[mutated], 3] <- runif(n_mutated)
-	  
+    
     # Number of new species which appeared (next one will be new.index + 1)
     new.index <- new.index + n_mutated
   }
@@ -399,10 +402,10 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     J <- length(com)
     
     com <- data.frame(id = paste("ind", 1:J, sep = ""),
-                    sp = as.character(com),
-                    trait = rep(NA, J),
-                    stringsAsFactors = FALSE)
-  
+                      sp = as.character(com),
+                      trait = rep(NA, J),
+                      stringsAsFactors = FALSE)
+    
   } else if (is.matrix(com) | is.data.frame(com)) {
     # If the community has defined traits
     J <- nrow(com)
@@ -412,9 +415,9 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     }
     com[, 1] <- as.character(com[, 1])
     com[, 2] <- as.character(com[, 2])
-      
+    
   } else {
-    stop("pick.immigrate: misdefined community composition")
+    stop("pick.immigrate: misdefined community composition", call. = FALSE)
   }
   
   # Function defining habitat filtering according to trait value
@@ -422,26 +425,26 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     hab_filter <- function(x) filt(x)
   } else {
     # If no function defined, dummy function returning value 1
-	  hab_filter <- function(x) vapply(x, function(x) 1, c(1))
+    hab_filter <- function(x) vapply(x, function(x) 1, c(1))
   }
   
   # Traits distances used to simulate limiting similarity
   if (limit.sim) {
-   tr.dist <- as.matrix(dist(com[, -(1:2)], method = method.dist))
-   colnames(tr.dist) <- com[, 1]
-   rownames(tr.dist) <- com[, 1]
-   diag(tr.dist) <- NA
-   
-   # dist.t will display the average trait distance among species
-   # for the whole community at each generation
-   if (min(dim(tr.dist))>1) {
-     dist.t <- mean(tr.dist[com[, 1], com[, 1]], na.rm = TRUE)
-   } else dist.t <- NA
-   
+    tr.dist <- as.matrix(dist(com[, -(1:2)], method = method.dist))
+    colnames(tr.dist) <- com[, 1]
+    rownames(tr.dist) <- com[, 1]
+    diag(tr.dist) <- NA
+    
+    # dist.t will display the average trait distance among species
+    # for the whole community at each generation
+    if (min(dim(tr.dist))>1) {
+      dist.t <- mean(tr.dist[com[, 1], com[, 1]], na.rm = TRUE)
+    } else dist.t <- NA
+    
   } else {
     tr.dist <- NULL
   }
-					   
+  
   # Initial community
   com.init <- com
   
@@ -452,9 +455,9 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     com <- com[-died, ]
     
     if (any(is.na(com[, 1]))) {
-      stop("NA values in community composition (1)")
-      }
-  
+      stop("NA values in community composition (1)", call. = FALSE)
+    }
+    
   } else {
     
     if(limit.sim)
@@ -479,26 +482,26 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       # similar to other resident individuals
       # For each species: compute death probability depending on limiting
       # similarity plus a baseline individual death probability
-     
+      
       prob.death <- apply(tr.dist[com[, 1], com[, 1]], 2,
-                            function(x) lim_sim_function(x))
+                          function(x) lim_sim_function(x))
       # Add baseline probability
       prob.death <- prob.death + 1/J
       names(prob.death ) <- com[, 1]
     }
-      
+    
     # Influence of habitat filtering on mortality
     if("death" %in% type.filt & !is.null(filt))
     {
       if (any(is.na(hab_filter(com[, -(1:2)])))) {
-         stop("NA values in habitat filter")
+        stop("NA values in habitat filter", call. = FALSE)
       }
       
       com_filter <- hab_filter(com[, -(1:2)])
       
       prob.death <- prob.death * (1 - com_filter / sum(com_filter))
     }
-      
+    
     # Giving names to prob.death
     names(prob.death) <- com[, 1]      
     
@@ -507,7 +510,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     com <- com[-died, ] 
     
     if (sum(is.na(com[, 1])) != 0) {
-      stop("NA values in community composition (2)")
+      stop("NA values in community composition (2)", call. = FALSE)
     }
   } 
   
@@ -529,7 +532,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     # Influence of habitat filtering on immigration
     if ("immig" %in% type.filt & !is.null(filt)) {
       if (any(is.na(hab_filter(pool[, -(1:2)])))) {
-        stop("NA values in habitat filtering of immigrants")
+        stop("NA values in habitat filtering of immigrants", call. = FALSE)
       }
       
       prob <- prob * vapply(pool[, -(1:2)], hab_filter, 0)
@@ -559,8 +562,8 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
                                   prob = prob),])
     
     if (any(is.na(com[, 1]))) {
-      stop("NA values in community composition (3)")
-      }
+      stop("NA values in community composition (3)", call. = FALSE)
+    }
   }
   
   if (J2 > 0) { # Recruitment from com.init
@@ -572,12 +575,12 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     if("loc.recr" %in% type.filt & !is.null(filt)) {
       
       if (any(is.na(hab_filter(com.init[, -(1:2)])))) {
-        stop("NA values in habitat filtering of local offspring")
+        stop("NA values in habitat filtering of local offspring", call. = FALSE)
       }
-        
+      
       prob <- prob * vapply(com.init[, -(1:2)], hab_filter, 0)
     }
-      
+    
     # Influence of limiting similarity on recruitment
     if("loc.recr" %in% type.limit & limit.sim) {
       # Same constraint is used for local offspring and immigrants
@@ -590,22 +593,22 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     
     # Add new established offspring individual to community
     com <- rbind(com, com.init[sample(1:nrow(com.init), J2, replace = TRUE,
-                                  prob = prob),])
-     
+                                      prob = prob),])
+    
     if (any(is.na(com[, 1]))) {
       print(J2)
-      stop("NA values in community composition (4)")
+      stop("NA values in community composition (4)", call. = FALSE)
     }
   }
-    
+  
   if (limit.sim) {
     # If there limiting similarity return the factor
     return(list(com = com, dist.t = dist.t))
-  
+    
   } else {
     # Without limiting similarity
     return(list(com = com))
-  
+    
   }
 }
 

@@ -15,12 +15,12 @@ tcor <- function(n, rho = 0.5, mar.fun = rnorm, x = NULL, ...) {
   
   # If the provided vector by the user is different from the target vector size
   if (!is.null(x) & length(x) != n) {
-    warning("Provided trait vector x does not have length n!")
+    warning("Provided trait vector x does not have length n!", call. = FALSE)
   }
   
   # correlation needs to be between -1 and 1 
   if (!is.numeric(rho) | rho > 1 | rho < -1) {
-    stop("rho must belong to [-1; 1] interval")
+    stop("rho must belong to [-1; 1] interval", call. = FALSE)
   }
   
   if (rho != 1) {

@@ -1,14 +1,18 @@
-coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL, f.sumstats, 
-                         filt.abc = NULL, migr.abc = NULL, size.abc = NULL, add = F, var.add = NULL, params  = NULL, par.filt = NULL,
-                         par.migr = NULL, par.size = NULL, scale = F, dim.pca = NULL, svd = F, 
-                         theta.max = NULL, nb.samp = 10^6, parallel = F, nb.core = NULL, tol = NULL, 
-                         type = "standard", method.seq = "Lenormand", method.mcmc = "Marjoram_original", 
-                         method.abc = "rejection", alpha = 0.5, pkg = NULL) 
+coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
+                        traits = NULL, f.sumstats, filt.abc = NULL,
+                        migr.abc = NULL, size.abc = NULL, add = FALSE,
+                        var.add = NULL, params  = NULL, par.filt = NULL,
+                        par.migr = NULL, par.size = NULL, scale = FALSE,
+                        dim.pca = NULL, svd = FALSE, theta.max = NULL,
+                        nb.samp = 10^6, parallel = FALSE, nb.core = NULL,
+                        tol = NULL, type = "standard", method.seq = "Lenormand",
+                        method.mcmc = "Marjoram_original",
+                        method.abc = "rejection", alpha = 0.5, pkg = NULL) 
 {
   
   if (is.null(pool)) {
-    warning(paste0("No species pool provided: pool will be simulated ",
-                   "and logseries theta estimated"))
+    warning("No species pool provided: pool will be simulated and logseries ",
+            "theta estimated", call. = FALSE)
     if (is.null(theta.max))
       theta.max <- 500
   }
@@ -23,25 +27,26 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   
   if (multi == "tab"){
     if(is.null(colnames(comm.obs)))
-      warning("Missing species names in species-by-site table")
-    if(length(pool)==1) if(any(!colnames(comm.obs)%in%unique(pool$sp))) 
-      stop("Mismatch of species names in pool and comm.obs")
-    else if(any(!colnames(comm.obs)%in%unique(Reduce(rbind, pool)$sp)))
-      stop("Mismatch of species names in pools and comm.obs")
+      warning("Missing species names in species-by-site table", call. = FALSE)
+    if(length(pool) == 1) if(any(!colnames(comm.obs) %in% unique(pool$sp))) 
+      stop("Mismatch of species names in pool and comm.obs", call. = FALSE)
+    else if(any(!colnames(comm.obs) %in% unique(Reduce(rbind, pool)$sp)))
+      stop("Mismatch of species names in pools and comm.obs", call. = FALSE)
     if(!is.null(traits))
     {
       if(any(!colnames(comm.obs)%in%row.names(traits)))
-        stop("Mismatch of species names in comm.obs and traits")
+        stop("Mismatch of species names in comm.obs and traits", call. = FALSE)
       # Reorder species in comm.obs following the order in traits
-      comm.obs <- comm.obs[,rownames(traits)[rownames(traits)%in%colnames(comm.obs)]]
+      comm.obs <- comm.obs[,rownames(traits)[rownames(traits) %in%
+                                               colnames(comm.obs)]]
     }
   }
   
   # Defining parameter ranges
   if (!is.null(params) & is.null(par.filt))
   {
-    warning("The use of params will be deprecated, please use arguments par.filt 
-            and par.migr instead.")
+    warning("The use of params will be deprecated, please use arguments ",
+            "par.filt and par.migr instead.", call. = FALSE)
     par.filt <- params
   }
   if (is.null(par.migr))
@@ -53,7 +58,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   if(!is.null(nb.core)) if(nb.core == 1) parallel <- F
   
   if(is.null(type)) {
-    warning("Standard ABC analysis (type = standard)")
+    warning('Standard ABC analysis (type = "standard")', call. = FALSE)
     type <- "standard"
   }
   
@@ -61,69 +66,87 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   # var.add = NULL, par.filt = NULL, par.migr = NULL, 
   # par.size = NULL, constr = NULL, scale = T, dim.pca = NULL, svd = F, pkg = NULL
   # need to be included
-  if(type == "standard")
-    return(coalesc_abc_std(comm.obs, pool, multi, prop, traits, f.sumstats, filt.abc, migr.abc, size.abc, add, 
-                           var.add, params, par.filt, par.migr, par.size, constr = NULL, scale = T, dim.pca, svd,
-                           theta.max, nb.samp, parallel, nb.core, tol, pkg, method.abc)) 
+  if (type == "standard")
+    return(coalesc_abc_std(comm.obs, pool, multi, prop, traits, f.sumstats,
+                           filt.abc, migr.abc, size.abc, add, var.add, params,
+                           par.filt, par.migr, par.size, constr = NULL,
+                           scale = TRUE, dim.pca, svd, theta.max, nb.samp,
+                           parallel, nb.core, tol, pkg, method.abc)) 
   else {
     if(!is.null(migr.abc) | !is.null(size.abc))
     {
       migr.abc <- NULL
       size.abc <- NULL
-      warning("migr.abc, size.abc not available with other sampling approach than standard")
+      warning("migr.abc, size.abc not available with other sampling approach ",
+              "than standard", call. = FALSE)
     }
     if(add)
     {
-      add <- F
-      warning("add and var.add not available with other sampling approach than standard")
+      add <- FALSE
+      warning("add and var.add not available with other sampling approach ",
+              "than standard", call. = FALSE)
     }
     if(!is.null(dim.pca) | svd)
     {
       dim.pca <- NULL
-      svd <- F
-      warning("dim.pca and svd not available with other sampling approach than standard")
+      svd <- FALSE
+      warning("dim.pca and svd not available with other sampling approach ",
+              "than standard", call. = FALSE)
     } 
-    initial_checks(comm.obs = comm.obs, pool = pool, multi = multi, prop = prop, traits = traits,
-                   f.sumstats = f.sumstats, filt.abc = filt.abc, migr.abc = migr.abc, size.abc = size.abc,
-                   params = params, par.filt = par.filt, par.migr = par.migr, 
-                   par.size = par.size, scale = scale, theta.max = theta.max, nb.samp = nb.samp, 
-                   parallel = parallel, nb.core = nb.core, tol = tol, type = type, method.seq = method.seq, 
-                   method.mcmc = method.mcmc, method.abc = method.abc, alpha = alpha, pkg = pkg)
+    initial_checks(comm.obs = comm.obs, pool = pool, multi = multi, prop = prop,
+                   traits = traits, f.sumstats = f.sumstats,
+                   filt.abc = filt.abc, migr.abc = migr.abc,
+                   size.abc = size.abc, params = params, par.filt = par.filt,
+                   par.migr = par.migr,  par.size = par.size, scale = scale,
+                   theta.max = theta.max, nb.samp = nb.samp,
+                   parallel = parallel, nb.core = nb.core, tol = tol,
+                   type = type, method.seq = method.seq,
+                   method.mcmc = method.mcmc, method.abc = method.abc,
+                   alpha = alpha, pkg = pkg)
   }  
   
-  if(parallel){
-    stop("parallel computation only implemented for type = standard - ongoing work")
+  if (parallel){
+    stop("parallel computation only implemented for type = standard - ",
+         "ongoing work", call. = FALSE)
   }
   
   if (is.null(pool)) {
-    warning(paste0("No species pool provided: pool will be simulated ",
-                   "and logseries theta estimated"))
+    warning("No species pool provided: pool will be simulated and logseries ",
+            "theta estimated", call. = FALSE)
     if (is.null(theta.max))
       theta.max <- 500
-    stop("Estimation of theta not implemented - Ongoing work")
+    stop("Estimation of theta not implemented - Ongoing work", call. = FALSE)
   }
   
   if(prop & multi!="tab")
-    stop("prop data can only be handled in tab format")
+    stop("prop data can only be handled in tab format", call. = FALSE)
   
   if (!requireNamespace("EasyABC", quietly = TRUE)) 
-    stop("coalesc_abc requires package EasyABC to be installed")
+    stop("coalesc_abc requires package EasyABC to be installed", call. = FALSE)
   #for (i in 1:length(pkg)) if (!requireNamespace(pkg[i], quietly = TRUE)) 
   #  stop(paste("Package ", pkg[i], " is not available", sep = ""))
-
-  if(!type%in%c("seq","mcmc","annealing","standard"))
-    stop("type should be either standard, seq, mcmc or annealing")
   
-  if(type=="seq") if(!method.seq%in%c("Beaumont", "Drovandi", "Delmoral", "Lenormand", "Emulation"))
-    stop("method.seq should be either Beaumont, Drovandi, Delmoral, Lenormand or Emulation")
+  if(!type %in% c("seq","mcmc","annealing","standard"))
+    stop("type should be either standard, seq, mcmc or annealing",
+         call. = FALSE)
   
-  if(type=="mcmc") if(!method.mcmc%in%c("Marjoram_original", "Marjoram", "Wegmann"))
-    stop("method.mcmc should be either Marjoram_original, Marjoram or Wegmann")
+  if(type == "seq") if(!method.seq %in% c("Beaumont", "Drovandi", "Delmoral",
+                                          "Lenormand", "Emulation"))
+    stop("method.seq should be either Beaumont, Drovandi, Delmoral, Lenormand ",
+         "or Emulation", call. = FALSE)
   
-  if(!is.null(nb.core)) if(nb.core == 1) parallel <- F
+  if(type == "mcmc") if(!method.mcmc %in% c("Marjoram_original", "Marjoram",
+                                            "Wegmann"))
+    stop("method.mcmc should be either Marjoram_original, Marjoram or Wegmann",
+         call. = FALSE)
+  
+  if(!is.null(nb.core)) if(nb.core == 1) parallel <- FALSE
   if(is.null(nb.core) & !parallel) nb.core <- 1
   
-  if(method.abc!="rejection") stop("only abc method rejection is implemented - ongoing work")
+  if(method.abc != "rejection") {
+    stop("only abc method rejection is implemented - ongoing work",
+         call. = FALSE)
+  }
   
   if(!is.null(pool)) {
     # Avoid factors in columns of pool
@@ -133,23 +156,22 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   
   if (ncol(pool) >= 3) {
     if (length(formals(f.sumstats))>1) {
-    # In this case, traits needs to be defined
-    # Compute mean or most frequent trait value per species
-    sel <- which(lapply(pool, class) == "numeric") 
-    traits <- data.frame(
-      sapply(3:ncol(pool), function(x) 
-        if(sel[x]) {
-          tapply(data.frame(pool[,x]), pool[, 2], mean)
-      } else tapply(data.frame(pool[,x]), pool[, 2], function(y) names(y[which.max(table(y))]))), 
-      stringsAsFactors = F)
+      # In this case, traits needs to be defined
+      # Compute mean or most frequent trait value per species
+      sel <- which(lapply(pool, class) == "numeric") 
+      traits <- data.frame(
+        sapply(3:ncol(pool), function(x) 
+          if(sel[x]) {
+            tapply(data.frame(pool[,x]), pool[, 2], mean)
+          } else tapply(data.frame(pool[,x]), pool[, 2], function(y) names(y[which.max(table(y))]))), 
+        stringsAsFactors = F)
     }
-  }
-  else if (is.null(traits) & ncol(pool) < 3) 
-    warning("Trait information is not provided")
+  } else if (is.null(traits) & ncol(pool) < 3) 
+    warning("Trait information is not provided", call. = FALSE)
   
   # Community size
   if (!(multi %in% c("single", "tab", "seqcom"))){
-    stop("multi parameter must be either single, tab or seqcom.")
+    stop("multi parameter must be either single, tab or seqcom.", call. = FALSE)
   }
   
   if (multi == "single") {
@@ -160,7 +182,9 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
       # comm.obs is a species-by-site matrix/data.frame
       J <- apply(comm.obs, 1, function(x) sum(x, na.rm = TRUE))
       # if the dataset includes relative proportions, the columns must sum to 1
-      if(prop & any(J!=1)) stop("Relative species abundances must sum to 1")
+      if(prop & any(J != 1)) {
+        stop("Relative species abundances must sum to 1", call. = FALSE)
+      }
       nb.com <- nrow(comm.obs)
     } else if (multi == "seqcom") {
       # comm.obs is a list of communities with individuals on rows in each
@@ -171,13 +195,14 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   }
   
   if(multi == "seqcom"){
-    if (length(formals(f.sumstats))==1) {
+    if (length(formals(f.sumstats)) == 1) {
       stats.obs <- lapply(comm.obs, function(x) as.vector(f.sumstats(x)))
     } else {
-      stats.obs <- lapply(comm.obs, function(x) as.vector(f.sumstats(x, traits)))
+      stats.obs <- lapply(comm.obs,
+                          function(x) as.vector(f.sumstats(x,traits)))
     }
   } else {
-    if (length(formals(f.sumstats))==1) {
+    if (length(formals(f.sumstats)) == 1) {
       stats.obs <- as.vector(f.sumstats(comm.obs))
     } else {
       stats.obs <- as.vector(f.sumstats(comm.obs, traits))
@@ -194,7 +219,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
     if(prop) 
     {
       prior[[length(prior)+1]] <- c("unif",100,1000)
-      warning("The prior of community size is uniform between 100 and 1000")
+      warning("The prior of community size is uniform between 100 and 1000",
+              call. = FALSE)
     }
   }
   
@@ -234,12 +260,13 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
               }
             }
         } else {
-          comm.samp <- coalesc(par[length(par)], m = par[length(par)-1], 
-                               filt = function(x) filt.abc(x, par[-((length(par)-1):length(par))]), 
-                               pool = pool, traits = traits)
+          comm.samp <- coalesc(
+            par[length(par)], m = par[length(par)-1], 
+            filt = function(x) filt.abc(x, par[-((length(par)-1):length(par))]), 
+            pool = pool, traits = traits)
           comm.samp$com <- t(table(comm.samp$com[,2])/par[length(par)])
         }
-        if (length(formals(f.sumstats))==1) {
+        if (length(formals(f.sumstats)) == 1) {
           stats.samp <- as.vector(f.sumstats(comm.samp$com))
         } else {
           stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
@@ -258,20 +285,24 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   
   set.seed(1)
   
-  if(type=="seq")
+  if(type == "seq")
   {
-    if(method.seq=="Lenormand"){
-      pacc=0.05 # Can be set by user (to be included in input)
-      res.abc <- EasyABC::ABC_sequential(method=method.seq, 
-                                         model= function(x) coalesc_model(x, traits,prop,J,pool,filt.abc,f.sumstats, parallel),
-                                         prior=prior, 
-                                         nb_simul=nb.samp,
-                                         summary_stat_target=stats.obs, 
-                                         p_acc_min=pacc, 
-                                         use_seed=F, 
-                                         n_cluster=nb.core, alpha = alpha)
+    if(method.seq == "Lenormand"){
+      pacc = 0.05 # Can be set by user (to be included in input)
+      res.abc <- EasyABC::ABC_sequential(
+        method              = method.seq, 
+        model               = function(x) {
+          coalesc_model(x, traits,prop,J,pool,filt.abc,f.sumstats, parallel)
+          },
+        prior               = prior, 
+        nb_simul            = nb.samp,
+        summary_stat_target = stats.obs, 
+        p_acc_min           = pacc, 
+        use_seed            = FALSE, 
+        n_cluster           = nb.core,
+        alpha               = alpha)
     } else if(method.seq=="Beaumont") 
-      { stop("Beaumont method not implemented - ongoing work")
+    { stop("Beaumont method not implemented - ongoing work", call. = FALSE)
       tol_tab <- c(tol,tol/2,tol/5)
       res.abc <- EasyABC::ABC_sequential(method=method.seq,
                                          model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats, parallel),
@@ -282,25 +313,29 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
                                          use_seed=F, 
                                          n_cluster=nb.core)
     } else if(method.seq=="Drovandi") 
-    {stop("Drovandi method not implemented - ongoing work")
-     res.abc <- EasyABC::ABC_sequential(method=method.seq, 
-                                    model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats, parallel),
-                                    prior=prior, 
-                                    nb_simul=nb.samp, summary_stat_target=stats.obs, first_tolerance_level_auto = T, use_seed=F, 
-                                    n_cluster=nb.core)
+    {stop("Drovandi method not implemented - ongoing work", call. = FALSE)
+      res.abc <- EasyABC::ABC_sequential(method=method.seq, 
+                                         model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats, parallel),
+                                         prior=prior, 
+                                         nb_simul=nb.samp, summary_stat_target=stats.obs, first_tolerance_level_auto = T, use_seed=F, 
+                                         n_cluster=nb.core)
     }
     
   } else if(type=="mcmc")
   { if(method.mcmc == "Marjoram_original"){
-    res.abc <- EasyABC::ABC_mcmc(method=method.mcmc, 
-                                 model=function(x) coalesc_model(x, traits, prop, J, pool,filt.abc, f.sumstats, parallel),
-                                 prior=prior, 
-                                 summary_stat_target=stats.obs,
-                                 n_cluster=nb.core,
-                                 n_rec = nb.samp) } else stop("mcmc methods other than Marjoram_original are not implemented - ongoing work")
+    res.abc <- EasyABC::ABC_mcmc(
+      method=method.mcmc, 
+      model=function(x) coalesc_model(x, traits, prop, J, pool,filt.abc, f.sumstats, parallel),
+      prior=prior, 
+      summary_stat_target=stats.obs,
+      n_cluster=nb.core,
+      n_rec = nb.samp)} else {
+        stop("mcmc methods other than Marjoram_original are not implemented - ",
+             "ongoing work", call. = FALSE)
+      }
     
   } else if(type=="annealing")
-  { stop("SABC is not implemented - ongoing work")
+  { stop("SABC is not implemented - ongoing work", call. = FALSE)
     #res <- EasyABC::SABC(r.model, r.prior, d.prior, n.sample, eps.init, iter.max,
     #     v=ifelse(method=="informative",0.4,1.2), beta=0.8,
     #     delta=0.1, resample=5*n.sample, verbose=n.sample,
@@ -310,27 +345,30 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = F, trait
   
   if(type != "standard"){
     comm.abc <- list(obs = stats.obs,
-                   abc = res.abc) }
+                     abc = res.abc) }
   return(comm.abc)
 }
 
 coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-                        f.sumstats, filt.abc = NULL, migr.abc = NULL, size.abc = NULL, add = F,
-                        var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
-                        par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = F, theta.max = NULL, 
-                        nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
-                        method.abc = "rejection")
+                            f.sumstats, filt.abc = NULL, migr.abc = NULL, size.abc = NULL, add = F,
+                            var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
+                            par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = F, theta.max = NULL, 
+                            nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
+                            method.abc = "rejection")
 {
-  initial_checks(comm.obs = comm.obs, pool = pool, multi = multi, prop = prop, traits = traits,
-                 f.sumstats = f.sumstats, filt.abc = filt.abc, migr.abc = migr.abc, size.abc = size.abc, 
-                 add = add, var.add = var.add, params = params, par.filt = par.filt, par.migr = par.migr, 
-                 par.size = par.size, constr = constr, scale = scale, dim.pca = dim.pca, svd = svd,
-                 theta.max = theta.max, nb.samp = nb.samp, parallel = parallel, nb.core = nb.core, tol = tol,
-                 pkg = pkg, method.abc = method.abc)
+  initial_checks(comm.obs = comm.obs, pool = pool, multi = multi, prop = prop,
+                 traits = traits, f.sumstats = f.sumstats, filt.abc = filt.abc,
+                 migr.abc = migr.abc, size.abc = size.abc,  add = add,
+                 var.add = var.add, params = params, par.filt = par.filt,
+                 par.migr = par.migr, par.size = par.size, constr = constr,
+                 scale = scale, dim.pca = dim.pca, svd = svd,
+                 theta.max = theta.max, nb.samp = nb.samp, parallel = parallel,
+                 nb.core = nb.core, tol = tol, pkg = pkg,
+                 method.abc = method.abc)
   
   if(is.null(par.filt) & is.null(par.migr)){
-    warning("No value provided for par.filt and par.migr arguments. Only m and theta will be ",
-            "estimated.")
+    warning("No value provided for par.filt and par.migr arguments. ",
+            "Only m and theta will be estimated.", call. = FALSE)
   }
   
   # The use of pool.glob must be checked
@@ -340,8 +378,10 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
     pool.glob <- pool
   }
   
-  if (!is.null(pool.glob) & !is.null(traits) & sum(!pool.glob[,2]%in%rownames(traits)!=0)) {
-    warning("The names of some species of the pool(s) are not present in the rownames of traits")
+  if (!is.null(pool.glob) & !is.null(traits) &
+      sum(!pool.glob[,2] %in% rownames(traits)!=0)) {
+    warning("The names of some species of the pool(s) are not present in ",
+            "the rownames of traits", call. = FALSE)
   }
   
   # Community size
@@ -356,14 +396,16 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
       #if(prop & any(J != 1)) 
       #  stop("Relative species abundances must sum to 1")
       if(!prop & any(round(J) != J)) 
-        stop("Species abundance must be integer values. Consider using prop = T for proportion data")
+        stop("Species abundance must be integer values. ",
+             "Consider using prop = TRUE for proportion data", call. = FALSE)
       nb.com <- nrow(comm.obs)
     } else if (multi == "seqcom") {
       # comm.obs is a list of communities with individuals on rows in each
       # community
       J <- unlist(lapply(comm.obs, nrow))
       if(any(round(J) != J)) 
-        stop("Species abundance must be integer values. Consider using prop = T for proportion data")
+        stop("Species abundance must be integer values. ",
+             "Consider using prop = TRUE for proportion data", call. = FALSE)
       nb.com <- length(comm.obs)
     }
   }
@@ -372,15 +414,15 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
     # Takes average trait values for species defined in pool
     if(ncol(pool.glob) > 3) {
       traits <- data.frame(apply(pool.glob[,-(1:2)], 2,
-                               function(x) {
-                                 tapply(x, pool.glob[, 2],
-                                        function(y)
-                                          mean(y, na.rm = TRUE)
-                                 )}), row.names = unique(pool.glob[, 2]))
+                                 function(x) {
+                                   tapply(x, pool.glob[, 2],
+                                          function(y)
+                                            mean(y, na.rm = TRUE)
+                                   )}), row.names = unique(pool.glob[, 2]))
     } else if(ncol(pool.glob) == 3) {
       traits <- data.frame(tapply(pool.glob[,-(1:2)], pool.glob[, 2],
-                                          function(y)
-                                            mean(y, na.rm = TRUE)), row.names = unique(pool.glob[, 2]))
+                                  function(y)
+                                    mean(y, na.rm = TRUE)), row.names = unique(pool.glob[, 2]))
     } 
   
   if (length(formals(f.sumstats)) == 1) {
@@ -401,8 +443,9 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
     # Remove summary statistics that failed in simulation
     stats.obs <- stats.obs[sim$sel.ss]
     
-    warning("Some summary statistics yielded many NA values and have been 
-            withdrawn. Please consider redifining these statistics or changing the prior distributions.")
+    warning("Some summary statistics yielded many NA values and have been ",
+            "withdrawn. Please consider redifining these statistics or ",
+            "changing the prior distributions.", call. = FALSE)
   }
   
   # Scaling f.sumstats criterions for simulations
@@ -436,19 +479,21 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
       res.abc <- NA
       stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
     } else {
-        if(is.null(dim.pca))
-        {
-          stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
-        } else
-        {
-          stats.obs.scaled <- sim$stats.scaled[nrow(sim$stats.scaled),]
-          sim$stats.scaled <- sim$stats.scaled[-nrow(sim$stats.scaled),]
-          # For debug
-          if(nrow(sim$stats.scaled)!=nrow(sim$params.sim)) stop("stats.scaled and params.sim must have
-                                                                the same number of rows")
+      if(is.null(dim.pca))
+      {
+        stats.obs.scaled <- (stats.obs - stats.mean)/stats.sd
+      } else
+      {
+        stats.obs.scaled <- sim$stats.scaled[nrow(sim$stats.scaled),]
+        sim$stats.scaled <- sim$stats.scaled[-nrow(sim$stats.scaled),]
+        # For debug
+        if(nrow(sim$stats.scaled)!=nrow(sim$params.sim)) {
+        stop("stats.scaled and params.sim must have the same number of rows",
+             call. = FALSE)
         }
       }
     }
+  }
   
   if (is.null(tol)){
     res.abc <- NA
@@ -462,7 +507,8 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
                  tol = tol,
                  method = method.abc),
         error = function(x) {
-          warning("ABC computation failed with the requested method.")
+          warning("ABC computation failed with the requested method.",
+                  call. = FALSE)
         })
     } else {
       res.abc <- tryCatch(
@@ -472,7 +518,8 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
                  tol = tol,
                  method = method.abc),
         error = function(x) {
-          warning("ABC computation failed with the requested method.")
+          warning("ABC computation failed with the requested method.",
+                  call. = FALSE)
         })
     }
     
@@ -515,7 +562,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   
   if (!requireNamespace("parallel", quietly = TRUE) & parallel) {
     warning("parallel = TRUE requires package 'parallel' to be installed\n",
-            "changed to parallel = FALSE")
+            "changed to parallel = FALSE", call. = FALSE)
     parallel <- FALSE
   }
   
@@ -531,7 +578,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                                             mean(y, na.rm = TRUE)
                                    )}))
     } else {
-      stop("Missing trait information")
+      stop("Missing trait information", call. = FALSE)
     }
   }
   
@@ -613,7 +660,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                      ifelse(!add,
                             function() function() params.samp["J"],
                             function(var.add) params.samp["J"]))
-     
+      
       if(multi == "tab") {
         # It is too slow
         if(!is.data.frame(pool) & is.list(pool) & length(pool) > 1) {
@@ -701,12 +748,13 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     
     worker <- function(j) {
       if (!requireNamespace("ecolottery", quietly = TRUE)) {
-        stop(paste("Package ecolottery is not available", sep = ""))
+        stop("Package ecolottery is not available", call. = FALSE)
       }
       # Other required packages
       if (!is.null(pkg)) for (i in 1:length(pkg)) {
         if (!requireNamespace(pkg[i], quietly = TRUE)) {
-          stop(paste("Package ", pkg[i], " is not available", sep = ""))
+          stop(paste("Package ", pkg[i], " is not available", sep = ""),
+               call. = FALSE)
         }
       }
       summCalc(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, migr.abc, 
@@ -775,7 +823,8 @@ generate_prior <- function(pool = NULL, prop = F, constr = NULL,
   }
   
   if (!is.null(constr) & !requireNamespace("lazyeval", quietly = TRUE)) {
-    stop("coalesc_abc requires package lazy_eval to be installed")
+    stop("coalesc_abc requires package lazy_eval to be installed",
+         call. = FALSE)
   }
   
   # Uniform prior distributions of parameters
@@ -797,7 +846,7 @@ generate_prior <- function(pool = NULL, prop = F, constr = NULL,
       if(!is.null(par.filt)) incr <- nrow(par.filt) else incr <- 0
       for (i in 1:nrow(par.migr)) {
         prior[[i+incr]] <- c(prior[[i+incr]], runif(samp, min = par.migr[i, 1], 
-                                                                        max = par.migr[i, 2]))
+                                                    max = par.migr[i, 2]))
       }
     } else {
       prior[[i+1]] <- c(prior[[i+1]], runif(samp, min = 0, max = 1))
@@ -823,7 +872,8 @@ generate_prior <- function(pool = NULL, prop = F, constr = NULL,
         names(prior)[l:(l+nrow(par.size))] <- rownames(par.size)
       } else {
         prior[[length(prior)+1]] <- c(prior[[length(prior)+1]], runif(prop, min = 100, max = 1000))
-        warning("The prior of community size is uniform between 100 and 1000")
+        warning("The prior of community size is uniform between 100 and 1000",
+                call. = FALSE)
         names(prior)[length(prior)] <- "J"
       }
     }
@@ -839,7 +889,8 @@ generate_prior <- function(pool = NULL, prop = F, constr = NULL,
     stop <- stop + 1
   }
   
-  if(stop==100) warning("Fail to meet constraints for nb.samp sets of parameter values")
+  if(stop==100) warning("Fail to meet constraints for nb.samp sets of ",
+                        "parameter values", call. = FALSE)
   
   return(prior)
 }
@@ -855,57 +906,61 @@ initial_checks <- function(comm.obs = NULL, pool = NULL, multi = "single", prop 
   # Checks on f.sumstats
   if(!is.function(f.sumstats)) {
     stop("You must provide a function to calculate summary statistics",
-         "(f.sumstats)")
+         "(f.sumstats)", call. = FALSE)
   }
   if (length(formals(f.sumstats)) > 3) {
-    stop("f.sumstats must be a function of up to three arguments")
+    stop("f.sumstats must be a function of up to three arguments", call. = FALSE)
   }
   
   if(is.null(filt.abc)){
-    warning("No habitat filtering function provided. Neutral communities will be simulated and only m will be estimated")
+    warning("No habitat filtering function provided. Neutral communities ",
+            "will be simulated and only m will be estimated", call. = FALSE)
   }
   
   # Should ABC analysis be performed
   if (is.null(tol)){
     warning("You must provide a tolerance value for ABC computation.\n",
             "The function will only provide simulations and will not perform ",
-            "ABC analysis.")
+            "ABC analysis.", call. = FALSE)
   } 
   else {
     if (!requireNamespace("abc", quietly = TRUE)) {
-      stop("coalesc_abc requires package abc to be installed")
+      stop("coalesc_abc requires package abc to be installed", call. = FALSE)
     }
     if(!is.null(method.abc)) if(!method.abc%in%c("rejection", "loclinear", "neuralnet", "ridge"))
-      stop("method.abc should be either rejection, loclinear, neuralnet or ridge")
+      stop("method.abc should be either rejection, loclinear, neuralnet ",
+           "or ridge", call. = FALSE)
   }
   
   # Checks on multi
   if (!(multi %in% c("single", "tab", "seqcom"))){
-    stop("multi parameter must be either single, tab or seqcom.")
+    stop("multi parameter must be either single, tab or seqcom.", call. = FALSE)
   }
   if (!multi == "single" & class(pool) == "list") {
     if((multi == "tab" & length(pool) != nrow(comm.obs)) | (multi == "seqcom" & length(pool) != length(comm.obs)))
-      stop("When several pools are given (list), there must be one for each community")
+      stop("When several pools are given (list), there must be one for each ",
+           "community", call. = FALSE)
   }
   if (multi=="single" & class(pool)=="list" & length(pool)>1)
-    stop("If multi=single, pool should not be a list of more than one element")
+    stop("If multi=single, pool should not be a list of more than one element",
+         call. = FALSE)
   
   if (multi=="tab") if (any(rowSums(comm.obs)==0)) {
-    stop("There should not be communities with 0 individuals")
+    stop("There should not be communities with 0 individuals", call. = FALSE)
   }
   
   if(prop & multi!="tab") {
-    stop("prop data can only be handled in tab format")
+    stop("prop data can only be handled in tab format", call. = FALSE)
   }
   
   if (is.null(traits)){
-    warning("Trait information is not provided")
+    warning("Trait information is not provided", call. = FALSE)
   }
   
   # Other required packages
   for (i in pkg) {
     if (!requireNamespace(pkg, quietly = TRUE)) {
-      stop(paste("Package ", pkg, " is not available", sep = ""))
+      stop(paste("Package ", pkg, " is not available", sep = ""), call. = FALSE)
     }   
   }
 }
