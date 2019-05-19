@@ -487,7 +487,6 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
                           function(x) lim_sim_function(x))
       # Add baseline probability
       prob.death <- prob.death + 1/J
-      names(prob.death ) <- com[, 1]
     }
     
     # Influence of habitat filtering on mortality
@@ -497,9 +496,17 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
         stop("NA values in habitat filter", call. = FALSE)
       }
       
+
       com_filter <- hab_filter(com[, -(1:2)])
       
       prob.death <- prob.death * (1 - com_filter / sum(com_filter))
+    }
+    
+    # If communities contained several traits prob.death object is a one column
+    # matrix that needs to be converted to a flat vector for further
+    # transformation
+    if (is.matrix(prob.death) | is.data.frame(prob.death)) {
+      prob.death <- prob.death[, 1]
     }
     
     # Giving names to prob.death
