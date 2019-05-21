@@ -106,7 +106,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = FALSE,
     }
     
     if (m == 1 & is.null(filt)) {
-      return(list(pool = data.frame(ind = ind_pool_lab, sp = ind_pool_sp,
+      return(list(com = data.frame(ind = ind_pool_lab, sp = ind_pool_sp,
                                     ind_pool_traits), call = match.call()))
     }
   } else { 
@@ -268,7 +268,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = FALSE,
                     stringsAsFactors = F)
   
   if (m == 1 & is.null(filt)) {
-    return(list(pool = com, call = match.call()))
+    return(list(com = com, call = match.call()))
   } else {
     return(list(com = as.data.frame(com), pool = as.data.frame(pool),
                 call = match.call()))
