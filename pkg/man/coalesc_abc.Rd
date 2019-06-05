@@ -349,7 +349,7 @@ env1 <- matrix(runif(20))
 # Simulate a set of 20 communities with varying environmental filtering in
 # different environmental conditions
 # A common source pool of immigrants
-pool <- coalesc(J = 10000, theta = 50)$pool
+pool <- coalesc(J = 10000, theta = 50)$com
 meta1 <- c()
 for(i in 1:20)
   meta1[[i]] <- coalesc(J = 400, pool = pool, m = 0.5, 
@@ -470,11 +470,11 @@ pool.loc <- c()
 meta3 <- c()
 theta <- 2.5*(1:20) # The pools differ in diversity
 # We first define a baseline pool of immigrants common to all communities
-baseline <- coalesc(J = 10000, theta = 25)$pool
+baseline <- coalesc(J = 10000, theta = 25)$com
 baseline$sp <- paste(0, baseline$sp, sep = "_")
 for(i in 1:20)
 {
-  pool.loc[[i]] <- coalesc(J = 10000, theta = theta[i])$pool
+  pool.loc[[i]] <- coalesc(J = 10000, theta = theta[i])$com
   pool.loc[[i]]$sp <- paste(i, pool.loc[[i]]$sp, sep = "_")
   pool.loc[[i]] <- rbind(pool.loc[[i]], baseline)
   meta3[[i]] <- coalesc(J = 400, pool = pool.loc[[i]], m = 0.5, 
