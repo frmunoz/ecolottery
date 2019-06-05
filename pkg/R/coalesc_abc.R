@@ -345,7 +345,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
   
   if(type != "standard"){
     comm.abc <- list(obs = stats.obs,
-                     abc = res.abc) }
+                     abc = res.abc,
+                     call = match.call()) }
   return(comm.abc)
 }
 
@@ -589,7 +590,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   }
   
   # Generate a set of parameter values drawn from prior distributions
-  prior <- generate_prior(pool, prop, constr, params, par.filt, par.migr, par.size)
+  prior <- generate_prior(pool, prop, constr, params, par.filt, par.migr, par.size, 
+                          theta.max, nb.samp)
   
   # Function to perform simulations
   mkWorker <- function(traits, nb.com, multi, prop, prior, J, pool, filt.abc, migr.abc, size.abc,
@@ -633,10 +635,10 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
       if (is.null(pool)) {
         if (multi == "seqcom"){
           pool <- coalesc(mean(unlist(J))*100,
-                          theta = params.samp[length(params.samp)])$pool
+                          theta = params.samp[length(params.samp)])$com
         } else {
           pool <- coalesc(mean(J)*100,
-                          theta = params.samp[length(params.samp)])$pool
+                          theta = params.samp[length(params.samp)])$com
         }
         params.samp <- params.samp[-length(params.samp)]
       }
@@ -831,7 +833,8 @@ generate_prior <- function(pool = NULL, prop = F, constr = NULL,
   prior <- list()
   dim.prior <- ifelse(!is.null(nrow(par.filt)),nrow(par.filt),0) + 
     max(ifelse(!is.null(par.migr),nrow(par.migr),0),1) + 
-    prop*max(ifelse(!is.null(par.size),nrow(par.size),0),1) + as.numeric(is.null(pool))
+    prop*max(ifelse(!is.null(par.size),nrow(par.size),0),1) + 
+    as.numeric(is.null(pool))
   length(prior) <- dim.prior
   stop <- 0
   while(length(prior[[1]]) < nb.samp & stop < 100) {
@@ -843,13 +846,15 @@ generate_prior <- function(pool = NULL, prop = F, constr = NULL,
       }
     }
     if(!is.null(par.migr)) {
-      if(!is.null(par.filt)) incr <- nrow(par.filt) else incr <- 0
-      for (i in 1:nrow(par.migr)) {
-        prior[[i+incr]] <- c(prior[[i+incr]], runif(samp, min = par.migr[i, 1], 
-                                                    max = par.migr[i, 2]))
+      for (j in (i+1):(i+nrow(par.migr))) {
+        prior[[j]] <- c(prior[[j]], runif(samp, min = par.migr[j-i, 1], 
+                                                    max = par.migr[j-i, 2]))
+        i <- j
       }
     } else {
       prior[[i+1]] <- c(prior[[i+1]], runif(samp, min = 0, max = 1))
+      i <- i+1
+      j <- i
     }
     if(!is.null(par.migr)) {
       names(prior) <- c(rownames(par.filt), rownames(par.migr))
@@ -861,26 +866,26 @@ generate_prior <- function(pool = NULL, prop = F, constr = NULL,
     # in simulated community; we should allow the user to define the prior for m and theta in
     # the future
     
-    l <- length(prior)
     if(prop) 
     {
       if(!is.null(par.size))
       {
-        for (i in 1:nrow(par.size)) {
-          prior[[i+l]] <- c(prior[[i+l]], runif(prop, min = par.size[i, 1], max = par.size[i, 2]))
+        for (i in (j+1):(j+nrow(par.size))) {
+          prior[[i]] <- c(prior[[i]], runif(samp, min = par.size[i-j, 1], max = par.size[k-j, 2]))
         }
-        names(prior)[l:(l+nrow(par.size))] <- rownames(par.size)
+        names(prior)[(j+1):(j+nrow(par.size))] <- rownames(par.size)
       } else {
-        prior[[length(prior)+1]] <- c(prior[[length(prior)+1]], runif(prop, min = 100, max = 1000))
+        prior[[j+1]] <- c(prior[[j+1]], runif(samp, min = 100, max = 1000))
+        i <- j+1
         warning("The prior of community size is uniform between 100 and 1000",
                 call. = FALSE)
-        names(prior)[length(prior)] <- "J"
+        names(prior)[i] <- "J"
       }
     }
     
     if (is.null(pool)) {
-      prior[[length(prior) + 1]] <- c(prior[[length(prior) + 1]], runif(prop, min = 0, max = theta.max))
-      names(prior)[length(prior)] <- "theta"
+      prior[[i + 1]] <- c(prior[[i + 1]], runif(samp, min = 0, max = theta.max))
+      names(prior)[i+1] <- "theta"
     }
     
     constr.sel <- sapply(1:nb.samp, function(x) constr.test(names(prior), unlist(lapply(prior,function(y) y[x]))))
