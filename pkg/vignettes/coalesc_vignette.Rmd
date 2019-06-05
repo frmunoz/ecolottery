@@ -39,7 +39,7 @@ abund <- abund(logser)
 
 # The expected distribution of abundances in the reference pool is log-series
 library(vegan)
-fit <- fisherfit(abund$pool$ab)
+fit <- fisherfit(abund$com$ab)
 freq <- as.numeric(names(fit$fisher))
 plot(log(freq), fit$fisher, xlab = "Frequency (log)", ylab = "Species", type = "n")
 rect(log(freq - 0.5), 0, log(freq + 0.5), fit$fisher, col = "skyblue")
@@ -60,16 +60,16 @@ J <- 500
 m <- 0.01
 comm1a <- data.frame()
 for (i in 1:100) {
-  comm1a <- rbind(comm1a, coalesc(J, m, pool = logser$pool)$com)
+  comm1a <- rbind(comm1a, coalesc(J, m, pool = logser$com)$com)
 }
-comm1a <- list(pool = logser$pool, com = comm1a)
+comm1a <- list(pool = logser$com, com = comm1a)
 
 m <- 0.95
 comm1b <- data.frame()
 for (i in 1:100) {
-  comm1b <- rbind(comm1b, coalesc(J, m, pool = logser$pool)$com)
+  comm1b <- rbind(comm1b, coalesc(J, m, pool = logser$com)$com)
 }
-comm1b <- list(pool = logser$pool, com = comm1b)
+comm1b <- list(pool = logser$com, com = comm1b)
 
 plot_comm(comm1a, type ="abund", main = "m = 0.01")
 r_sqa <- summary(lm(abund(comm1a)$pool[rownames(abund(comm1a)$com), "relab"] ~
