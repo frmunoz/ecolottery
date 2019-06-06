@@ -100,11 +100,11 @@ filt_gaussian <- function(t, x) exp(-(x - t)^2/(2*sigma^2))
 comm4a <- coalesc(J, m, filt = function(x) filt_gaussian(0.1, x), pool = pool)
 plot_comm(comm4a)
 # Stabilizing habitat filtering around t = 0.5
-comm4b <- coalesc(J, m, theta, filt = function(x) filt_gaussian(0.5, x),
+comm4b <- coalesc(J, m, filt = function(x) filt_gaussian(0.5, x),
                   pool = pool)
 plot_comm(comm4b)
 # Stabilizing habitat filtering around t = 0.9
-comm4c <- coalesc(J, m, theta, filt = function(x) filt_gaussian(0.9, x),
+comm4c <- coalesc(J, m, filt = function(x) filt_gaussian(0.9, x),
                   pool = pool)
 plot_comm(comm4c)
 
@@ -122,7 +122,6 @@ t.sp <- rnorm(500)
 pool[, 3] <- t.sp[pool[,2]]
 comm6 <- coalesc(J, m, filt = function(x) sin(3*x) + 1, pool = pool)
 plot_comm(comm6)
-
 }
 
 \keyword{coalescent}
