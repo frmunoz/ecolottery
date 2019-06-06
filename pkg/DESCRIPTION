@@ -31,13 +31,15 @@ Imports:
     moments
 Suggests:
     ape,
+    e1071,
     changepoint,
     knitr,
     picante,
     rmarkdown,
     testthat,
     untb,
-    vegan
+    vegan,
+    Weighted.Desc.Stat
 Description: Coalescent-Based Simulation of Ecological Communities as proposed
     by Munoz et al. (2018) <doi:10.1111/2041-210X.12918>. The package includes
     a tool for estimating parameters of community assembly by using Approximate 
