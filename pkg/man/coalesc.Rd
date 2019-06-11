@@ -22,7 +22,7 @@ migration rate (if \code{m = 1} the community is a subsample of the regional poo
 parameter of neutral dynamics in the regional pool (used only if \code{pool=NULL}), it is the \dQuote{fundamental biodiversity number} (\eqn{\theta}).
 }
  \item{filt}{
-a function representing the effect of local habitat filtering. For a given trait value \code{t}, \code{filt(t)} represents the probability that an individual with trait \code{t} enters the local community. If \code{filt = NULL},  \code{coalesc()} provides a neutral community.
+a function representing the effect of local habitat filtering. For an individual that displays the value(s)\code{t} of a single or several trait(s), \code{filt(t)} represents the probability that the individual enters the local community. If \code{filt = NULL}, \code{coalesc()} provides a neutral community.
 }
  \item{add}{
 indicates if additional variables must be passed to \code{filt}. It can be, for instance, environmental data conditioning the trait-based filtering in the community. Default is FALSE.
@@ -46,6 +46,9 @@ if \code{verbose = TRUE}, functions returns a lot of outputs about parameters, s
 }
 \details{
 Coalescent-based simulation of a community of size \code{J}. This generic function can simulate a neutral community (if \code{filt = NULL}) or a community undergoing both neutral and niche-based dynamics. In the latter case, \code{filt(t)} represents the relative ability of immigrants with trait values \code{t} in the regional pool to enter the community.
+
+If trait-based filtering involves several traits, \code{filt(t)} must be defined such as \code{t} is a vector of the trait values of a candidate immigrant.
+See example below.
 }
 \value{
   \item{com}{
@@ -122,6 +125,23 @@ t.sp <- rnorm(500)
 pool[, 3] <- t.sp[pool[,2]]
 comm6 <- coalesc(J, m, filt = function(x) sin(3*x) + 1, pool = pool)
 plot_comm(comm6)
+
+# Filtering depending on multiple traits
+# We define two traits
+t1.sp <- runif(500)
+t2.sp <- runif(500)
+pool[, 3] <- t1.sp[pool[,2]]
+pool <- cbind(pool, t2.sp[pool[,2]])
+# Here the probability of successful immigration depends
+# on the product of Gaussian filters playing on two traits, 
+# with different optimal values
+comm7 <- coalesc(J, m, filt = function(x) 
+filt_gaussian(0.75, x[1])*filt_gaussian(0.25, x[2]), 
+pool = pool)
+# Distribution of trait 1
+plot_comm(comm7, seltrait = 1)
+# Distribution of trait 2
+plot_comm(comm7, seltrait = 2)
 }
 
 \keyword{coalescent}
