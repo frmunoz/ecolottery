@@ -31,10 +31,13 @@ Imports:
     moments
 Suggests:
     ape,
+    dplyr,
     e1071,
     changepoint,
     knitr,
     picante,
+    RColorBrewer,
+    reshape,
     rmarkdown,
     testthat,
     untb,
