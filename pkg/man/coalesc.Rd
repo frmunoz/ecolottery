@@ -49,6 +49,8 @@ Coalescent-based simulation of a community of size \code{J}. This generic functi
 
 If trait-based filtering involves several traits, \code{filt(t)} must be defined such as \code{t} is a vector of the trait values of a candidate immigrant.
 See example below.
+
+A Shiny app is available to visualize simulated trait distributions for chosen parameter values in the model: https://ecolottery.shinyapps.io/Coalesc/. 
 }
 \value{
   \item{com}{
