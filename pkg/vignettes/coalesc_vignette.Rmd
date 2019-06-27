@@ -71,12 +71,12 @@ for (i in 1:100) {
 }
 comm1b <- list(pool = logser$com, com = comm1b)
 
-plot_comm(comm1a, type ="abund", main = "m = 0.01")
+plot_comm(comm1a, type ="locreg", main = "m = 0.01")
 r_sqa <- summary(lm(abund(comm1a)$pool[rownames(abund(comm1a)$com), "relab"] ~
                       abund(comm1a)$com$relab))
 r_sqa <- signif(r_sqa$r.squared, 2)
 legend("bottomright", legend = bquote(R^2 ~ "=" ~. (r_sqa)), bty = "n")
-plot_comm(comm1b, type = "abund", main = "m = 0.95")
+plot_comm(comm1b, type = "locreg", main = "m = 0.95")
 r_sqb <- summary(lm(abund(comm1b)$pool[rownames(abund(comm1b)$com), "relab"] ~
                       abund(comm1b)$com$relab))
 r_sqb <- signif(r_sqb$r.squared, 2)
