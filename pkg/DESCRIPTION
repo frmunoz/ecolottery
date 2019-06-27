@@ -39,6 +39,7 @@ Suggests:
     RColorBrewer,
     reshape,
     rmarkdown,
+    sads,
     testthat,
     untb,
     vegan,
