@@ -3,22 +3,22 @@ context("Test abund()")
 test_that("get_rel_abund() works", {
   given_com <- data.frame(ind = 1:4, sp = c(1, 1, 2, 3))
   
-  expected_rel_abund <- data.frame(sp = as.character(1:3),
-                                   ab = as.integer(c(2, 1, 1)),
+  expected_rel_abund <- data.frame(ab = as.integer(c(2, 1, 1)),
                                    relab = c(0.5, 0.25, 0.25),
+                                   row.names = as.character(1:3),
                                    stringsAsFactors = FALSE)
   
   comp_rel_abund <- .get_rel_abund(given_com)
   
   expect_is(comp_rel_abund, "data.frame")
-  expect_named(comp_rel_abund, c("sp", "ab", "relab"))
-  expect_equal(dim(comp_rel_abund), c(3, 3))
+  expect_named(comp_rel_abund, c("ab", "relab"))
+  expect_equal(dim(comp_rel_abund), c(3, 2))
   expect_equal(.get_rel_abund(given_com),
                expected_rel_abund)
   
   # Extreme case single individual of a single species in community
   expect_equal(.get_rel_abund(data.frame(ind = 1, sp = 1)), 
-               data.frame(sp = "1", ab = 1, relab = 1,
+               data.frame(ab = 1, relab = 1, row.names = "1",
                           stringsAsFactors = FALSE))
   
 })
