@@ -2,8 +2,11 @@
 # abundances per species
 abund <- function(x) {
   if (!is.list(x)) {
-    stop("The input argument must be a list of communities", call. = FALSE)
+    stop("The input argument must be a list of assemblages", call. = FALSE)
   }
+  
+  # Select only elements that are data frames
+  x <- x[lapply(x, class)=="data.frame"]
   
     rel_abund_list <-  lapply(x, function(y) {
       
@@ -29,8 +32,10 @@ abund <- function(x) {
   
   if (is.data.frame(comdf) | is.matrix(comdf)) {
     rel_abund <- as.data.frame(table(comdf[, "sp"]), stringsAsFactors = FALSE)
-    colnames(rel_abund) <- c("sp", "ab")
-    rel_abund$relab <- rel_abund$ab / nrow(comdf)
+    rownames(rel_abund) <- rel_abund[,1]
+    rel_abund$relab <- rel_abund[,2] / nrow(comdf)
+    rel_abund <- rel_abund[,-1]
+    colnames(rel_abund)[1] <- "ab"
   } else {
     rel_abund <- NA
   }
