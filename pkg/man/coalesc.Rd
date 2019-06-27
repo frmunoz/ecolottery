@@ -9,7 +9,7 @@ Simulates the composition of a community based on immigration from a regional po
 }
 \usage{
 coalesc(J, m = 1, theta = NULL, filt = NULL, add = FALSE,  var.add =NULL, pool = NULL, 
-        traits = NULL, Jpool = 50 * J, verbose = FALSE)
+        traits = NULL, Jpool = 50 * J, verbose = FALSE, checks = TRUE)
 }
 \arguments{
  \item{J}{
@@ -42,6 +42,9 @@ if \code{pool = NULL}, it is the number of individuals to be simulated in the re
 }
  \item{verbose}{
 if \code{verbose = TRUE}, functions returns a lot of outputs about parameters, species pool and environmental filter.
+}
+ \item{checks}{
+should initial checks that the inputs are correct be performed?
 }
 }
 \details{

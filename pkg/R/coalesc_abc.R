@@ -231,7 +231,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
         if(!prop){
           comm.samp <- coalesc(J, m = par[length(par)], filt = NULL,
                                add = F,  var.add =NULL, pool=pool, 
-                               traits = NULL)
+                               traits = NULL,
+                               checks = F)
           if (length(formals(f.sumstats))==1) {
             stats.samp <- as.vector(f.sumstats(comm.samp$com))
           } else {
@@ -244,7 +245,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
             set.seed(par[1])
             comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(x, par[2:(length(par)-1)]),
                                  add = F,  var.add =NULL, pool=pool, 
-                                 traits = NULL, Jpool = 50 * J, verbose = FALSE)
+                                 traits = NULL, Jpool = 50 * J, verbose = FALSE, checks = F)
             if (length(formals(f.sumstats))==1) {
               stats.samp <- as.vector(f.sumstats(comm.samp$com))
             } else {
@@ -252,7 +253,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
             }} else {
               comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(x, par[1:(length(par)-1)]),
                                    add = F,  var.add =NULL, pool=pool, 
-                                   traits = NULL)
+                                   traits = NULL, checks = F)
               if (length(formals(f.sumstats))==1) {
                 stats.samp <- as.vector(f.sumstats(comm.samp$com))
               } else {
@@ -263,7 +264,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
           comm.samp <- coalesc(
             par[length(par)], m = par[length(par)-1], 
             filt = function(x) filt.abc(x, par[-((length(par)-1):length(par))]), 
-            pool = pool, traits = traits)
+            pool = pool, traits = traits, checks = F)
           comm.samp$com <- t(table(comm.samp$com[,2])/par[length(par)])
         }
         if (length(formals(f.sumstats)) == 1) {
@@ -635,10 +636,10 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
       if (is.null(pool)) {
         if (multi == "seqcom"){
           pool <- coalesc(mean(unlist(J))*100,
-                          theta = params.samp[length(params.samp)])$com
+                          theta = params.samp[length(params.samp)], checks = F)$com
         } else {
           pool <- coalesc(mean(J)*100,
-                          theta = params.samp[length(params.samp)])$com
+                          theta = params.samp[length(params.samp)], checks = F)$com
         }
         params.samp <- params.samp[-length(params.samp)]
       }
@@ -686,7 +687,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                                              filt = filt,
                                              add = add,
                                              var.add = var.add[i,],
-                                             pool = pool.loc, traits = traits)
+                                             pool = pool.loc, traits = traits,
+                                             checks = F)
             tab <- table(comm.samp$com[,2])
             meta.samp[i,names(tab)] <- tab
             if(prop) meta.samp[i,] <- meta.samp[i,]/J.loc #sum(meta.samp[i,])
@@ -717,7 +719,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                                                     filt = filt,
                                                     add = add,
                                                     var.add = var.add[i,],
-                                                    pool = pool.loc, traits = traits)$com
+                                                    pool = pool.loc, traits = traits, checks = F)$com
           })
         }
         if (length(formals(f.sumstats)) == 1) {
@@ -734,7 +736,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                                          filt = filt,
                                          add = add,
                                          var.add = var.add,
-                                         pool = pool, traits = traits)
+                                         pool = pool, traits = traits,
+                                         checks = F)
         if(prop) comm.samp$com <- t(table(comm.samp$com[,2])/J)
         if (length(formals(f.sumstats)) == 1) {
           stats.samp <- f.sumstats(comm.samp$com)

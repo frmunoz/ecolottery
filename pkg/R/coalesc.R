@@ -1,56 +1,59 @@
 coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = FALSE,
                     var.add = NULL, pool = NULL, traits = NULL, Jpool = 50*J,
-                    verbose = FALSE) {
+                    verbose = FALSE, checks = T) {
   
-  # Check parameters
-  if (is.null(theta) & is.null(pool)) {
-    stop("You must provide either regional pool composition or a theta value",
-         call. = FALSE)
-  }
-  
-  # Need to define a function for environmental filtering
-  if(!is.null(filt)) if(!is.function(filt)) filt <- NULL
-  
-  if((add & is.null(var.add)) | (!add & !is.null(var.add))) {
-    warning("No additional variables are passed to filt", call. = FALSE)
-  }
+  if(checks)
+  {
+    # Check parameters
+    if (is.null(theta) & is.null(pool)) {
+      stop("You must provide either regional pool composition or a theta value",
+           call. = FALSE)
+    }
     
-  if(length(m)>1 | length(theta)>1) {
-    stop("m and theta cannot be vectors of length greater than 1",
-         call. = FALSE)
-  }
-  
-  if (m < 0 | m > 1) {
-    stop("The migration parameter takes values between 0 and 1", call. = FALSE)
-  }
-  
-  if (!is.null(theta)) {
-    if (theta <= 0) {
-      stop("The theta parameter must be positive", call. = FALSE)
-    } else if (theta > 0 & !is.null(pool)) {
-      if (verbose) {
-        warning("Both a theta value and a regional pool provided, discarding ",
-                "theta", call. = FALSE)
+    # Need to define a function for environmental filtering
+    if(!is.null(filt)) if(!is.function(filt)) filt <- NULL
+    
+    if((add & is.null(var.add)) | (!add & !is.null(var.add))) {
+      warning("No additional variables are passed to filt", call. = FALSE)
+    }
+      
+    if(length(m)>1 | length(theta)>1) {
+      stop("m and theta cannot be vectors of length greater than 1",
+           call. = FALSE)
+    }
+    
+    if (m < 0 | m > 1) {
+      stop("The migration parameter takes values between 0 and 1", call. = FALSE)
+    }
+    
+    if (!is.null(theta)) {
+      if (theta <= 0) {
+        stop("The theta parameter must be positive", call. = FALSE)
+      } else if (theta > 0 & !is.null(pool)) {
+        if (verbose) {
+          warning("Both a theta value and a regional pool provided, discarding ",
+                  "theta", call. = FALSE)
+        }
       }
     }
-  }
-  
-  if (J <= 0) {
-    stop("J must be positive")
-  }
-  
-  if (is.null(traits) & (is.null(pool) | NCOL(pool) < 3)) {
-    if (verbose) warning("No trait information provided in the regional pool",
-                         call. = FALSE)
-  }
-  
-  if (!is.null(traits) & is.null(colnames(traits))) {
-    colnames(traits) <- paste("tra", 1:ncol(traits), sep = "")
-  }
-  if (!is.null(pool) & is.null(colnames(pool))) {
-    if (ncol(pool) > 2) {
-      colnames(pool) <- c("ind", "sp", paste("tra", 1:(ncol(pool) - 2),
-                                             sep = ""))
+    
+    if (J <= 0) {
+      stop("J must be positive")
+    }
+    
+    if (is.null(traits) & (is.null(pool) | NCOL(pool) < 3)) {
+      if (verbose) warning("No trait information provided in the regional pool",
+                           call. = FALSE)
+    }
+    
+    if (!is.null(traits) & is.null(colnames(traits))) {
+      colnames(traits) <- paste("tra", 1:ncol(traits), sep = "")
+    }
+    if (!is.null(pool) & is.null(colnames(pool))) {
+      if (ncol(pool) > 2) {
+        colnames(pool) <- c("ind", "sp", paste("tra", 1:(ncol(pool) - 2),
+                                               sep = ""))
+      }
     }
   }
   
