@@ -2,12 +2,13 @@
 \alias{plot_comm}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-  Regional vs. Local trait distributions of abundances
+  Plotting trait and species distributions of simulated communities
 }
 \description{
   Graphical function to used on the output of \code{coalesc()} or
-  \code{forward()} functions.It aims at plotting links between regional and
-  local trait/abundance distributions.
+  \code{forward()} functions. It can show the links between regional and
+  local trait/abundance distributions, or local species and rank
+  abundance distributions.
 }
 \usage{
 plot_comm(x, type = "trait", seltrait = 1, main = NULL)
@@ -22,8 +23,11 @@ plot_comm(x, type = "trait", seltrait = 1, main = NULL)
    \itemize{
     \item if \code{type = "trait"}, the function displays density plots of trait
           distributions.
-    \item if \code{type = "abund"}, it displays the relationship between local
-          and regional abundances.
+    \item if \code{type = "locreg"},it displays the relationship between local and regional abundances.
+    \item if \code{type = "sad"}, it displays the empirical percentiles and theoretical values of species
+          abundance distribution (SAD) in the community.
+    \item if \code{type = "rad"}, it displays the empirical percentiles and theoretical values of rank
+          abundance distribution (RAD) in the community.
    }
 }
  \item{seltrait}{
@@ -37,14 +41,20 @@ plot_comm(x, type = "trait", seltrait = 1, main = NULL)
 \details{
   If \code{type = "trait"}, the function provides density plots of the trait or
   abundance distributions in the regional pool and in a local community.
-  If \code{type = "abund"}, the function displays the relationship between
+  If \code{type = "locreg"}, it displays the relationship between
   regional and local species relative abundances.
+  If \code{type = "sad"} or \code{"rad"}, it shows the percentile plots provided by 
+  functions \code{\link[sads]{ppsad}} and  \code{\link[sads]{pprad}} 
+  in the \code{"sads"} package. The reference red line corresponds to log-series 
+  for \code{"sad"} and to geometric series for \code{"rad"}.
+  
   By default \code{type = "trait"}.
+  
   To be used on the output of \code{coalesc()} or \code{forward()} functions.
 }
 \value{
 Return two stacked \code{\link[=ggplot2-package]{ggplot2}} density plots if
-\code{type = "trait"} and a biplot if \code{type = "abund"}.
+\code{type = "trait"} and biplots otherwise.
 }
 \author{
 F. Munoz; P. Denelle
@@ -55,12 +65,15 @@ F. Munoz; P. Denelle
 J <- 500; theta <- 50; m <- 0.1;
 comm1 <- coalesc(J, m, theta) 
 plot_comm(comm1)
-plot_comm(comm1, type = "abund")
+plot_comm(comm1, type = "locreg")
+plot_comm(comm1, type = "sad")
 
 # Stabilizing habitat filtering around t = 0.5
-comm2 <- coalesc(J, m, theta, filt = function(x) 0.5 - abs(0.5 - x))
+filt_gaussian <- function(x) exp(-(x - 0.5)^2/(2*0.1^2))
+comm2 <- coalesc(J, m, theta, filt = filt_gaussian)
 plot_comm(comm2)
-plot_comm(comm2, type = "abund")
+plot_comm(comm2, type = "locreg")
+plot_comm(comm1, type = "sad")
 }
 
 \keyword{trait distribution}

@@ -18,6 +18,13 @@ plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL)
     }
   }
   
+  if(type == "abund")
+    stop("Type abund is no longer supported, see options in ?abund")
+  
+  if(type != "trait")
+    # Compute community and regional pool abundances by species
+    ab <- abund(x) 
+  
   switch(type,
     "trait" =
      {
@@ -51,11 +58,8 @@ plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL)
          plot(h2, col = localCol, add = TRUE, freq = FALSE)
       }
      },
-    "abund" =
+    "locreg" =
      {
-       # Compute community and regional pool abundances by species
-       ab <- abund(x) 
-       
        # Plot graphics
        plot(ab$pool[rownames(ab$com),"relab"],
             ab$com$relab,
@@ -65,5 +69,21 @@ plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL)
             log = "xy")
        abline(0,1)
      },
-    warning("Need to choose a type of plot to display (trait or abund)"))
+    "sad" =
+    {
+      #Fits log-series distribution to abundance data
+      ab.com.ls <- sads::fitsad(ab$com$ab, "ls")
+      
+      #Show species abundance distributions
+      sads::ppsad(ab.com.ls)
+    },
+    "rad" =
+    {
+      #Fits geometric series to abundance data
+      ab.com.gs <- sads::fitrad(ab$com$ab, "gs")
+      
+      # Show rank abundance distributions
+      sads::pprad(ab.com.gs)
+    },
+    warning("Need to choose a type of plot to display (trait, locreg, sad or rad)"))
 }
