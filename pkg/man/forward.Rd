@@ -1,5 +1,6 @@
 \name{forward}
 \alias{forward}
+\alias{gauss_limit}
 \alias{get_number_of_gens}
 \alias{pick}
 \alias{pick.mutate}
@@ -15,24 +16,24 @@ generations.
 
 \usage{
 forward(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
-        pool = NULL, traits = NULL, filt = NULL, limit.sim = FALSE, 
-        coeff.lim.sim = 1, type.filt = "immig", type.limit = "death", 
-        sigm = 0.1, add = F, var.add = NULL, prob.death = NULL, 
-        method.dist = "euclidean", plot_gens = FALSE)
+        pool = NULL, traits = NULL, filt = NULL, limit.sim = NULL, 
+        par.limit = 0.1, coeff.lim.sim = 1, type.filt = "immig", 
+        type.limit = "death", add = F, var.add = NULL, 
+        prob.death = NULL, method.dist = "euclidean", plot_gens = FALSE)
+gauss_limit(x, tr, par)
 get_number_of_gens(given_size, pool, traits = NULL, nbrep = 5, prob = 1, 
-                   d = 1, gens = NULL, filt = NULL,  limit.sim = FALSE, 
+                   d = 1, gens = NULL, filt = NULL,  limit.sim = NULL, 
                    coeff.lim.sim = 1, type.filt = "immig", type.limit = "death", 
-                   sigm = 0.1, add = F, var.add = NULL, prob.death = NULL, 
+                   add = F, var.add = NULL, prob.death = NULL, 
                    method.dist = "euclidean", plot_gens = FALSE)
 pick(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
-     filt = NULL, limit.sim = NULL, coeff.lim.sim = 1, type.filt = "immig", 
-     type.limit = "death", sigm = 0.1, new.index = new.index, 
+     filt = NULL, limit.sim = NULL, par.limit = 0.1, coeff.lim.sim = 1, 
+     type.filt = "immig", type.limit = "death", new.index = new.index, 
      method.dist = "euclidean")
 pick.mutate(com, d = 1, prob.of.mutate = 0, new.index = 0)
 pick.immigrate(com, d = 1, prob.of.immigrate = 0, pool, prob.death = NULL, 
-              filt = NULL, limit.sim = NULL, coeff.lim.sim = 1, 
-              type.filt = "immig", type.limit = "death", sigm = 0.1, 
-              method.dist = "euclidean")
+              filt = NULL, limit.sim = NULL, par.limit = 0.1, coeff.lim.sim = 1, 
+              type.filt = "immig", type.limit = "death", method.dist = "euclidean")
 }
 
 \arguments{
@@ -79,9 +80,16 @@ number of replicates from which you want to estimate the number of generations
 needed to reach stationarity in species richness.
 }
  \item{limit.sim}{
-if \code{TRUE,} limiting similarity will be simulated, based on species trait
+if non null, limiting similarity will be simulated, based on species trait
 distances (computed with the method given by \code{method.dist}) and a Gaussian
 overlapping function. 
+}
+ \item{par.limit}{
+a vector of additional parameters to be passed to the limiting similarity function defined in \code{limit.sim}.
+If \code{NULL} but the \code{limit.sim} requires additional parameter values,
+an error message will be issues.
+In the case of default Gaussian limiting similarity function, the additional 
+parameter value sets the standard deviation of the Gaussian function.
 }
  \item{coeff.lim.sim}{
 adjust the intensity of limiting similarity. 
@@ -100,10 +108,6 @@ If \code{type.limit="immig"}, it plays at the establishment of immigrants,
 If \code{type.limit="loc.recr"}, it plays at the establishment of local offspring.
 \code{type.limit} can be any combination of these three values.
 }
- \item{sigm}{
-adjust the variance of the overlap function used to calculate limiting
-similarity.
-}
  \item{filt}{
 the function used to represent habitat filtering. For a given trait value
 \code{t}, \code{filt(t)} represents the probability that an individual with
@@ -121,7 +125,7 @@ is used in niche-based dynamics to represent the balance of baseline and
 niche-dependent mortality.
 }
  \item{method.dist}{
-provide the method to compute trait distances between individuals (syntax of
+provides the method to compute trait distances between individuals (syntax of
 function \code{\link[stats]{dist}}, can be in the list \code{c("euclidean",
 "maximum", "manhattan", 
 "canberra", "binary", "minkowski")}).
@@ -149,6 +153,9 @@ and \code{type.simil = "death"}, which corresponds to a classical conception of
 the hierarchical influence of habitat filtering and limiting similarity on immigration success
 and local survival.
 
+\code{gauss_limit()} is the default function used to compute limiting similarity. In this case, the relative performance of an individual decreases depending on the sum of exponential distances to other individuals in the community (McArthur and Levins 1967), i.e.,
+
+
 Function \code{get_number_of_gen()} allows determining the number of generations
 needed to reach stationary richness for given parameterization of
 \code{forward()}. The target number of generation is based on assessing the
@@ -160,6 +167,8 @@ communities.
 Functions \code{pick.immigrate()} and \code{pick.mutate()} are used to simulate
 immigration and speciation events within a time step. They are embedded in
 forward and are not really intended for the end user. 
+
+A Shiny app is available to visualize simulated trait distributions for chosen parameter values in the model: https://ecolottery.shinyapps.io/forward/.
 }
 \value{
 \item{com}{
@@ -194,8 +203,11 @@ the call function.
 }
 }
 \references{
-For neutral dynamics, S. P. Hubbell 2001. "The Unified Neutral Theory of
+For neutral dynamics, see S. P. Hubbell 2001. "The Unified Neutral Theory of
 Biodiversity". Princeton University Press. 
+
+For the default model of limiting similarity,
+MacArthur, R., Levins, R., 1967. The limiting similarity, convergence, and divergence of coexisting species. The American Naturalist 101, 377–385.
 }
 \author{
 F. Munoz, derived from the \code{untb} function of R. Hankin.
