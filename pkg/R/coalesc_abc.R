@@ -166,7 +166,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
           } else tapply(data.frame(pool[,x]), pool[, 2], function(y) names(y[which.max(table(y))]))), 
         stringsAsFactors = F)
     }
-  } else if (is.null(traits) & ncol(pool) < 3) 
+  } else if (!is.null(filt.abc) & is.null(traits) & ncol(pool) < 3) 
     warning("Trait information is not provided", call. = FALSE)
   
   # Community size
