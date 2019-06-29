@@ -20,12 +20,13 @@ forward(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
         par.limit = 0.1, coeff.lim.sim = 1, type.filt = "immig", 
         type.limit = "death", add = F, var.add = NULL, 
         prob.death = NULL, method.dist = "euclidean", plot_gens = FALSE)
-gauss_limit(x, tr, par)
+gauss_limit(dist, par)
 get_number_of_gens(given_size, pool, traits = NULL, nbrep = 5, prob = 1, 
-                   d = 1, gens = NULL, filt = NULL,  limit.sim = NULL, 
-                   coeff.lim.sim = 1, type.filt = "immig", type.limit = "death", 
-                   add = F, var.add = NULL, prob.death = NULL, 
-                   method.dist = "euclidean", plot_gens = FALSE)
+                   d = 1, gens = NULL, filt = NULL,  limit.sim = NULL,
+                   par.limit = 0.1, coeff.lim.sim = 1, type.filt = "immig", 
+                   type.limit = "death", add = F, var.add = NULL, 
+                   prob.death = NULL, method.dist = "euclidean", 
+                   plot_gens = FALSE)
 pick(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
      filt = NULL, limit.sim = NULL, par.limit = 0.1, coeff.lim.sim = 1, 
      type.filt = "immig", type.limit = "death", new.index = new.index, 
@@ -136,6 +137,12 @@ prefix used to give a new species name when speciation occurs.
  \item{plot_gens}{
 plot the number of unique individuals and species over generations.
 }
+ \item{dist}{
+vector of trait distances that is used for calculation of limiting similarity.
+}
+ \item{par}{
+addditional parameter values to be passed to \code{limit.sim} function.
+}
 }
 \details{
 The model of community assembly is a zero-sum game, so that the number of individuals 
@@ -168,7 +175,7 @@ Functions \code{pick.immigrate()} and \code{pick.mutate()} are used to simulate
 immigration and speciation events within a time step. They are embedded in
 forward and are not really intended for the end user. 
 
-A Shiny app is available to visualize simulated trait distributions for chosen parameter values in the model: https://ecolottery.shinyapps.io/forward/.
+A Shiny app is available to visualize simulated trait distributions for chosen parameter values in the model: \link{https://ecolottery.shinyapps.io/forward/}.
 }
 \value{
 \item{com}{

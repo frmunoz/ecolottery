@@ -565,10 +565,10 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       if(!is.null(limit.sim)) if(length(formals(limit.sim))>1)
       {
         prob.estab <- apply(tr.dist[paste("pool", pool[, 1], sep="."),
-                                   comm[, 1]], 1, function(x) limit.sim(x, par.limit))
+                                   com[, 1]], 1, function(x) limit.sim(x, par.limit))
       } else {
         prob.estab <- apply(tr.dist[paste("pool", pool[, 1], sep="."),
-                                    comm[, 1]], 1, limit.sim)
+                                    com[, 1]], 1, limit.sim)
       }
       prob.estab <- prob.estab/max(prob.estab)
       prob.estab <- 1 - prob.estab
@@ -633,8 +633,8 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
   }
 }
 
-gauss_limit <- function(d, par)
+gauss_limit <- function(dist, par)
 {
-  sum(exp(-d^2/(2*par^2)), na.rm = T)
+  sum(exp(-dist^2/(2*par^2)), na.rm = T)
 }
 
