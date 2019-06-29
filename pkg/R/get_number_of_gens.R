@@ -1,7 +1,7 @@
 get_number_of_gens <- function(given_size, pool, traits = NULL, nbrep = 5, prob = 1, d = 1,
-                               gens = NULL, filt = NULL, limit.sim = FALSE,
+                               gens = NULL, filt = NULL, limit.sim = NULL, par.limit = 0.1,
                                coeff.lim.sim = 1, type.filt = "immig", type.limit = "death", 
-                               sigm = 0.1, add = F, var.add = NULL, prob.death = NULL, 
+                               add = F, var.add = NULL, prob.death = NULL, 
                                method.dist = "euclidean", plot_gens = FALSE) {
   
     if (is.character(pool)) {
@@ -36,8 +36,8 @@ get_number_of_gens <- function(given_size, pool, traits = NULL, nbrep = 5, prob 
     for (i in 1:nbrep) {
       final <- forward(initial = start_com, prob = prob, d = d, gens = gens,
                        keep = FALSE, pool = pool, traits = traits, filt = filt,
-                       limit.sim = limit.sim, coeff.lim.sim = coeff.lim.sim, 
-                       type.filt = type.filt, type.limit = type.limit, sigm = sigm,  
+                       limit.sim = limit.sim, par.limit = par.limit, coeff.lim.sim = coeff.lim.sim, 
+                       type.filt = type.filt, type.limit = type.limit,  
                        add = add, var.add = var.add, prob.death = prob.death, 
                        method.dist = method.dist, plot_gens = plot_gens)
       
