@@ -1,6 +1,6 @@
 coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = FALSE,
                     var.add = NULL, pool = NULL, traits = NULL, Jpool = 50*J,
-                    verbose = FALSE, checks = T) {
+                    verbose = FALSE, checks = TRUE) {
   
   if(checks)
   {
