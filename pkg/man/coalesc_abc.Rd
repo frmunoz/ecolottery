@@ -392,7 +392,7 @@ res.tab1 <- coalesc_abc(tab1, pool, multi = "tab", f.sumstats = f.sumstats,
                    filt.abc = filt_gaussian_env, par.filt = par.range, 
                    add = T, var.add = env1,
                    nb.samp = nb.samp, parallel = TRUE, tol = 0.5,
-                   pkg = c("e1071","vegan"), method.abc = "neuralnet")
+                   pkg = c("vegan","Weighted.Desc.Stat"), method.abc = "neuralnet")
 
 plot(res.tab1$abc, param=res.tab1$par)                   
 hist(res.tab1$abc)
