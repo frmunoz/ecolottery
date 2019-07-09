@@ -284,19 +284,19 @@ plot(final6$dist.t, xlab = "Time step", ylab = "Limiting similarity")
 
 # Higher migration rate, 5000 time steps
 # Limiting similarity only plays on mortality
-final6 <- forward(initial = initial2, prob = 0.7, gens = 5000, pool = pool, 
-                 limit.sim = TRUE)
-plot_comm(final6) # should be closer to regional distribution
-# Limiting similarity plays on immigration, mortality and local recruitment
 final7 <- forward(initial = initial2, prob = 0.7, gens = 5000, pool = pool, 
+                 limit.sim = TRUE)
+plot_comm(final7) # should be closer to regional distribution
+# Limiting similarity plays on immigration, mortality and local recruitment
+final8 <- forward(initial = initial2, prob = 0.7, gens = 5000, pool = pool, 
                  limit.sim = TRUE, type.limit = c("immig", "death", "loc.recr"))
-plot_comm(final7)
+plot_comm(final8)
 # Check temporal changes
-plot(final7$sp_t, xlab = "Time step", ylab = "Community richness")
-points(1:5000, final6$sp_t, col="blue")
+plot(final8$sp_t, xlab = "Time step", ylab = "Community richness")
+points(1:5000, final7$sp_t, col="blue")
 # Index of limiting similarity over time
-plot(final7$dist.t, xlab = "Time step", ylab = "Limiting similarity")
-points(1:5000, final6$dist.t, col="blue")
+plot(final8$dist.t, xlab = "Time step", ylab = "Limiting similarity")
+points(1:5000, final7$dist.t, col="blue")
 }
 }
 
