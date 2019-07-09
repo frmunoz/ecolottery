@@ -373,7 +373,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
   # Function defining habitat filtering according to trait value
   env_filter <- ifelse(!is.null(filt), ifelse(!add, 
                                                function(x) apply(x, 1, filt), 
-                                               function(x, var.add) apply(x, function(i) filt(i, var.add))), 
+                                               function(x, var.add) apply(x, 1, function(i) filt(i, var.add))), 
                         function(x) rep(1, nrow(x))) 
   
   # Traits distances used to simulate limiting similarity
