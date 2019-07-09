@@ -152,10 +152,6 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
          "composition for niche-based dynamics", call. = FALSE)
   }
   
-  # TODO: possibility to handle several traits
-  if(ncol(initial)==3) colnames(initial) <- c("ind", "sp", "trait")
-  if(ncol(initial)==2) colnames(initial) <- c("ind", "sp")
-  
   new.index <- 0
   
   ## Forward simulation with community
@@ -387,13 +383,13 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       tr.dist <- as.matrix(dist(com[, -(1:2)], method = method.dist))
       sp.lab <- com[, 2]
       # Column and row names are individual labels
-      colnames(tr.dist) <- paste("loc", com[, 1], sep=".")
-      rownames(tr.dist) <- paste("loc", com[, 1], sep=".")
+      colnames(tr.dist) <- com[, 1]
+      rownames(tr.dist) <- com[, 1]
     } else {
       tr.dist <- as.matrix(dist(c(com[, -(1:2)], pool[, -(1:2)]), method = method.dist))
       sp.lab <- c(com[, 2], pool[, 2])
-      colnames(tr.dist) <- c(paste("loc", com[, 1], sep="."), paste("pool", pool[, 1], sep="."))
-      rownames(tr.dist) <- c(paste("loc", com[, 1], sep="."), paste("pool", pool[, 1], sep="."))
+      colnames(tr.dist) <- c(com[, 1], pool[, 1])
+      rownames(tr.dist) <- c(com[, 1], pool[, 1])
     }
     diag(tr.dist) <- NA
     
@@ -407,8 +403,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     # dist.t will display the average trait distance among species
     # for the whole community at each generation
     if (min(dim(tr.dist))>1) {
-      dist.t <- mean(tr.dist[paste("loc", com[, 1], sep="."), 
-                             paste("loc", com[, 1], sep=".")], na.rm = TRUE)
+      dist.t <- mean(tr.dist[com[, 1], com[, 1]], na.rm = TRUE)
     } else dist.t <- NA
     
   } else {
@@ -452,11 +447,9 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       
       if(!is.null(limit.sim)) if(length(formals(limit.sim))>1)
       {
-        prob.death <- apply(tr.dist[paste("loc", com[, 1], sep="."), 
-                                  paste("loc", com[, 1], sep=".")], 2, function(x) limit.sim(x, par.limit))
+        prob.death <- apply(tr.dist[com[, 1], com[, 1]], 2, function(x) limit.sim(x, par.limit))
       } else {
-        prob.death <- apply(tr.dist[paste("loc", com[, 1], sep="."), 
-                                    paste("loc", com[, 1], sep=".")], 2, limit.sim)
+        prob.death <- apply(tr.dist[com[, 1], com[, 1]], 2, limit.sim)
       }
       # Add baseline probability
       prob.death <- prob.death + 1/J
@@ -523,10 +516,10 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
       # Influence of limiting similarity on establishment
       if(!is.null(limit.sim)) if(length(formals(limit.sim))>1)
       {
-        prob.estab <- apply(tr.dist[paste("pool", pool[, 1], sep="."),
+        prob.estab <- apply(tr.dist[pool[, 1],
                                    com[, 1]], 1, function(x) limit.sim(x, par.limit))
       } else {
-        prob.estab <- apply(tr.dist[paste("pool", pool[, 1], sep="."),
+        prob.estab <- apply(tr.dist[pool[, 1],
                                     com[, 1]], 1, limit.sim)
       }
       prob.estab <- prob.estab/max(prob.estab)
