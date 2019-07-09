@@ -2,13 +2,34 @@
 # environmental filtering
 forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
                     pool = NULL, traits = NULL, filt = NULL, limit.sim = NULL, 
-                    par.limit = 0.1, coeff.lim.sim = 1, type.filt = "immig", 
-                    type.limit = "death", add = F, var.add = NULL,
+                    limit.intra = F, par.limit = 0.1, coeff.lim.sim = 1, 
+                    type.filt = "immig", type.limit = "death", add = F, var.add = NULL,
                     prob.death = NULL, method.dist = "euclidean", plot_gens = FALSE) {
   # The function will stop if niche - based dynamics is requested, but trait
   # information is missing in the local community
   # For strictly neutral communities, a vector of species names is enough for
   # the initial community
+  
+  if(is.factor(initial))
+    initial <- as.character(initial)
+  if(is.factor(pool))
+    pool <- as.character(pool)
+  
+  # Standard formatting: first column is individual id, second is species id
+  if(is.vector(initial))
+    initial <- data.frame(ind=1:length(initial), sp=initial, stringsAsFactors = FALSE)
+  if(is.vector(pool)) {
+    pool <- data.frame(ind=paste("pool",1:length(pool),sep="."), sp=pool, stringsAsFactors = FALSE)
+    rownames(pool) <- pool$ind
+  }
+  
+  if (!is.null(pool)) if (ncol(pool) < 2) {
+    stop("The regional pool is misdefined (at least two columns ",
+         "required when a matrix or data frame is provided)", call. = FALSE)
+  }
+  
+  if(any(initial$ind %in% pool$ind))
+    stop("# There should not be same individual ids in pool and initial")
   
   # For back-compatibility
   if(is.logical(limit.sim)) 
@@ -21,7 +42,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
   
   # Checking basic parameters
   
-  if (!is.numeric(prob) | prob < 0) {
+  if (!is.numeric(prob) | prob < 0 | prob > 1) {
     stop("Probability of migration or mutation must be a number belonging to ",
          "[0; 1] interval.", call. = FALSE)
   }
@@ -55,7 +76,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     stop("filt() must be a function.", call. = FALSE)
   }    
   
-  if((add & is.null(var.add)) | (!add & !is.null(var.add))) 
+  if(add & is.null(var.add)) 
     warning("No additional variables are passed to filt", call. = FALSE)
   
   if ((method.dist %in% c("euclidean", "maximum", "manhattan", "canberra",
@@ -68,82 +89,45 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     stop("plot_gens parameter must be a boolean.", call. = FALSE)
   }
   
-  # Stops if only a vector of species name is given as initial community with
-  # environmental filtering or limiting similarity
-  if ((is.character(initial) | is.vector(initial)) &
-      (!is.null(limit.sim) | !is.null(filt))) {
-    stop("Trait information must be provided along with species identity in",
-         " the initial community for niche - based dynamics", call. = FALSE)
-  }
-  
-  # If environmental filtering or limiting similarity, the initial community
-  # needs to be a matrix or a data.frame
-  if (!is.matrix(initial) & !is.data.frame(initial) &
-      (!is.null(limit.sim) | !is.null(filt))) {
-    stop("Misdefined initial community", call. = FALSE)
-  }
-  
-  # If no limiting similarity nor environmental filter -> community dynamics are
-  # considered neutral
+  # If no limiting similarity nor environmental filter: neutral community dynamics 
   if (is.null(limit.sim) & is.null(filt)) {
     message("Simulation of a neutral community")
-  }
-  
-  # "pool" will be a three - column matrix of individuals in the regional pool,
-  # with individual id in first column, species name in second column, and
-  # additional trait information for niche - based dynamics in third column
-  if (is.character(pool)) {
-    pool <- data.frame(id = 1:length(pool),
-                       sp = pool,
-                       trait = rep(NA, length(pool)),
-                       stringsAsFactors = FALSE)
-    
-    if (!is.null(limit.sim) | !is.null(filt)) {
-      message("No trait information provided in the regional pool")
-      pool[, 3] <- runif(nrow(pool))
-      message("Random trait values attributed to individuals of the regional",
-              " pool")
-      colnames(pool) <- c("id", "sp", "trait")
-    }
-  }
-  
-  # If species pool is specified by user
-  if (!is.null(pool)) {
-    if(ncol(pool)==2 &  !is.null(traits)) {
-      # Assign trait values to individuals of the pool
-      pool[,3:(2+ncol(traits))] <- traits[pool[,2],]
-      if(any(is.na(pool[,-(1:2)]))) 
-        stop("Mismatch of species names between pool and traits", call. = FALSE)
-    }
-    if (ncol(pool) < 2) {
-      stop("The regional pool is misdefined (at least two columns ",
-           "required when a matrix or data frame is provided)", call. = FALSE)
-    } else if (ncol(pool) == 2) {
-      message("No trait information provided in the regional pool")
-    }
-    if (!is.null(limit.sim) | !is.null(filt)) {
-      if(!is.null(traits)) {
-        pool <- cbind(pool[,1:2],traits[pool[,2],])
-      }
-      if(is.null(traits) & ncol(pool) < 3) {
-        pool[, 3] <- runif(nrow(pool))
-        
-        message("Random (uniform) trait values attributed to individuals of ",
-                "the regional pool")
-      }
-    }
-    # TEMPORARY - TOUPDATE
-    if(ncol(pool) == 3) colnames(pool) <- c("id", "sp", "trait")
-    if(ncol(pool) == 2) colnames(pool) <- c("id", "sp")
-  }
-  
-  if (is.null(traits) & (is.null(pool) | NCOL(pool) < 3)) {
-    warning("No trait information provided in the regional pool", call. = FALSE)
   }
   
   if (!is.null(traits) & is.null(colnames(traits))) {
     colnames(traits) <- paste("tra", 1:ncol(traits), sep = "")
   }
+  
+  # Check and complete trait values for trait-based dynamics
+  if (!is.null(limit.sim) | !is.null(filt)) {
+    # Trait information in pool
+    if(ncol(pool) == 2 &  !is.null(traits)) {
+      # Assign trait values to the individuals of the pool
+      pool[,3:(2+ncol(traits))] <- traits[pool[,2],]
+      colnames(pool)[-(1:2)] <- colnames(traits)
+      if(any(is.na(pool[,-(1:2)]))) 
+        stop("Mismatch of species names between pool and traits", call. = FALSE)
+    }
+    # Trait information in initial
+    if(ncol(initial) == 2 &  !is.null(traits)) {
+      # Assign trait values to the individuals of the initial community
+      initial[,3:(2+ncol(traits))] <- traits[initial[,2],]
+      colnames(initial)[-(1:2)] <- colnames(traits)
+      if(any(is.na(initial[,-(1:2)]))) 
+        stop("Mismatch of species names between initial and traits", call. = FALSE)
+    }
+    # Generation of random trait values
+    if(is.null(traits) & ncol(initial) < 3)
+      stop("Trait values are required in initial community")
+    if(is.null(traits) & ncol(pool) < 3) {
+      for(i in 1:(ncol(initial)-2))
+        pool[, i+2] <- runif(nrow(pool))
+      colnames(pool)[-(1:2)] <- colnames(initial)[-(1:2)]
+      message("Random (uniform) trait values attributed to individuals of ",
+              "the regional pool")
+    }
+  }
+  
   if (!is.null(pool) & is.null(colnames(pool))) {
     if (ncol(pool) > 2) {
       colnames(pool) <- c("ind", "sp", paste("tra", 1:(ncol(pool) - 2),
@@ -151,68 +135,33 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     }
   }
   
-  # "init_comm" is a 3 columns matrix of individuals in the initial community,
-  # with individual id in first column, species name in second column, and
-  # additional trait information for niche-based dynamics in the third column
-  if (is.character(initial)) {  # If only list of species names provided
-    # The ids of individuals present in the initial community begi with "init"
-    J <- length(initial)
-    if(is.null(traits)) {
-      init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
-                              sp = initial,
-                              trait = rep(NA, J),
-                              stringsAsFactors = FALSE) 
-    } else {
-      init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
-                              sp = initial,
-                              trait = traits[initial,],
-                              stringsAsFactors = FALSE) 
-    }
-  } else {
-    J <- nrow(initial)
-    if (ncol(initial) == 2 & is.null(traits)) {
-      message("Two-column initial community: assumed to represent species ",
-              "and trait information; individual ids will be generated")
-      init_comm <- data.frame(id = paste("init", 1:J, sep = ""),
-                              sp = initial[, 1],
-                              trait = initial[, 2],
-                              stringsAsFactors = FALSE)
-    } else if (ncol(initial) == 2 & !is.null(traits)) {
-      message("Two-column initial community: assumed to represent individual ",
-              "and species ids; trait information in traits")
-      init_comm <- data.frame(initial,
-                              trait = traits[initial[,2], ],
-                              stringsAsFactors = FALSE)
-    } else if (ncol(initial) > 2) {
-      init_comm <- initial
-    }
-  }
-  
-  if(is.null(filt) & !is.null(pool)) if(ncol(pool)==2 & ncol(init_comm)>2)
+  J <- nrow(initial)
+ 
+  if(is.null(filt) & !is.null(pool)) if(ncol(pool)==2 & ncol(initial)>2)
   {
     # TO BE IMPROVED
     # No need to keep trait information for neutral dynamics
-    init_comm <- init_comm[,1:2]
+    initial <- initial[,1:2]
   }
   
   if (J < d) stop("The number of dead individuals per time step ",
                   "cannot be greater than community size", call. = FALSE)
   
-  if ((!is.null(limit.sim) | !is.null(filt))) if(any(is.na(init_comm[, 3]))) {
+  if ((!is.null(limit.sim) | !is.null(filt))) if(any(is.na(initial[, 3]))) {
     stop("Trait information must be provided in initial community ",
          "composition for niche-based dynamics", call. = FALSE)
   }
   
   # TODO: possibility to handle several traits
-  if(ncol(init_comm)==3) colnames(init_comm) <- c("id", "sp", "trait")
-  if(ncol(init_comm)==2) colnames(init_comm) <- c("id", "sp")
+  if(ncol(initial)==3) colnames(initial) <- c("ind", "sp", "trait")
+  if(ncol(initial)==2) colnames(initial) <- c("ind", "sp")
   
   new.index <- 0
   
   ## Forward simulation with community
   
   # Begins with the initial community
-  next_comm <- init_comm
+  next_comm <- initial
   
   # Richness of initial community is not included
   sp_t <- c()
@@ -234,7 +183,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     # Simulate community dynamics
     next_comm <- pick(next_comm, d = d, prob = prob, pool = pool,
                       prob.death = prob.death, filt = filt, 
-                      limit.sim = limit.sim, par.limit = par.limit, 
+                      limit.sim = limit.sim, limit.intra = limit.intra,
+                      par.limit = par.limit, 
                       coeff.lim.sim = coeff.lim.sim, 
                       type.filt = type.filt, type.limit = type.limit, 
                       new.index = new.index,
@@ -300,7 +250,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
 # Precise function to simulate a single timestep by picking an individual in
 # the pool or make an individual mutate
 pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
-                 filt = NULL, limit.sim = NULL, par.limit = 0.1, coeff.lim.sim = 1, 
+                 filt = NULL, limit.sim = NULL, limit.intra = F, par.limit = 0.1, 
+                 coeff.lim.sim = 1, 
                  type.filt = "immig", type.limit = "death", 
                  new.index = new.index, method.dist = "euclidean") {
   
@@ -322,20 +273,21 @@ pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
     # If there is a species pool make an individual immigrates
     return(pick.immigrate(com, d = d, prob.of.immigrate = prob, pool = pool,
                           prob.death = prob.death, filt = filt, 
-                          limit.sim = limit.sim, par.limit = par.limit, coeff.lim.sim = coeff.lim.sim, 
+                          limit.sim = limit.sim, limit.intra = limit.intra, 
+                          par.limit = par.limit, coeff.lim.sim = coeff.lim.sim, 
                           type.filt = type.filt, type.limit = type.limit, 
                           method.dist = "euclidean"))
   }
 }
 
-# Return community with mutated inidividual (= new species)
+# Return community with mutated individual (= new species)
 pick.mutate <- function(com, d = 1, prob.of.mutate = 0, new.index = 0) {
   
   if (is.vector(com)) {
     # If community only defined by species names
     J <- length(com)
     
-    com <- data.frame(id = paste("ind", 1:J, sep = ""),
+    com <- data.frame(ind = paste("ind", 1:J, sep = ""),
                       sp = as.character(com),
                       trait = rep(NA, J),
                       stringsAsFactors = FALSE)
@@ -394,7 +346,7 @@ pick.mutate <- function(com, d = 1, prob.of.mutate = 0, new.index = 0) {
 # limit.sim = limiting similarity; filt = habitat filtering function
 pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
                            prob.death = NULL, filt= NULL, limit.sim = NULL,
-                           par.limit = 0.1,
+                           limit.intra = F, par.limit = 0.1,
                            coeff.lim.sim = 1, type.filt = "immig", 
                            type.limit = "death", 
                            method.dist = "euclidean") {
@@ -403,7 +355,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     # If community only defined by species names
     J <- length(com)
     
-    com <- data.frame(id = paste("ind", 1:J, sep = ""),
+    com <- data.frame(ind = paste("ind", 1:J, sep = ""),
                       sp = as.character(com),
                       trait = rep(NA, J),
                       stringsAsFactors = FALSE)
@@ -423,28 +375,35 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
   }
   
   # Function defining habitat filtering according to trait value
-  if (!is.null(filt)) {
-    hab_filter <- function(x) filt(x)
-  } else {
-    # If no function defined, dummy function returning value 1
-    hab_filter <- function(x) vapply(x, function(x) 1, c(1))
-  }
+  env_filter <- ifelse(!is.null(filt), ifelse(!add, 
+                                               function(x) apply(x, 1, filt), 
+                                               function(x, var.add) apply(x, function(i) filt(i, var.add))), 
+                        function(x) rep(1, nrow(x))) 
   
   # Traits distances used to simulate limiting similarity
   if (!is.null(limit.sim)) {
     if(!("immig" %in% type.limit))
     {
       tr.dist <- as.matrix(dist(com[, -(1:2)], method = method.dist))
+      sp.lab <- com[, 2]
       # Column and row names are individual labels
       colnames(tr.dist) <- paste("loc", com[, 1], sep=".")
       rownames(tr.dist) <- paste("loc", com[, 1], sep=".")
     } else {
       tr.dist <- as.matrix(dist(c(com[, -(1:2)], pool[, -(1:2)]), method = method.dist))
+      sp.lab <- c(com[, 2], pool[, 2])
       colnames(tr.dist) <- c(paste("loc", com[, 1], sep="."), paste("pool", pool[, 1], sep="."))
       rownames(tr.dist) <- c(paste("loc", com[, 1], sep="."), paste("pool", pool[, 1], sep="."))
     }
     diag(tr.dist) <- NA
     
+    # Should intraspecific competition be included
+    if(!limit.intra)
+    {
+      # In this case no limiting similarity within species
+      for(sp in unique(sp.lab))
+        tr.dist[sp.lab==sp, sp.lab==sp] <- NA
+    }
     # dist.t will display the average trait distance among species
     # for the whole community at each generation
     if (min(dim(tr.dist))>1) {
@@ -506,7 +465,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     # Influence of habitat filtering on mortality
     if("death" %in% type.filt & !is.null(filt)) { 
       
-      com_filter <- apply(com[, -(1:2), drop = FALSE], 1, hab_filter)
+      com_filter <- env_filter(com[, -(1:2), drop = FALSE])
       
       if (any(is.na(com_filter))) {
         stop("NA values in habitat filter", call. = FALSE)
@@ -551,7 +510,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     
     # Influence of habitat filtering on immigration
     if ("immig" %in% type.filt & !is.null(filt)) {
-      pool_filter <- apply(pool[, -(1:2), drop = FALSE], 1, hab_filter)
+      pool_filter <- env_filter(pool[, -(1:2), drop = FALSE])
       
       if (any(is.na(pool_filter))) {
         stop("NA values in habitat filter", call. = FALSE)
@@ -594,7 +553,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     # Influence of habitat filtering on recruitment
     if("loc.recr" %in% type.filt & !is.null(filt)) {
       
-      com_filter <- apply(com.init[, -(1:2), drop = FALSE], 1, hab_filter)
+      com_filter <- env_filter(com.init[, -(1:2), drop = FALSE])
       
       if (any(is.na(com_filter))) {
         stop("NA values in habitat filter", call. = FALSE)

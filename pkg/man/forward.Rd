@@ -16,9 +16,9 @@ generations.
 
 \usage{
 forward(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
-        pool = NULL, traits = NULL, filt = NULL, limit.sim = NULL, 
-        par.limit = 0.1, coeff.lim.sim = 1, type.filt = "immig", 
-        type.limit = "death", add = F, var.add = NULL, 
+        pool = NULL, traits = NULL, filt = NULL, limit.sim = NULL,
+        limit.intra = F, par.limit = 0.1, coeff.lim.sim = 1, 
+        type.filt = "immig", type.limit = "death", add = F, var.add = NULL, 
         prob.death = NULL, method.dist = "euclidean", plot_gens = FALSE)
 gauss_limit(dist, par)
 get_number_of_gens(given_size, pool, traits = NULL, nbrep = 5, prob = 1, 
@@ -69,7 +69,7 @@ If \code{NULL}, the pool is simulated as a metacommunity at speciation-drift
 equilibrium, based on \code{prob} for speciation rate.
 }
  \item{traits}{
-a matrix or data.frame including one or several traits on columns. A unique trait value is assigned to each species in the regional pool. Species names of \code{pool} must be included in \code{traits}.
+a matrix or data.frame including one or several traits on columns. A unique trait value is assigned to each species in the regional pool. Species names of \code{pool} must be included in rownames of \code{traits}.
 If \code{traits = NULL} and trait information is absent from \code{pool}, a random trait value is given to species of the regional pool, from a uniform distribution between 0 and 1. 
 }
  \item{given_size}{
@@ -91,6 +91,9 @@ If \code{NULL} but the \code{limit.sim} requires additional parameter values,
 an error message will be issues.
 In the case of default Gaussian limiting similarity function, the additional 
 parameter value sets the standard deviation of the Gaussian function.
+}
+ \item{limit.intra}{
+should there be intraspecific competition? Default is \code{FALSE}.
 }
  \item{coeff.lim.sim}{
 adjust the intensity of limiting similarity. 
@@ -240,8 +243,8 @@ final2$com$sp # includes new species that immigrated from the pool
 
 # Initial community composed of 10 species each including 10 individuals, 
 # with trait information for niche-based dynamics
-initial2 <- data.frame(sp = rep(as.character(1:10), each = 10), 
-                      trait = runif(100))
+initial2 <- data.frame(ind = 1:100, sp = rep(as.character(1:10), each = 10), 
+                      trait = runif(100), stringsAsFactors = F)
 
 # Simulation of stabilizing hab. filtering around t = 0.5, over 2000 time steps
 sigm <- 0.1
@@ -256,14 +259,28 @@ final4 <- forward(initial = initial2, prob = 0.1, gens = 2000, pool = pool,
                  type.filt = c("immig", "death", "loc.recr"))
 plot_comm(final4) # Stronger convergence around 0.5 
 
+# Simulation of stabilizing hab. filtering with two traits
+initial3 <- data.frame(ind = 1:100, sp = rep(as.character(1:10), each = 10), 
+                      tr1 = runif(100), tr2 = runif(100), stringsAsFactors = F)
+# Parameters of filtering for first trait
+topt1 <- 0.25
+sigm1 <- 0.1
+# Parameters of filtering for second trait
+topt2 <- 0.75
+sigm2 <- 0.2
+filt_gaussian <- function(x) exp(-(x[1] - topt1)^2/(2*sigm1^2)) * exp(-(x[2] - topt2)^2/(2*sigm2^2))
+final5 <- forward(initial = initial3, prob = 0.1, gens = 2000, pool = pool, 
+                 filt = filt_gaussian)
+plot_comm(final5) # trait distribution in final community
+
 # Simulation of limiting similarity, over 2000 time steps
-final5 <- forward(initial = initial2, prob = 0.1, gens = 2000, pool = pool, 
+final6 <- forward(initial = initial2, prob = 0.1, gens = 2000, pool = pool, 
                  limit.sim = TRUE)
-plot_comm(final5)
+plot_comm(final6)
 # Check temporal changes
-plot(final5$sp_t, xlab = "Time step", ylab = "Community richness")
+plot(final6$sp_t, xlab = "Time step", ylab = "Community richness")
 # Index of limiting similarity over time
-plot(final5$dist.t, xlab = "Time step", ylab = "Limiting similarity")
+plot(final6$dist.t, xlab = "Time step", ylab = "Limiting similarity")
 
 # Higher migration rate, 5000 time steps
 # Limiting similarity only plays on mortality
