@@ -183,6 +183,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
                       par.limit = par.limit, 
                       coeff.lim.sim = coeff.lim.sim, 
                       type.filt = type.filt, type.limit = type.limit, 
+                      add = add, var.add = var.add,
                       new.index = new.index,
                       method.dist = "euclidean")
     
@@ -249,7 +250,8 @@ pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
                  filt = NULL, limit.sim = NULL, limit.intra = F, par.limit = 0.1, 
                  coeff.lim.sim = 1, 
                  type.filt = "immig", type.limit = "death", 
-                 new.index = new.index, method.dist = "euclidean") {
+                 new.index = new.index, add = add, var.add = var.add,
+                 method.dist = "euclidean") {
   
   
   if (is.null(pool)) {
@@ -272,6 +274,7 @@ pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
                           limit.sim = limit.sim, limit.intra = limit.intra, 
                           par.limit = par.limit, coeff.lim.sim = coeff.lim.sim, 
                           type.filt = type.filt, type.limit = type.limit, 
+                          add = add, var.add = var.add,
                           method.dist = "euclidean"))
   }
 }
@@ -344,7 +347,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
                            prob.death = NULL, filt= NULL, limit.sim = NULL,
                            limit.intra = F, par.limit = 0.1,
                            coeff.lim.sim = 1, type.filt = "immig", 
-                           type.limit = "death", 
+                           type.limit = "death", add = F, var.add = NULL, 
                            method.dist = "euclidean") {
   
   if (is.vector(com)) {
