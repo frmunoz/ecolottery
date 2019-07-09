@@ -250,7 +250,7 @@ pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
                  filt = NULL, limit.sim = NULL, limit.intra = F, par.limit = 0.1, 
                  coeff.lim.sim = 1, 
                  type.filt = "immig", type.limit = "death", 
-                 new.index = new.index, add = add, var.add = var.add,
+                 add = add, var.add = var.add, new.index = new.index,
                  method.dist = "euclidean") {
   
   
