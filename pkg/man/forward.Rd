@@ -28,12 +28,13 @@ get_number_of_gens(given_size, pool, traits = NULL, nbrep = 5, prob = 1,
                    prob.death = NULL, method.dist = "euclidean", 
                    plot_gens = FALSE)
 pick(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
-     filt = NULL, limit.sim = NULL, par.limit = 0.1, coeff.lim.sim = 1, 
+     filt = NULL, limit.sim = NULL,  limit.intra = F, par.limit = 0.1, coeff.lim.sim = 1, 
      type.filt = "immig", type.limit = "death", add = add, var.add = var.add,
      new.index = new.index, method.dist = "euclidean")
 pick.mutate(com, d = 1, prob.of.mutate = 0, new.index = 0)
 pick.immigrate(com, d = 1, prob.of.immigrate = 0, pool, prob.death = NULL, 
-              filt = NULL, limit.sim = NULL, par.limit = 0.1, coeff.lim.sim = 1, 
+              filt = NULL, limit.sim = NULL,  limit.intra = F, 
+              par.limit = 0.1, coeff.lim.sim = 1, 
               type.filt = "immig", type.limit = "death", add = F, var.add = NULL,
               method.dist = "euclidean")
 }
@@ -86,15 +87,15 @@ if non null, limiting similarity will be simulated, based on species trait
 distances (computed with the method given by \code{method.dist}) and a Gaussian
 overlapping function. 
 }
+ \item{limit.intra}{
+should limiting similarity play on individual dynamics within species? Default is \code{FALSE}. 
+}
  \item{par.limit}{
 a vector of additional parameters to be passed to the limiting similarity function defined in \code{limit.sim}.
 If \code{NULL} but the \code{limit.sim} requires additional parameter values,
 an error message will be issues.
 In the case of default Gaussian limiting similarity function, the additional 
 parameter value sets the standard deviation of the Gaussian function.
-}
- \item{limit.intra}{
-should there be intraspecific competition? Default is \code{FALSE}.
 }
  \item{coeff.lim.sim}{
 adjust the intensity of limiting similarity. 
