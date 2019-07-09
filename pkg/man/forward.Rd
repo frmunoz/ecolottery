@@ -180,7 +180,7 @@ Functions \code{pick.immigrate()} and \code{pick.mutate()} are used to simulate
 immigration and speciation events within a time step. They are embedded in
 forward and are not really intended for the end user. 
 
-A Shiny app is available to visualize simulated trait distributions for chosen parameter values in the model: \link{https://ecolottery.shinyapps.io/forward/}.
+A \href{https://ecolottery.shinyapps.io/forward/}{Shiny app} is available to visualize simulated trait distributions for chosen parameter values in the model.
 }
 \value{
 \item{com}{
