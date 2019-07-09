@@ -272,7 +272,8 @@ sigm2 <- 0.2
 filt_gaussian <- function(x) exp(-(x[1] - topt1)^2/(2*sigm1^2)) * exp(-(x[2] - topt2)^2/(2*sigm2^2))
 final5 <- forward(initial = initial3, prob = 0.1, gens = 2000, pool = pool, 
                  filt = filt_gaussian)
-plot_comm(final5) # trait distribution in final community
+plot_comm(final5, seltrait = 1) # trait distribution in final community (first trait)
+plot_comm(final5, seltrait = 2) # trait distribution in final community (second trait)
 
 # Simulation of limiting similarity, over 2000 time steps
 final6 <- forward(initial = initial2, prob = 0.1, gens = 2000, pool = pool, 
