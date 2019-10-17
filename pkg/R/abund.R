@@ -6,9 +6,14 @@ abund <- function(x) {
   }
   
   # Select only elements that are data frames
+  if("com_t" %in% names(x)) {
+    y <- x$com_t[lapply(x$com_t, class)=="data.frame"]
+    names(y) <- paste("com_t", 1:length(x$com_t), sep=".")
+  } else y <- NULL
   x <- x[lapply(x, class)=="data.frame"]
+  x <- c(x, y)
   
-    rel_abund_list <-  lapply(x, function(y) {
+  rel_abund_list <-  lapply(x, function(y) {
       
       if (is.list(y) & !is.data.frame(y) & !is.matrix(y)) {
         rel_abund <- lapply(y, .get_rel_abund)
@@ -17,14 +22,14 @@ abund <- function(x) {
       } 
       
       return(rel_abund)
-    })
+  })
     
-    if (sum(is.na(rel_abund_list)) + sum(is.null(rel_abund_list)) != 0) {
+  if (sum(is.na(rel_abund_list)) + sum(is.null(rel_abund_list)) != 0) {
       warning("Some communities were undefined; returning NA abundances",
               call. = FALSE)
-    }
-    
-    return(rel_abund_list)
+  }
+  
+  return(rel_abund_list)
 }
 
 # Internal function to compute relative abundances from a community data.frame

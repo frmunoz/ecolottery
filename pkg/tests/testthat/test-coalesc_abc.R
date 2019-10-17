@@ -3,6 +3,8 @@ context("Test coalesc_abc() structure")
 test_that("coalesc_abc() works and returns desired result structure", {
   set.seed(1)
   
+  rm(f.sumstats)
+  
   # 1/ Analysis of community assembly in a single community
   
   # Trait-dependent filtering function
@@ -33,8 +35,8 @@ test_that("coalesc_abc() works and returns desired result structure", {
   res.single <- coalesc_abc(comm$com, comm$pool, f.sumstats = f.sumstats,
                            filt.abc = filt_gaussian, par.filt = par.range, 
                            nb.samp = nb.samp, parallel = TRUE, tol = 0.5,
-                           pkg = NULL, #c("e1071","vegan"),
-                           method.abc = "neuralnet")
+                           pkg = c("e1071","vegan"),
+                           method.abc = "rejection")
   sink()
   expect_is(res.single, "list")
   expect_named(res.single, c("par", "obs", "obs.scaled", "ss", "ss.scale", "abc", "call"))
@@ -113,8 +115,8 @@ test_that("coalesc_abc() works and returns desired result structure", {
                           filt.abc = filt_gaussian_env, par.filt = par.range, 
                           add = T, var.add = env1,
                           nb.samp = nb.samp, parallel = TRUE, tol = 0.5,
-                          pkg = NULL,# c("e1071","vegan"),
-                          method.abc = "neuralnet")
+                          pkg = c("e1071","vegan"),
+                          method.abc = "rejection")
   sink()
   expect_is(res.tab1, "list")
   expect_named(res.tab1, c("par", "obs", "obs.scaled", "ss", "ss.scale", "abc", "call"))
@@ -170,8 +172,8 @@ test_that("coalesc_abc() works and returns desired result structure", {
                           par.filt = par.filt.range, par.migr = par.migr.range,
                           add = T, var.add = env,
                           nb.samp = nb.samp, parallel = FALSE, tol = 0.5,
-                          pkg = NULL, #c("e1071","vegan"),
-                          method.abc = "neuralnet")
+                          pkg = c("e1071","vegan"),
+                          method.abc = "rejection")
   sink()
   expect_is(res.tab2, "list")
   expect_named(res.tab2, c("par", "obs", "obs.scaled", "ss", "ss.scale", "abc", "call"))
@@ -223,7 +225,7 @@ test_that("coalesc_abc() works and returns desired result structure", {
                           par.filt = par.range, 
                           nb.samp = nb.samp, parallel = FALSE, tol = 0.5,
                           pkg = NULL, #c("e1071","vegan"),
-                          method.abc = "neuralnet")
+                          method.abc = "rejection")
   sink()
   expect_is(res.tab3, "list")
   expect_named(res.tab3, c("par", "obs", "obs.scaled", "ss", "ss.scale", "abc", "call"))

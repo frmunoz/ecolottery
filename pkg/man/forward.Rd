@@ -1,5 +1,6 @@
 \name{forward}
 \alias{forward}
+\alias{gauss_limit}
 \alias{get_number_of_gens}
 \alias{pick}
 \alias{pick.mutate}
@@ -15,23 +16,26 @@ generations.
 
 \usage{
 forward(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
-        pool = NULL, traits = NULL, filt = NULL, limit.sim = FALSE, 
-        coeff.lim.sim = 1, type.filt = "immig", type.limit = "death", 
-        sigm = 0.1, add = F, var.add = NULL, prob.death = NULL, 
-        method.dist = "euclidean", plot_gens = FALSE)
+        pool = NULL, traits = NULL, filt = NULL, limit.sim = NULL,
+        limit.intra = F, par.limit = 0.1, coeff.lim.sim = 1, 
+        type.filt = "immig", type.limit = "death", add = F, var.add = NULL, 
+        prob.death = NULL, method.dist = "euclidean", plot_gens = FALSE)
+gauss_limit(dist, par)
 get_number_of_gens(given_size, pool, traits = NULL, nbrep = 5, prob = 1, 
-                   d = 1, gens = NULL, filt = NULL,  limit.sim = FALSE, 
-                   coeff.lim.sim = 1, type.filt = "immig", type.limit = "death", 
-                   sigm = 0.1, add = F, var.add = NULL, prob.death = NULL, 
-                   method.dist = "euclidean", plot_gens = FALSE)
+                   d = 1, gens = NULL, filt = NULL,  limit.sim = NULL,
+                   par.limit = 0.1, coeff.lim.sim = 1, type.filt = "immig", 
+                   type.limit = "death", add = F, var.add = NULL, 
+                   prob.death = NULL, method.dist = "euclidean", 
+                   plot_gens = FALSE)
 pick(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
-     filt = NULL, limit.sim = NULL, coeff.lim.sim = 1, type.filt = "immig", 
-     type.limit = "death", sigm = 0.1, new.index = new.index, 
-     method.dist = "euclidean")
+     filt = NULL, limit.sim = NULL,  limit.intra = F, par.limit = 0.1, coeff.lim.sim = 1, 
+     type.filt = "immig", type.limit = "death", add = add, var.add = var.add,
+     new.index = new.index, method.dist = "euclidean")
 pick.mutate(com, d = 1, prob.of.mutate = 0, new.index = 0)
 pick.immigrate(com, d = 1, prob.of.immigrate = 0, pool, prob.death = NULL, 
-              filt = NULL, limit.sim = NULL, coeff.lim.sim = 1, 
-              type.filt = "immig", type.limit = "death", sigm = 0.1, 
+              filt = NULL, limit.sim = NULL,  limit.intra = F, 
+              par.limit = 0.1, coeff.lim.sim = 1, 
+              type.filt = "immig", type.limit = "death", add = F, var.add = NULL,
               method.dist = "euclidean")
 }
 
@@ -67,7 +71,7 @@ If \code{NULL}, the pool is simulated as a metacommunity at speciation-drift
 equilibrium, based on \code{prob} for speciation rate.
 }
  \item{traits}{
-a matrix or data.frame including one or several traits on columns. A unique trait value is assigned to each species in the regional pool. Species names of \code{pool} must be included in \code{traits}.
+a matrix or data.frame including one or several traits on columns. A unique trait value is assigned to each species in the regional pool. Species names of \code{pool} must be included in rownames of \code{traits}.
 If \code{traits = NULL} and trait information is absent from \code{pool}, a random trait value is given to species of the regional pool, from a uniform distribution between 0 and 1. 
 }
  \item{given_size}{
@@ -79,9 +83,19 @@ number of replicates from which you want to estimate the number of generations
 needed to reach stationarity in species richness.
 }
  \item{limit.sim}{
-if \code{TRUE,} limiting similarity will be simulated, based on species trait
+if non null, limiting similarity will be simulated, based on species trait
 distances (computed with the method given by \code{method.dist}) and a Gaussian
 overlapping function. 
+}
+ \item{limit.intra}{
+should limiting similarity play on individual dynamics within species? Default is \code{FALSE}. 
+}
+ \item{par.limit}{
+a vector of additional parameters to be passed to the limiting similarity function defined in \code{limit.sim}.
+If \code{NULL} but the \code{limit.sim} requires additional parameter values,
+an error message will be issues.
+In the case of default Gaussian limiting similarity function, the additional 
+parameter value sets the standard deviation of the Gaussian function.
 }
  \item{coeff.lim.sim}{
 adjust the intensity of limiting similarity. 
@@ -100,10 +114,6 @@ If \code{type.limit="immig"}, it plays at the establishment of immigrants,
 If \code{type.limit="loc.recr"}, it plays at the establishment of local offspring.
 \code{type.limit} can be any combination of these three values.
 }
- \item{sigm}{
-adjust the variance of the overlap function used to calculate limiting
-similarity.
-}
  \item{filt}{
 the function used to represent habitat filtering. For a given trait value
 \code{t}, \code{filt(t)} represents the probability that an individual with
@@ -121,7 +131,7 @@ is used in niche-based dynamics to represent the balance of baseline and
 niche-dependent mortality.
 }
  \item{method.dist}{
-provide the method to compute trait distances between individuals (syntax of
+provides the method to compute trait distances between individuals (syntax of
 function \code{\link[stats]{dist}}, can be in the list \code{c("euclidean",
 "maximum", "manhattan", 
 "canberra", "binary", "minkowski")}).
@@ -131,6 +141,12 @@ prefix used to give a new species name when speciation occurs.
 }
  \item{plot_gens}{
 plot the number of unique individuals and species over generations.
+}
+ \item{dist}{
+vector of trait distances that is used for calculation of limiting similarity.
+}
+ \item{par}{
+addditional parameter values to be passed to \code{limit.sim} function.
 }
 }
 \details{
@@ -149,6 +165,9 @@ and \code{type.simil = "death"}, which corresponds to a classical conception of
 the hierarchical influence of habitat filtering and limiting similarity on immigration success
 and local survival.
 
+\code{gauss_limit()} is the default function used to compute limiting similarity. In this case, the relative performance of an individual decreases depending on the sum of exponential distances to other individuals in the community (McArthur and Levins 1967), i.e.,
+
+
 Function \code{get_number_of_gen()} allows determining the number of generations
 needed to reach stationary richness for given parameterization of
 \code{forward()}. The target number of generation is based on assessing the
@@ -160,6 +179,8 @@ communities.
 Functions \code{pick.immigrate()} and \code{pick.mutate()} are used to simulate
 immigration and speciation events within a time step. They are embedded in
 forward and are not really intended for the end user. 
+
+A \href{https://ecolottery.shinyapps.io/forward/}{Shiny app} is available to visualize simulated trait distributions for chosen parameter values in the model.
 }
 \value{
 \item{com}{
@@ -194,8 +215,11 @@ the call function.
 }
 }
 \references{
-For neutral dynamics, S. P. Hubbell 2001. "The Unified Neutral Theory of
+For neutral dynamics, see S. P. Hubbell 2001. "The Unified Neutral Theory of
 Biodiversity". Princeton University Press. 
+
+For the default model of limiting similarity,
+MacArthur, R., Levins, R., 1967. The limiting similarity, convergence, and divergence of coexisting species. The American Naturalist 101, 377–385.
 }
 \author{
 F. Munoz, derived from the \code{untb} function of R. Hankin.
@@ -221,8 +245,8 @@ final2$com$sp # includes new species that immigrated from the pool
 
 # Initial community composed of 10 species each including 10 individuals, 
 # with trait information for niche-based dynamics
-initial2 <- data.frame(sp = rep(as.character(1:10), each = 10), 
-                      trait = runif(100))
+initial2 <- data.frame(ind = 1:100, sp = rep(as.character(1:10), each = 10), 
+                      trait = runif(100), stringsAsFactors = F)
 
 # Simulation of stabilizing hab. filtering around t = 0.5, over 2000 time steps
 sigm <- 0.1
@@ -237,30 +261,45 @@ final4 <- forward(initial = initial2, prob = 0.1, gens = 2000, pool = pool,
                  type.filt = c("immig", "death", "loc.recr"))
 plot_comm(final4) # Stronger convergence around 0.5 
 
+# Simulation of stabilizing hab. filtering with two traits
+initial3 <- data.frame(ind = 1:100, sp = rep(as.character(1:10), each = 10), 
+                      tr1 = runif(100), tr2 = runif(100), stringsAsFactors = F)
+# Parameters of filtering for first trait
+topt1 <- 0.25
+sigm1 <- 0.1
+# Parameters of filtering for second trait
+topt2 <- 0.75
+sigm2 <- 0.2
+filt_gaussian <- function(x) exp(-(x[1] - topt1)^2/(2*sigm1^2)) * exp(-(x[2] - topt2)^2/(2*sigm2^2))
+final5 <- forward(initial = initial3, prob = 0.1, gens = 2000, pool = pool, 
+                 filt = filt_gaussian)
+plot_comm(final5, seltrait = 1) # trait distribution in final community (first trait)
+plot_comm(final5, seltrait = 2) # trait distribution in final community (second trait)
+
 # Simulation of limiting similarity, over 2000 time steps
-final5 <- forward(initial = initial2, prob = 0.1, gens = 2000, pool = pool, 
+final6 <- forward(initial = initial2, prob = 0.1, gens = 2000, pool = pool, 
                  limit.sim = TRUE)
-plot_comm(final5)
+plot_comm(final6)
 # Check temporal changes
-plot(final5$sp_t, xlab = "Time step", ylab = "Community richness")
+plot(final6$sp_t, xlab = "Time step", ylab = "Community richness")
 # Index of limiting similarity over time
-plot(final5$dist.t, xlab = "Time step", ylab = "Limiting similarity")
+plot(final6$dist.t, xlab = "Time step", ylab = "Limiting similarity")
 
 # Higher migration rate, 5000 time steps
 # Limiting similarity only plays on mortality
-final6 <- forward(initial = initial2, prob = 0.7, gens = 5000, pool = pool, 
-                 limit.sim = TRUE)
-plot_comm(final6) # should be closer to regional distribution
-# Limiting similarity plays on immigration, mortality and local recruitment
 final7 <- forward(initial = initial2, prob = 0.7, gens = 5000, pool = pool, 
+                 limit.sim = TRUE)
+plot_comm(final7) # should be closer to regional distribution
+# Limiting similarity plays on immigration, mortality and local recruitment
+final8 <- forward(initial = initial2, prob = 0.7, gens = 5000, pool = pool, 
                  limit.sim = TRUE, type.limit = c("immig", "death", "loc.recr"))
-plot_comm(final7)
+plot_comm(final8)
 # Check temporal changes
-plot(final7$sp_t, xlab = "Time step", ylab = "Community richness")
-points(1:5000, final6$sp_t, col="blue")
+plot(final8$sp_t, xlab = "Time step", ylab = "Community richness")
+points(1:5000, final7$sp_t, col="blue")
 # Index of limiting similarity over time
-plot(final7$dist.t, xlab = "Time step", ylab = "Limiting similarity")
-points(1:5000, final6$dist.t, col="blue")
+plot(final8$dist.t, xlab = "Time step", ylab = "Limiting similarity")
+points(1:5000, final7$dist.t, col="blue")
 }
 }
 

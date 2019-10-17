@@ -8,16 +8,16 @@ test_that("get_rel_abund() works", {
                                    row.names = as.character(1:3),
                                    stringsAsFactors = FALSE)
   
-  comp_rel_abund <- .get_rel_abund(given_com)
+  comp_rel_abund <- abund(list(given_com))[[1]]
   
   expect_is(comp_rel_abund, "data.frame")
   expect_named(comp_rel_abund, c("ab", "relab"))
   expect_equal(dim(comp_rel_abund), c(3, 2))
-  expect_equal(.get_rel_abund(given_com),
+  expect_equal(abund(list(given_com))[[1]],
                expected_rel_abund)
   
   # Extreme case single individual of a single species in community
-  expect_equal(.get_rel_abund(data.frame(ind = 1, sp = 1)), 
+  expect_equal(abund(list(data.frame(ind = 1, sp = 1)))[[1]], 
                data.frame(ab = 1, relab = 1, row.names = "1",
                           stringsAsFactors = FALSE))
   
@@ -37,14 +37,10 @@ test_that("abund() works", {
     ab_coal <- abund(coal_final)
   })
   
-  expect_length(ab_coal, 3)
-  expect_named(ab_coal, c("com", "pool", "call"))
+  expect_length(ab_coal, 2)
+  expect_named(ab_coal, c("com", "pool"))
   
-  expect_length(ab_fwd, 4)
-  expect_warning(abund(fwd_final), fixed = TRUE,
-                 "Some communities were undefined; returning NA abundances")
-  
-  expect_length(ab_keep, 4)
-  expect_length(ab_keep$com_t, 1000)
-  expect_named(ab_keep, names(fwd_keep))
+  expect_length(ab_fwd, 1)
+ 
+  expect_length(ab_keep, 1000)
 })

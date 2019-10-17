@@ -298,12 +298,15 @@ As for *coalesc*, the user can define the composition of the species pool from w
 We can for instance simulate stabilizing environmental filtering in a way analogous to the previous example with *`coalesc()`*. *`d = 10`* represents the number of individuals that die in the community at each time step, *`prob = 0.5`* represents the immigration rate at each time step. The number of simulated time steps is *`gens = 500`*.
 
 ```{r, message = F, eval = T}
-pool <- data.frame(ind=1:Jpool, sp=rep(as.character(1:500),Jpool/500), 
-                   tra=rep(NA,Jpool), stringsAsFactors=F)
-t.sp <- data.frame(sp=as.character(1:500), tra = runif(500))
+pool <- data.frame(ind = paste("pool", 1:Jpool, sep="."), sp = rep(as.character(1:500),Jpool/500), 
+                   tra = rep(NA,Jpool), stringsAsFactors=F)
+t.sp <- data.frame(rownames = as.character(1:500), tra = runif(500))
 pool$tra <- t.sp[pool$sp,]$tra
 # Initial community composed of 500 individuals
-initial <- pool[sample(1:Jpool,500),]
+J <- 500
+initial <- data.frame(ind = paste("init", 1:J, sep="."), sp = rep(as.character(1:50),J/50), 
+                   tra = rep(NA,J), stringsAsFactors=F)
+initial$tra <- t.sp[initial$sp,]$tra
 # Forward-in-time simulation 
 sigma <- 0.1
 filt_gaussian <- function(t,x) exp(-(x-t)^2/(2*sigma^2))

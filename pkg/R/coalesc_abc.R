@@ -166,7 +166,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
           } else tapply(data.frame(pool[,x]), pool[, 2], function(y) names(y[which.max(table(y))]))), 
         stringsAsFactors = F)
     }
-  } else if (is.null(traits) & ncol(pool) < 3) 
+  } else if (!is.null(filt.abc) & is.null(traits) & ncol(pool) < 3) 
     warning("Trait information is not provided", call. = FALSE)
   
   # Community size
@@ -244,7 +244,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
           if(parallel){
             set.seed(par[1])
             comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(x, par[2:(length(par)-1)]),
-                                 add = F,  var.add =NULL, pool=pool, 
+                                 add = F,  var.add = NULL, pool = pool, 
                                  traits = NULL, Jpool = 50 * J, verbose = FALSE, checks = F)
             if (length(formals(f.sumstats))==1) {
               stats.samp <- as.vector(f.sumstats(comm.samp$com))
@@ -252,7 +252,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
               stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
             }} else {
               comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(x, par[1:(length(par)-1)]),
-                                   add = F,  var.add =NULL, pool=pool, 
+                                   add = F,  var.add = NULL, pool = pool, 
                                    traits = NULL, checks = F)
               if (length(formals(f.sumstats))==1) {
                 stats.samp <- as.vector(f.sumstats(comm.samp$com))
@@ -644,11 +644,11 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
         params.samp <- params.samp[-length(params.samp)]
       }
       
-      filt <- ifelse(!is.null(filt.abc),
-                     ifelse(!add, 
+      ifelse(!is.null(filt.abc),
+             filt <- ifelse(!add, 
                             function(x) filt.abc(x, params.samp[1:nrow(par.filt)]),
                             function(x, var.add) filt.abc(x, params.samp[1:nrow(par.filt)], var.add)),
-                     NA)
+             filt <- NULL)
       migr <- ifelse(!is.null(migr.abc),
                      ifelse(!add, 
                             function() migr.abc(params.samp[(nrow(par.filt)+1):(nrow(par.filt)+nrow(par.migr))]),
