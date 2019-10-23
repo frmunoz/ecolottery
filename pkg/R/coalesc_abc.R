@@ -644,11 +644,10 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
         params.samp <- params.samp[-length(params.samp)]
       }
       
-      ifelse(!is.null(filt.abc),
-             filt <- ifelse(!add, 
+     if(!is.null(filt.abc))  filt <- ifelse(!add, 
                             function(x) filt.abc(x, params.samp[1:nrow(par.filt)]),
-                            function(x, var.add) filt.abc(x, params.samp[1:nrow(par.filt)], var.add)),
-             filt <- NULL)
+                            function(x, var.add) filt.abc(x, params.samp[1:nrow(par.filt)], var.add))
+     else filt <- NULL
       migr <- ifelse(!is.null(migr.abc),
                      ifelse(!add, 
                             function() migr.abc(params.samp[(nrow(par.filt)+1):(nrow(par.filt)+nrow(par.migr))]),
