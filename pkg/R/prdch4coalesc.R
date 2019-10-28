@@ -41,11 +41,19 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund", f.stats 
   for(i in seq(nrow(params))){
     if(!is.null(filt)){
       par <- params[i,]
+<<<<<<< HEAD
       sim <- ecolottery::coalesc(J, par[length(par)], theta = NULL, filt = function(x) filt(x, par[-length(par)]), 
                                  add = F,var.add =NULL, pool = pool, traits = NULL, 
                                  Jpool = 50 * J, 
                                  verbose = FALSE)}else{
       sim <-  ecolottery::coalesc(J, par[length(par)], theta = NULL, filt = NULL, 
+=======
+      sim <- ecolottery::coalesc(J, par[,length(par)], theta = NULL, filt = function(x) filt(x, par[i,]), 
+                                 add = F,var.add =NULL, pool = pool, traits = NULL, 
+                                 Jpool = 50 * J, 
+                                 verbose = FALSE)}else{
+      sim <-  ecolottery::coalesc(J, par[i,length(par)], theta = NULL, filt = NULL, 
+>>>>>>> a26d8c56a856ca2aaa94371746cf87c195c5634f
                                   add = F,var.add =NULL, pool = pool, traits = NULL, 
                                   Jpool = 50 * J, 
                                   verbose = FALSE)
