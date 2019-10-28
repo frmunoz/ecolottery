@@ -40,11 +40,12 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund", f.stats 
   pb <- txtProgressBar(min = 0, max = nrow(params), style = 3)
   for(i in seq(nrow(params))){
     if(!is.null(filt)){
-      sim <- ecolottery::coalesc(J, params[i,length(params)], theta = NULL, filt = function(x) filt(x, params[i,]), 
+      par <- params[i,]
+      sim <- ecolottery::coalesc(J, par[,length(par)], theta = NULL, filt = function(x) filt(x, par[i,]), 
                                  add = F,var.add =NULL, pool = pool, traits = NULL, 
                                  Jpool = 50 * J, 
                                  verbose = FALSE)}else{
-      sim <-  ecolottery::coalesc(J, params[i,length(params)], theta = NULL, filt = NULL, 
+      sim <-  ecolottery::coalesc(J, par[i,length(par)], theta = NULL, filt = NULL, 
                                   add = F,var.add =NULL, pool = pool, traits = NULL, 
                                   Jpool = 50 * J, 
                                   verbose = FALSE)
