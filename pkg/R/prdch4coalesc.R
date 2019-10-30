@@ -53,7 +53,6 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund", f.stats 
                                   
                                   
                                 
-    }
     all.sims[[i]] <- sim$com
     setTxtProgressBar(pb, i)
   }
