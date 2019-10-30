@@ -1,4 +1,5 @@
-prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund", f.stats = NULL, estim = NULL){
+prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
+                          f.stats = NULL, estim = NULL) {
   if(!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("This function requires the package ggplot2 to be installed to work")
   }
