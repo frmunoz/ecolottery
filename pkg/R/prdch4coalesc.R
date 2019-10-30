@@ -21,7 +21,7 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund", f.stats 
   if(ncol(data.frame(params))>1) if(is.null(filt)) stop("When simulating neutral communities params should only contain the migration rate posterior parameter distribution")
   if(ncol(data.frame(params))==1) if(!is.null(filt)) stop("Users should provided more than one posterior parameter distribution when simulating communities undergoing environmental filtering")
   
-  lim <- 100 #a définir en fonction du temps necessaire a faire tourner ce nombre de simulation, possible de mettre une option pour forcer?
+  lim <- 100 #a definir en fonction du temps necessaire a faire tourner ce nombre de simulation, possible de mettre une option pour forcer?
   J <- nrow(com.obs)
   
   if(!is.null(estim)){
@@ -33,7 +33,7 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund", f.stats 
     params <- matrix(rep(params,each=lim),nrow=lim)
   }else{
     if(nrow(params) > lim){
-      warning("Parameter distribution is large - Predictive checks using a sample of the posterior parameter distribution (ecrire ça mieux)")
+      warning("Parameter distribution is large - Predictive checks using a sample of the posterior parameter distribution (ecrire ca mieux)")
       params <- params[sample(nrow(params),lim),]
     }
   }
