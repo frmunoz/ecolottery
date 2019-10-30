@@ -78,7 +78,7 @@ f.stats <- function(com){
   tab <- table(com[,2])
   as.vector(t(sapply(0:3, function(x) hillR::hill_taxa(tab, q=x)))) }
   
-filt <- function(x, par) exp(-(x - par[1])^2/(2*par[2]^2))
+filt <- function(x, par) exp(-(x - par[[1]])^2/(2*par[[2]]^2))
 
 stats <- c("custom","abund", "moments")
 
