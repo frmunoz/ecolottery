@@ -11,6 +11,7 @@ importFrom("stats", "complete.cases", "dist", "median", "optim", "rmultinom", "r
 importFrom("plyr", "adply")
 importFrom("abc", "abc")
 importFrom("parallel", "parLapply")
+importFrom("utils", "setTxtProgressBar", "txtProgressBar")
 
 # Registered S3 methods
 #S3method(barplot, Tstats)

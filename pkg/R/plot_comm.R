@@ -71,6 +71,10 @@ plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL)
      },
     "sad" =
     {
+      if (!requireNamespace("sads", quietly = TRUE)) {
+        stop("In order to plot SAD curves the package 'sads' has to be ",
+             "installed")
+      }
       #Fits log-series distribution to abundance data
       ab.com.ls <- sads::fitsad(ab$com$ab, "ls")
       
@@ -78,7 +82,11 @@ plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL)
       sads::ppsad(ab.com.ls)
     },
     "rad" =
-    {
+    { 
+      if (!requireNamespace("sads", quietly = TRUE)) {
+        stop("In order to plot RAD curves the package 'sads' has to be ",
+             "installed")
+      }
       #Fits geometric series to abundance data
       ab.com.gs <- sads::fitrad(ab$com$ab, "gs")
       

@@ -8,7 +8,8 @@ Posterior predictive checks using coalescent-based simulation of ecological comm
 This function performs posterior predicitve checks assessing a model's prediction performance of either user defined summary statistics, functional diversity (moments of the trait distribution, Enquist et al., 2015) or species rank-abundance plots}
 
 \usage{
-prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund", f.stats = NULL, estim = NULL)
+prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
+                          f.stats = NULL, estim = NULL)
 }
 
 \arguments{
@@ -68,7 +69,9 @@ E. Barthelemy
 }
 
 \examples{
-pool <- data.frame(ind = 1:1000, sp = as.character(rep(1:50), each = 10),trait = runif(1000), stringsAsFactors = F)
+pool <- data.frame(ind = 1:1000,
+                   sp = as.character(rep(1:50), each = 10),
+                   trait = runif(1000), stringsAsFactors = F)
 com.obs <- pool[sample(nrow(pool), 50),]
 
 f.stats <- function(com){

@@ -1,5 +1,7 @@
 prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund", f.stats = NULL, estim = NULL){
-  require(ggplot2)
+  if(!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop("This function requires the package ggplot2 to be installed to work")
+  }
   getmode <- function(v) {
     uniqv <- unique(v)
     uniqv[which.max(tabulate(match(v, uniqv)))]
@@ -19,7 +21,7 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund", f.stats 
   if(ncol(data.frame(params))>1) if(is.null(filt)) stop("When simulating neutral communities params should only contain the migration rate posterior parameter distribution")
   if(ncol(data.frame(params))==1) if(!is.null(filt)) stop("Users should provided more than one posterior parameter distribution when simulating communities undergoing environmental filtering")
   
-  lim <- 100 #à définir en fonction du temps necessaire à faire tourner ce nombre de simulation, possible de mettre une option pour forcer?
+  lim <- 100 #a définir en fonction du temps necessaire a faire tourner ce nombre de simulation, possible de mettre une option pour forcer?
   J <- nrow(com.obs)
   
   if(!is.null(estim)){
@@ -103,17 +105,22 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund", f.stats 
                     sd = unlist(lapply(split(rank.sim, as.factor(rank.sim$rank)), function(x) sd(x$abund))))
     
     cols <- c("Simulated"="#E69F00","Observed"="#56B4E9")
-    print(ggplot(d, aes(x=rank, y=mean)) + 
-      geom_point(data = rank.obs, aes(x=rank, y=abund, color="Observed")) +
-      geom_line(data = rank.obs, aes(x=rank, y=abund, color="Observed"))+
-      labs(x = "Rank", y = "Relative Abundance", title = "Species Rank-Abundance Curve")+
-      scale_colour_manual(name=" ",values=cols) +
-      geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd, color ="Simulated"), width=0,position=position_dodge(0.05)))
+    print(ggplot(d, aes(x = rank, y = mean)) + 
+      geom_point(data = rank.obs, aes(x = rank, y = abund, color = "Observed")) +
+      geom_line(data = rank.obs, aes(x = rank, y = abund, color = "Observed")) +
+      labs(x = "Rank", y = "Relative Abundance",
+           title = "Species Rank-Abundance Curve")+
+      scale_colour_manual(name = " ", values = cols) +
+      geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd,
+                        color = "Simulated"), width = 0,
+                    position = position_dodge(0.05)))
     
-    print(ggplot(rank.obs, aes(x=rank, y=abund, color=mdl, label=sp)) +
-      geom_point(aes(color=mdl))+
+    print(ggplot(rank.obs, aes_string(x = "rank", y = "abund", color = "mdl",
+                                      label = "sp")) +
+      geom_point(aes_string(color = "mdl"))+
       geom_text(angle = 90,hjust=0, vjust=0, size=3, show.legend = F)+
-      labs(x = "Rank", y = "Relative Abundance", title = "Species Rank-Abundance Curve")+
+      labs(x = "Rank", y = "Relative Abundance",
+           title = "Species Rank-Abundance Curve")+
       scale_color_manual(breaks = c("Under-estimated", "Over-estimated", "OK"),
                          values=c("#999999", "#E69F00", "#56B4E9")))
     
