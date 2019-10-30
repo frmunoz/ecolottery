@@ -10,7 +10,11 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
   
   sp.rank <- function(com){
     temp <- sort(table(com[,2]), decreasing = T)
-    return(data.frame(sp=names(temp), rank=1:length(temp), abund = sapply(temp, function(x) x /sum(temp)), stringsAsFactors = F))
+    
+    return(data.frame(sp = names(temp),
+                      rank = 1:length(temp),
+                      abund = sapply(temp, function(x) x /sum(temp)),
+                      stringsAsFactors = F))
   }
   
   rel.abund <- function(com){
@@ -32,7 +36,7 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
                      "mode" = apply(params,2,getmode))
     
     params <- matrix(rep(params,each=lim),nrow=lim)
-  }else{
+  } else {
     if(nrow(params) > lim){
       warning("Parameter distribution is large - Predictive checks using a sample of the posterior parameter distribution (ecrire ca mieux)")
       params <- params[sample(nrow(params),lim),]
@@ -45,17 +49,16 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
     if(!is.null(filt)){
       par <- params[i,]
       
-      sim <- ecolottery::coalesc(J, par[length(par)], theta = NULL, filt = function(x) filt(x, par[-length(par)]), 
-                                 add = F,var.add =NULL, pool = pool, traits = NULL, 
-                                 Jpool = 50 * J, 
-                                 verbose = FALSE)}else{
+      sim <- ecolottery::coalesc(J, par[length(par)], theta = NULL,
+                                 filt = function(x) filt(x, par[-length(par)]), 
+                                 add = F,var.add = NULL, pool = pool,
+                                 traits = NULL, Jpool = 50 * J, verbose = FALSE)
+    } else {
       sim <-  ecolottery::coalesc(J, par[length(par)], theta = NULL, filt = NULL, 
-                                  add = F,var.add =NULL, pool = pool, traits = NULL, 
-                                  Jpool = 50 * J, 
-                                  verbose = FALSE)}
-                                  
-                                  
-                                
+                                  add = F,var.add = NULL, pool = pool,
+                                  traits = NULL, Jpool = 50 * J,
+                                  verbose = FALSE)
+    }
     all.sims[[i]] <- sim$com
     setTxtProgressBar(pb, i)
   }
