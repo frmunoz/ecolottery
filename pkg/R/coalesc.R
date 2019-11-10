@@ -168,8 +168,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, add = FALSE,
   #                                             function(x, var.add) adply(x, 1, function(i) filt(i, var.add), .expand=F)[,2]), 
   #                      function(x) rep(1, nrow(x))) 
   env_filter <- ifelse(!is.null(filt), ifelse(!add, 
-                                               function(x) apply(x, 1, filt, .expand=F)[,2], 
-                                               function(x, var.add) apply(x, 1, function(i) filt(i, var.add), .expand=F)[,2]), 
+                                               function(x) apply(x, 1, filt), 
+                                               function(x, var.add) apply(x, 1, function(i) filt(i, var.add))), 
                         function(x) rep(1, nrow(x))) 
 
   if (!add) 
