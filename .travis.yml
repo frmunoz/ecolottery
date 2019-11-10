@@ -6,7 +6,6 @@ before_install:
   - cd pkg
 
 r:
-  - oldrel
   - release
   - devel
 
