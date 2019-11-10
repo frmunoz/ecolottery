@@ -44,8 +44,7 @@ plot_comm(x, type = "trait", seltrait = 1, main = NULL)
   If \code{type = "locreg"}, it displays the relationship between
   regional and local species relative abundances.
   If \code{type = "sad"} or \code{"rad"}, it shows the percentile plots provided by 
-  functions \code{\link[sads]{ppsad}} and  \code{\link[sads]{pprad}} 
-  in the \code{"sads"} package. The reference red line corresponds to log-series 
+  functions in the \code{"sads"} package (see \code{\link[sads]{ppsad}}). The reference red line corresponds to log-series 
   for \code{"sad"} and to geometric series for \code{"rad"}.
   
   By default \code{type = "trait"}.
