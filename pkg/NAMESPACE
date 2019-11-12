@@ -8,8 +8,11 @@ importFrom("grDevices", "rgb")
 importFrom("graphics", "abline", "plot", "hist")
 importFrom("stats", "complete.cases", "dist", "median", "optim", "rmultinom", "rnorm", "runif",
            "sd", "var")
+importFrom("plyr", "adply")
+importFrom("data.table", "data.table")
 importFrom("abc", "abc")
 importFrom("parallel", "parLapply")
+importFrom("utils", "setTxtProgressBar", "txtProgressBar")
 
 # Registered S3 methods
 #S3method(barplot, Tstats)

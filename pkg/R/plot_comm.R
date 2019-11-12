@@ -5,6 +5,13 @@ plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL)
 # x should be the output of coalesc or forward
 # seltrait is the index of the trait to be plotted (in case of multiple traits)
 {
+  # Check dependency
+  if(type=="sad" | type=="rad")
+  {
+    if (!requireNamespace("sads", quietly = TRUE))
+      stop("In order to plot SAD curves the package 'sads' has to be ",
+           "installed")
+  }
   
   # Check parameters
   if (!is.numeric(seltrait) | seltrait <= 0){

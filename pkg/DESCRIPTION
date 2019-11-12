@@ -20,6 +20,7 @@ Depends:
 Imports:
     abc,
     ade4,
+    data.table,
     plyr,
     stats,
     graphics,
@@ -43,6 +44,7 @@ Suggests:
     sads,
     testthat,
     untb,
+    utils,
     vegan,
     Weighted.Desc.Stat
 Description: Coalescent-Based Simulation of Ecological Communities as proposed
