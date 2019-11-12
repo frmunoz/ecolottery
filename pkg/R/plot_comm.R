@@ -63,7 +63,7 @@ plot_comm <- function(x, type = "trait", seltrait = 1, main = NULL)
        # Plot graphics
        plot(ab$pool[rownames(ab$com),"relab"],
             ab$com$relab,
-            main = main,
+            main = "locreg",
             xlab = "Regional abundance",
             ylab = "Local abundance",
             log = "xy")
