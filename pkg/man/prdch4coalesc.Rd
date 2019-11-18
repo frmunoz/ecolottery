@@ -38,7 +38,10 @@ statistics used for the predictive checks:
 the user-defined function computing the summary statistics to be used in the predictive checks when \code{stats = "custom"}}
 
   \item{estim}{
-an estimator of the posterior distribution - can be either \code{"mean"}, \code{"median"} or \code{"mode"} used for the simulations} }
+an estimator of the posterior distribution - can be either \code{"mean"}, \code{"median"} or \code{"mode"} used for the simulations}
+
+ \item{nval}{
+the number of simulations to be run for computing predictive checks. If \code{"estim = NULL"} (default), a sample of size \code{nval} is used, if an estimator of the posterior distribution is used then \code{nval} replicates are used} }
 
 \value{
  \item{pvalue}{
