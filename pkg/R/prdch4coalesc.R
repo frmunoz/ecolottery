@@ -1,5 +1,5 @@
 prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
-                          f.stats = NULL, estim = NULL) {
+                          f.stats = NULL, estim = NULL, nval = 100) {
   if(!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("This function requires the package ggplot2 to be installed to work")
   }
@@ -25,8 +25,9 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
   if("custom" %in% stats) if(is.null(f.stats)) stop("Users should provide a function for computing summary statistics")
   if(ncol(data.frame(params))>1) if(is.null(filt)) stop("When simulating neutral communities params should only contain the migration rate posterior parameter distribution")
   if(ncol(data.frame(params))==1) if(!is.null(filt)) stop("Users should provided more than one posterior parameter distribution when simulating communities undergoing environmental filtering")
-  
-  lim <- 100 #a definir en fonction du temps necessaire a faire tourner ce nombre de simulation, possible de mettre une option pour forcer?
+  if(lim > nrow(params)) stop("number of simulations cannot be greater than the number of accepted simulation - either consider a smaller sample or use an estimator of the posterior distribution")
+  if(lim > 200) print("nval is large - simulations may take some time")
+  lim <- nval 
   J <- nrow(com.obs)
   
   if(!is.null(estim)){
