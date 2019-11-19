@@ -100,8 +100,8 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
     
     #comparing rank-abundance curves:
     rank.obs <- cbind(sp.rank(com.obs), mdl=rep("OK", length(unique(com.obs$sp))),stringsAsFactors = FALSE)
-    rank.obs[names(spval[which(spval<0.05)]),"mdl"] <- "Under-estimated"
-    rank.obs[names(spval[which(spval>0.95)]),"mdl"] <- "Over-estimated"
+    rank.obs[names(spval[which(spval<0.95)]),"mdl"] <- "Under-estimated"
+    rank.obs[names(spval[which(spval>0.05)]),"mdl"] <- "Over-estimated"
     
     rank.sim <- dplyr::bind_rows(lapply(all.sims, function(x) sp.rank(x)))
     #dat <- rbind(cbind(rank.sim, type = rep("simulated", nrow(rank.sim))), cbind(rank.obs[,1:3], type = rep("observed", nrow(rank.obs))))
@@ -129,10 +129,10 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
       labs(x = "Rank", y = "Relative Abundance",
            title = "Species Rank-Abundance Curve")+
       scale_color_manual(breaks = c("Under-estimated", "Over-estimated", "OK"),
-                         values=c("#999999", "#E69F00", "#56B4E9")))
+                         values=c("#E69F00","#999999", "#56B4E9")))
     
-    ret$underestim.sp <- names(spval[which(spval<0.05)])
-    ret$overestim.sp <- names(spval[which(spval>0.95)])
+    ret$underestim.sp <- names(spval[which(spval<0.95)])
+    ret$overestim.sp <- names(spval[which(spval>0.05)])
     
   }
   close(pb)
