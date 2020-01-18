@@ -28,8 +28,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
          "required when a matrix or data frame is provided)", call. = FALSE)
   }
   
-  if(any(initial$ind %in% pool$ind))
-    stop("# There should not be same individual ids in pool and initial")
+  #if(any(initial$ind %in% pool$ind))
+  #  warning("It is advisable not to have the same individual ids in pool and initial")
   
   # For back-compatibility
   if(is.logical(limit.sim)) 
