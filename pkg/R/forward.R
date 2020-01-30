@@ -1,8 +1,8 @@
 # Function to compute forward simulation of community dynamics with (eventually)
 # environmental filtering
 forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
-                    pool = NULL, traits = NULL, filt = NULL, limit.sim = NULL, 
-                    limit.intra = F, par.limit = 0.1, coeff.lim.sim = 1, 
+                    pool = NULL, traits = NULL, filt = NULL, filt.vect = F,
+                    limit.sim = NULL, limit.intra = F, par.limit = 0.1, coeff.lim.sim = 1, 
                     type.filt = "immig", type.limit = "death", add = F, var.add = NULL,
                     prob.death = NULL, method.dist = "euclidean", plot_gens = FALSE) {
   # The function will stop if niche - based dynamics is requested, but trait
@@ -178,7 +178,7 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
     
     # Simulate community dynamics
     next_comm <- pick(next_comm, d = d, prob = prob, pool = pool,
-                      prob.death = prob.death, filt = filt, 
+                      prob.death = prob.death, filt = filt, filt.vect = filt.vect,
                       limit.sim = limit.sim, limit.intra = limit.intra,
                       par.limit = par.limit, 
                       coeff.lim.sim = coeff.lim.sim, 
@@ -247,8 +247,8 @@ forward <- function(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
 # Precise function to simulate a single timestep by picking an individual in
 # the pool or make an individual mutate
 pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
-                 filt = NULL, limit.sim = NULL, limit.intra = F, par.limit = 0.1, 
-                 coeff.lim.sim = 1, 
+                 filt = NULL, filt.vect = F, limit.sim = NULL, limit.intra = F, 
+                 par.limit = 0.1, coeff.lim.sim = 1, 
                  type.filt = "immig", type.limit = "death", 
                  add = add, var.add = var.add, new.index = new.index,
                  method.dist = "euclidean") {
@@ -270,7 +270,7 @@ pick <- function(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
     
     # If there is a species pool make an individual immigrates
     return(pick.immigrate(com, d = d, prob.of.immigrate = prob, pool = pool,
-                          prob.death = prob.death, filt = filt, 
+                          prob.death = prob.death, filt = filt, filt.vect = filt.vect, 
                           limit.sim = limit.sim, limit.intra = limit.intra, 
                           par.limit = par.limit, coeff.lim.sim = coeff.lim.sim, 
                           type.filt = type.filt, type.limit = type.limit, 
@@ -344,8 +344,8 @@ pick.mutate <- function(com, d = 1, prob.of.mutate = 0, new.index = 0) {
 # Function to return individuals who immigrated from the species pool
 # limit.sim = limiting similarity; filt = habitat filtering function
 pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
-                           prob.death = NULL, filt= NULL, limit.sim = NULL,
-                           limit.intra = F, par.limit = 0.1,
+                           prob.death = NULL, filt= NULL, filt.vect = F,
+                           limit.sim = NULL, limit.intra = F, par.limit = 0.1,
                            coeff.lim.sim = 1, type.filt = "immig", 
                            type.limit = "death", add = F, var.add = NULL, 
                            method.dist = "euclidean") {
@@ -374,10 +374,15 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
   }
   
   # Function defining habitat filtering according to trait value
-  env_filter <- ifelse(!is.null(filt), ifelse(!add, 
-                                               function(x) apply(x, 1, filt), 
-                                               function(x, var.add) apply(x, 1, function(i) filt(i, var.add))), 
-                        function(x) rep(1, nrow(x))) 
+  if(!filt.vect) {
+    env_filter <- ifelse(!is.null(filt), ifelse(!add, 
+                                                function(x) apply(x, 1, filt), 
+                                                function(x, var.add) apply(x, 1, function(i) filt(i, var.add))), 
+                         function(x) rep(1, nrow(x))) 
+  } else {
+    # If the filtering function can be directly applied to a vector of trait values
+    env_filter <- filt
+  }
   
   # Traits distances used to simulate limiting similarity
   if (!is.null(limit.sim)) {
@@ -461,7 +466,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     # Influence of habitat filtering on mortality
     if("death" %in% type.filt & !is.null(filt)) { 
       
-      com_filter <- env_filter(com[, -(1:2), drop = FALSE])
+      com_filter <- unlist(env_filter(com[, -(1:2), drop = FALSE]))
       
       if (any(is.na(com_filter))) {
         stop("NA values in habitat filter", call. = FALSE)
@@ -506,7 +511,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     
     # Influence of habitat filtering on immigration
     if ("immig" %in% type.filt & !is.null(filt)) {
-      pool_filter <- env_filter(pool[, -(1:2), drop = FALSE])
+      pool_filter <- unlist(env_filter(pool[, -(1:2), drop = FALSE]))
       
       if (any(is.na(pool_filter))) {
         stop("NA values in habitat filter", call. = FALSE)
@@ -549,7 +554,7 @@ pick.immigrate <- function(com, d = 1, prob.of.immigrate = 0, pool,
     # Influence of habitat filtering on recruitment
     if("loc.recr" %in% type.filt & !is.null(filt)) {
       
-      com_filter <- env_filter(com.init[, -(1:2), drop = FALSE])
+      com_filter <- unlist(env_filter(com.init[, -(1:2), drop = FALSE]))
       
       if (any(is.na(com_filter))) {
         stop("NA values in habitat filter", call. = FALSE)

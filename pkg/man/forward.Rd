@@ -16,7 +16,7 @@ generations.
 
 \usage{
 forward(initial, prob = 0, d = 1, gens = 150, keep = FALSE,
-        pool = NULL, traits = NULL, filt = NULL, limit.sim = NULL,
+        pool = NULL, traits = NULL, filt = NULL, filt.vect, limit.sim = NULL,
         limit.intra = F, par.limit = 0.1, coeff.lim.sim = 1, 
         type.filt = "immig", type.limit = "death", add = F, var.add = NULL, 
         prob.death = NULL, method.dist = "euclidean", plot_gens = FALSE)
@@ -33,7 +33,7 @@ pick(com, d = 1, prob = 0, pool = NULL, prob.death = prob.death,
      new.index = new.index, method.dist = "euclidean")
 pick.mutate(com, d = 1, prob.of.mutate = 0, new.index = 0)
 pick.immigrate(com, d = 1, prob.of.immigrate = 0, pool, prob.death = NULL, 
-              filt = NULL, limit.sim = NULL,  limit.intra = F, 
+              filt = NULL, filt.vect = F, limit.sim = NULL,  limit.intra = F, 
               par.limit = 0.1, coeff.lim.sim = 1, 
               type.filt = "immig", type.limit = "death", add = F, var.add = NULL,
               method.dist = "euclidean")
@@ -119,6 +119,9 @@ the function used to represent habitat filtering. For a given trait value
 \code{t}, \code{filt(t)} represents the probability that an individual with
 trait \code{t} enters the local community.
 }
+ \item{filt.vect}{
+indicates whether the filtering function can be vectorized. It means that the function can take as input a vector of trait values and provide a vector of the corresponding weights.
+}
  \item{add}{
 indicates if additional variables must be passed to \code{filt}. It can be, for instance, environmental data conditioning the trait-based filtering in the community. Default is FALSE.
 }
@@ -165,8 +168,10 @@ and \code{type.simil = "death"}, which corresponds to a classical conception of
 the hierarchical influence of habitat filtering and limiting similarity on immigration success
 and local survival.
 
-\code{gauss_limit()} is the default function used to compute limiting similarity. In this case, the relative performance of an individual decreases depending on the sum of exponential distances to other individuals in the community (McArthur and Levins 1967), i.e.,
+A environmental filtering function can be defined with \code{filt}. It should take two arguments, the first is a trait value of a candidate immigrant, the second is a vector including the parameter values of the filtering function. See examples below for further information on usage.
+An important point is that in many cases the function might be vectorized, that is, it can provide a vector of filtering probabilities for a vector of trait values given in first argument. In this case the user should set \code{filt.vect = T}, which will significantly accelerate simulations. 
 
+\code{gauss_limit()} is the default function used to compute limiting similarity. In this case, the relative performance of an individual decreases depending on the sum of exponential distances to other individuals in the community (McArthur and Levins 1967), i.e.,
 
 Function \code{get_number_of_gen()} allows determining the number of generations
 needed to reach stationary richness for given parameterization of
@@ -262,8 +267,13 @@ final4 <- forward(initial = initial2, prob = 0.1, gens = 2000, pool = pool,
 plot_comm(final4) # Stronger convergence around 0.5 
 
 # Simulation of stabilizing hab. filtering with two traits
-initial3 <- data.frame(ind = 1:100, sp = rep(as.character(1:10), each = 10), 
-                      tr1 = runif(100), tr2 = runif(100), stringsAsFactors = F)
+pool <- data.frame(ind=1:10000, sp=rep(1:500, 20), tra1=rep(NA, 10000), tra2=rep(NA, 10000))
+# Trait values in the pool
+t1.sp <- runif(500)
+t2.sp <- runif(500)
+pool[, 3] <- t1.sp[pool[,2]]
+pool[, 4] <- t2.sp[pool[,2]]
+initial3 <- pool[sample(1:10000, 100),]
 # Parameters of filtering for first trait
 topt1 <- 0.25
 sigm1 <- 0.1
@@ -271,8 +281,11 @@ sigm1 <- 0.1
 topt2 <- 0.75
 sigm2 <- 0.2
 filt_gaussian <- function(x) exp(-(x[1] - topt1)^2/(2*sigm1^2)) * exp(-(x[2] - topt2)^2/(2*sigm2^2))
-final5 <- forward(initial = initial3, prob = 0.1, gens = 2000, pool = pool, 
-                 filt = filt_gaussian)
+system.time(final5 <- forward(initial = initial3, prob = 0.1, gens = 2000, pool = pool, 
+                 filt = filt_gaussian))
+# Here the filtering function can be vectorized
+system.time(final5 <- forward(initial = initial3, prob = 0.1, gens = 2000, pool = pool, 
+                 filt = filt_gaussian, filt.vect = T))
 plot_comm(final5, seltrait = 1) # trait distribution in final community (first trait)
 plot_comm(final5, seltrait = 2) # trait distribution in final community (second trait)
 
