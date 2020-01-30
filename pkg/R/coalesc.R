@@ -179,8 +179,8 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, filt.vect = F, add = FA
     
   if (!add) 
   {
-    prob <- env_filter(ind_pool_traits)
-  } else prob <- env_filter(ind_pool_traits, var.add)
+    prob <- unlist(env_filter(ind_pool_traits))
+  } else prob <- unlist(env_filter(ind_pool_traits, var.add))
   
   if(length(prob) < nrow(ind_pool_traits)) {
     stop("Incorrect output of the filtering function", call. = FALSE)
