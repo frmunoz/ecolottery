@@ -9,7 +9,7 @@ This function performs posterior predicitve checks assessing a model's predictio
 
 \usage{
 prdch4coalesc(com.obs, pool, filt, params, stats = "abund", f.stats = NULL,
-              estim = NULL)
+              estim = NULL, nval = 100)
 }
 
 \arguments{
