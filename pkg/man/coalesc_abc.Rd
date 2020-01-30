@@ -44,9 +44,9 @@
   initial_checks(comm.obs = NULL, pool = NULL, multi = "single", prop = F, traits = NULL, 
   f.sumstats = NULL, filt.abc = NULL, filt.vect = F, migr.abc = NULL, size.abc = NULL, 
   add = NULL, var.add = NULL, params = NULL,  par.filt = NULL, par.migr = NULL, 
-  par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = NULL, theta.max = NULL,
-  nb.samp = 10^6, parallel = F, nb.core = NULL, tol = NULL, type = "standard", 
-  method.seq = "Lenormand", method.mcmc = "Marjoram_original",
+  par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = NULL, 
+  theta.max = NULL, nb.samp = 10^6, parallel = F, nb.core = NULL, tol = NULL, 
+  type = "standard", method.seq = "Lenormand", method.mcmc = "Marjoram_original",
   method.abc = "rejection", alpha = 0.5, pkg = NULL)
 
 }
