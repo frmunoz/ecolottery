@@ -1,5 +1,5 @@
 coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
-                        traits = NULL, f.sumstats, filt.abc = NULL,
+                        traits = NULL, f.sumstats, filt.abc = NULL, filt.vect = F,
                         migr.abc = NULL, size.abc = NULL, add = FALSE,
                         var.add = NULL, params  = NULL, par.filt = NULL,
                         par.migr = NULL, par.size = NULL, scale = FALSE,
@@ -68,7 +68,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
   # need to be included
   if (type == "standard")
     return(coalesc_abc_std(comm.obs, pool, multi, prop, traits, f.sumstats,
-                           filt.abc, migr.abc, size.abc, add, var.add, params,
+                           filt.abc, filt.vect, migr.abc, size.abc, add, var.add, params,
                            par.filt, par.migr, par.size, constr = NULL,
                            scale = TRUE, dim.pca, svd, theta.max, nb.samp,
                            parallel, nb.core, tol, pkg, method.abc)) 
@@ -95,7 +95,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
     } 
     initial_checks(comm.obs = comm.obs, pool = pool, multi = multi, prop = prop,
                    traits = traits, f.sumstats = f.sumstats,
-                   filt.abc = filt.abc, migr.abc = migr.abc,
+                   filt.abc = filt.abc, filt.vect = filt.vect, migr.abc = migr.abc,
                    size.abc = size.abc, params = params, par.filt = par.filt,
                    par.migr = par.migr,  par.size = par.size, scale = scale,
                    theta.max = theta.max, nb.samp = nb.samp,
@@ -224,13 +224,14 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
     }
   }
   
-  coalesc_model <- function(par, traits, prop, J, pool, filt.abc, f.sumstats, parallel) {
+  coalesc_model <- function(par, traits, prop, J, pool, filt.abc, filt.vect, f.sumstats, 
+                            parallel) {
     stats.samp <- NA
     try({
       if(is.null(filt.abc)){
         if(!prop){
           comm.samp <- coalesc(J, m = par[length(par)], filt = NULL,
-                               add = F,  var.add =NULL, pool=pool, 
+                               add = F,  var.add = NULL, pool = pool, 
                                traits = NULL,
                                checks = F)
           if (length(formals(f.sumstats))==1) {
@@ -244,6 +245,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
           if(parallel){
             set.seed(par[1])
             comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(x, par[2:(length(par)-1)]),
+                                 filt.vect = filt.vect,
                                  add = F,  var.add = NULL, pool = pool, 
                                  traits = NULL, Jpool = 50 * J, verbose = FALSE, checks = F)
             if (length(formals(f.sumstats))==1) {
@@ -252,6 +254,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
               stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
             }} else {
               comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(x, par[1:(length(par)-1)]),
+                                   filt.vect = filt.vect,
                                    add = F,  var.add = NULL, pool = pool, 
                                    traits = NULL, checks = F)
               if (length(formals(f.sumstats))==1) {
@@ -263,7 +266,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
         } else {
           comm.samp <- coalesc(
             par[length(par)], m = par[length(par)-1], 
-            filt = function(x) filt.abc(x, par[-((length(par)-1):length(par))]), 
+            filt = function(x) filt.abc(x, par[-((length(par)-1):length(par))]),
+            filt.vect = filt.vect,
             pool = pool, traits = traits, checks = F)
           comm.samp$com <- t(table(comm.samp$com[,2])/par[length(par)])
         }
@@ -280,7 +284,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
   
   # For debug
   #test <- c()
-  #for(i in 1:100) test[[i]] <- coalesc_model(c(runif(0,1),runif(0,1),runif(0,1)), traits, J, pool, filt.abc, f.sumstats)
+  #for(i in 1:100) test[[i]] <- coalesc_model(c(runif(0,1),runif(0,1),runif(0,1)), 
+  #traits, J, pool, filt.abc, filt.vect, f.sumstats)
   
   #if(multi!="single") stop("multi option is not implemented - ongoing work")
   
@@ -293,7 +298,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
       res.abc <- EasyABC::ABC_sequential(
         method              = method.seq, 
         model               = function(x) {
-          coalesc_model(x, traits,prop,J,pool,filt.abc,f.sumstats, parallel)
+          coalesc_model(x, traits, prop, J, pool, filt.abc, 
+                        filt.vect, f.sumstats, parallel)
           },
         prior               = prior, 
         nb_simul            = nb.samp,
@@ -306,7 +312,9 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
     { stop("Beaumont method not implemented - ongoing work", call. = FALSE)
       tol_tab <- c(tol,tol/2,tol/5)
       res.abc <- EasyABC::ABC_sequential(method=method.seq,
-                                         model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats, parallel),
+                                         model=function(par) coalesc_model(par, traits, prop, 
+                                                                           J, pool, filt.abc, 
+                                                                           filt.vect, f.sumstats, parallel),
                                          prior=prior,
                                          nb_simul=nb.samp, 
                                          summary_stat_target=stats.obs,
@@ -316,7 +324,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
     } else if(method.seq=="Drovandi") 
     {stop("Drovandi method not implemented - ongoing work", call. = FALSE)
       res.abc <- EasyABC::ABC_sequential(method=method.seq, 
-                                         model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, f.sumstats, parallel),
+                                         model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, filt.vect, f.sumstats, parallel),
                                          prior=prior, 
                                          nb_simul=nb.samp, summary_stat_target=stats.obs, first_tolerance_level_auto = T, use_seed=F, 
                                          n_cluster=nb.core)
@@ -326,7 +334,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
   { if(method.mcmc == "Marjoram_original"){
     res.abc <- EasyABC::ABC_mcmc(
       method=method.mcmc, 
-      model=function(x) coalesc_model(x, traits, prop, J, pool,filt.abc, f.sumstats, parallel),
+      model=function(x) coalesc_model(x, traits, prop, J, pool,filt.abc, filt.vect, f.sumstats, parallel),
       prior=prior, 
       summary_stat_target=stats.obs,
       n_cluster=nb.core,
@@ -352,16 +360,16 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
 }
 
 coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-                            f.sumstats, filt.abc = NULL, migr.abc = NULL, size.abc = NULL, add = F,
-                            var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
+                            f.sumstats, filt.abc = NULL, filt.vect = F, migr.abc = NULL, size.abc = NULL, 
+                            add = F, var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
                             par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = F, theta.max = NULL, 
                             nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
                             method.abc = "rejection")
 {
   initial_checks(comm.obs = comm.obs, pool = pool, multi = multi, prop = prop,
                  traits = traits, f.sumstats = f.sumstats, filt.abc = filt.abc,
-                 migr.abc = migr.abc, size.abc = size.abc,  add = add,
-                 var.add = var.add, params = params, par.filt = par.filt,
+                 filt.vect = filt.vect, migr.abc = migr.abc, size.abc = size.abc, 
+                 add = add, var.add = var.add, params = params, par.filt = par.filt,
                  par.migr = par.migr, par.size = par.size, constr = constr,
                  scale = scale, dim.pca = dim.pca, svd = svd,
                  theta.max = theta.max, nb.samp = nb.samp, parallel = parallel,
@@ -436,7 +444,7 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
   }
   
   # Community simulation
-  sim <- do.simul.coalesc(J, pool, multi, prop, nb.com, traits, f.sumstats, filt.abc, migr.abc,
+  sim <- do.simul.coalesc(J, pool, multi, prop, nb.com, traits, f.sumstats, filt.abc, filt.vect, migr.abc,
                           size.abc, add, var.add, params, par.filt, par.migr, par.size, constr,
                           dim.pca, svd, theta.max, nb.samp, parallel, nb.core, tol, pkg, method.abc)
   
@@ -555,7 +563,7 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
 }
 
 do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
-                             traits = NULL, f.sumstats = NULL, filt.abc = NULL, migr.abc = NULL, 
+                             traits = NULL, f.sumstats = NULL, filt.abc = NULL, filt.vect = F, migr.abc = NULL, 
                              size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
                              par.migr = NULL, par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, 
                              theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, 
@@ -595,8 +603,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                           theta.max, nb.samp)
   
   # Function to perform simulations
-  mkWorker <- function(traits, nb.com, multi, prop, prior, J, pool, filt.abc, migr.abc, size.abc,
-                       add, var.add, f.sumstats, pkg) {
+  mkWorker <- function(traits, nb.com, multi, prop, prior, J, pool, filt.abc, filt.vect, 
+                       migr.abc, size.abc, add, var.add, f.sumstats, pkg) {
     force(traits)
     force(nb.com)
     force(multi)
@@ -605,6 +613,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     force(J)
     force(pool)
     force(filt.abc)
+    force(filt.vect)
     force(migr.abc)
     force(size.abc)
     force(add)
@@ -612,7 +621,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     force(f.sumstats)
     force(pkg)
     
-    summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, migr.abc, add, var.add,
+    summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, filt.vect, migr.abc, add, var.add,
                          f.sumstats) {
       
       params.samp <- unlist(lapply(prior,function(x) x[j]))
@@ -684,6 +693,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
             }
             comm.samp <- ecolottery::coalesc(J.loc, m = m,
                                              filt = filt,
+                                             filt.vect = filt.vect,
                                              add = add,
                                              var.add = var.add[i,],
                                              pool = pool.loc, traits = traits,
@@ -716,6 +726,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
             seqcom.samp[[i]] <- ecolottery::coalesc(J[[i]],
                                                     m = m,
                                                     filt = filt,
+                                                    filt.vect = filt.vect,
                                                     add = add,
                                                     var.add = var.add[i,],
                                                     pool = pool.loc, traits = traits, checks = F)$com
@@ -733,6 +744,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
         comm.samp <- ecolottery::coalesc(J,
                                          m = m,
                                          filt = filt,
+                                         filt.vect = filt.vect,
                                          add = add,
                                          var.add = var.add,
                                          pool = pool, traits = traits,
@@ -761,7 +773,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                call. = FALSE)
         }
       }
-      summCalc(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, migr.abc, 
+      summCalc(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, filt.vect, migr.abc, 
                add, var.add, f.sumstats)
     }
     return(worker)
@@ -771,10 +783,10 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   if (parallel) {
     err.chk <- try(models <- parallel::parLapply(parCluster, 1:nb.samp,
                                                  mkWorker(traits, nb.com, multi, prop, prior, J,
-                                                          pool, filt.abc, migr.abc, size.abc, add, var.add, f.sumstats, pkg)), T)
+                                                          pool, filt.abc, filt.vect, migr.abc, size.abc, add, var.add, f.sumstats, pkg)), T)
   } else {
     models <- lapply(1:nb.samp, mkWorker(traits, nb.com, multi, prop, prior, J, pool,
-                                         filt.abc, migr.abc, size.abc, add, var.add, f.sumstats, pkg))
+                                         filt.abc, filt.vect, migr.abc, size.abc, add, var.add, f.sumstats, pkg))
   }
   
   if (parallel) {
@@ -907,7 +919,7 @@ generate_prior <- function(pool = NULL, prop = F, constr = NULL,
 }
 
 initial_checks <- function(comm.obs = NULL, pool = NULL, multi = "single", prop = F, traits = NULL, 
-                           f.sumstats = NULL, filt.abc = NULL,  migr.abc = NULL, size.abc = NULL, 
+                           f.sumstats = NULL, filt.abc = NULL, filt.vect = F, migr.abc = NULL, size.abc = NULL, 
                            add = NULL, var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
                            par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = NULL,
                            theta.max = NULL, nb.samp = 10^6, parallel = F, nb.core = NULL, tol = NULL, type = "standard",
@@ -975,4 +987,3 @@ initial_checks <- function(comm.obs = NULL, pool = NULL, multi = "single", prop 
     }   
   }
 }
-
