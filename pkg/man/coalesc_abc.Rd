@@ -17,23 +17,22 @@
 }
 \usage{
   coalesc_abc(comm.obs, pool = NULL, multi = "single", prop = FALSE, traits = NULL, 
-  f.sumstats, filt.abc = NULL,  migr.abc = NULL, size.abc = NULL, add = FALSE, 
-  var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, par.size = NULL, 
-  scale = FALSE, dim.pca = NULL, svd = FALSE, theta.max = NULL,  nb.samp = 10^6,
-  parallel = FALSE, 
-  nb.core = NULL, tol = NULL, type = "standard", method.seq = "Lenormand", 
-  method.mcmc = "Marjoram_original",method.abc = "rejection", alpha = 0.5, 
-  pkg = NULL)
+  f.sumstats, filt.abc = NULL,  filt.vect = F, migr.abc = NULL, size.abc = NULL, 
+  add = FALSE, var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
+  par.size = NULL, scale = FALSE, dim.pca = NULL, svd = FALSE, theta.max = NULL,  
+  nb.samp = 10^6, parallel = FALSE, nb.core = NULL, tol = NULL, 
+  type = "standard", method.seq = "Lenormand", method.mcmc = "Marjoram_original",
+  method.abc = "rejection", alpha = 0.5, pkg = NULL)
   
   coalesc_abc_std(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-  f.sumstats, filt.abc = NULL, migr.abc = NULL, size.abc = NULL, add = F, 
+  f.sumstats, filt.abc = NULL, filt.vect = F, migr.abc = NULL, size.abc = NULL, add = F, 
   var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
   par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = F, 
   theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
   tol = NULL, pkg = NULL, method.abc = "rejection")
   
   do.simul.coalesc(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
-  traits = NULL, f.sumstats = NULL, filt.abc = NULL, migr.abc = NULL, 
+  traits = NULL, f.sumstats = NULL, filt.abc = NULL, filt.vect = F, migr.abc = NULL, 
   size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
   par.migr = NULL, par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, 
   theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
@@ -43,9 +42,9 @@
   par.filt = NULL, par.migr = NULL, par.size = NULL, theta.max = NULL, nb.samp = 10^6)
   
   initial_checks(comm.obs = NULL, pool = NULL, multi = "single", prop = F, traits = NULL, 
-  f.sumstats = NULL, filt.abc = NULL,  migr.abc = NULL, size.abc = NULL, add = NULL, 
-  var.add = NULL, params = NULL,  par.filt = NULL, par.migr = NULL, par.size = NULL, 
-  constr = NULL, scale = F, dim.pca = NULL, svd = NULL, theta.max = NULL, 
+  f.sumstats = NULL, filt.abc = NULL, filt.vect = F, migr.abc = NULL, size.abc = NULL, 
+  add = NULL, var.add = NULL, params = NULL,  par.filt = NULL, par.migr = NULL, 
+  par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = NULL, theta.max = NULL, 
   nb.samp = 10^6, parallel = F, nb.core = NULL, tol = NULL, type = "standard", 
   method.seq = "Lenormand", method.mcmc = "Marjoram_original",
   method.abc = "rejection", alpha = 0.5, pkg = NULL)
@@ -107,6 +106,11 @@
     individual trait values (first argument), additional parameters to be estimated and (optionally) 
     environmental variables defined in \code{var.add}.
     If \code{NULL}, neutral communities will be simulated and only m will be estimated. 
+  }
+   \item{filt.vect}{
+    indicates whether the filtering function can be vectorized. It means that the function
+    can take as input a vector of trait values and provide a vector of the corresponding 
+    weights.
   }
   \item{migr.abc}{
     a function defining immigration probability in local communities. It can be a function of 

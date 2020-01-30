@@ -8,8 +8,9 @@ Coalescent-based simulation of ecological communities undergoing both neutral an
 Simulates the composition of a community based on immigration from a regional pool, habitat filtering depending on local environment and species traits, and local birth-death stochastic dynamics. 
 }
 \usage{
-coalesc(J, m = 1, theta = NULL, filt = NULL, add = FALSE,  var.add =NULL, pool = NULL, 
-        traits = NULL, Jpool = 50 * J, verbose = FALSE, checks = TRUE)
+coalesc(J, m = 1, theta = NULL, filt = NULL, filt.vect = F, add = FALSE,
+        var.add =NULL, pool = NULL, traits = NULL, Jpool = 50 * J, 
+        verbose = FALSE, checks = TRUE)
 }
 \arguments{
  \item{J}{
@@ -23,6 +24,9 @@ parameter of neutral dynamics in the regional pool (used only if \code{pool=NULL
 }
  \item{filt}{
 a function representing the effect of local habitat filtering. For an individual that displays the value(s)\code{t} of a single or several trait(s), \code{filt(t)} represents the probability that the individual enters the local community. If \code{filt = NULL}, \code{coalesc()} provides a neutral community.
+}
+ \item{filt.vect}{
+indicates whether the filtering function can be vectorized. It means that the function can take as input a vector of trait values and provide a vector of the corresponding weights.
 }
  \item{add}{
 indicates if additional variables must be passed to \code{filt}. It can be, for instance, environmental data conditioning the trait-based filtering in the community. Default is FALSE.
