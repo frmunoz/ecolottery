@@ -14,7 +14,7 @@ prdch4coalesc(com.obs, pool, filt, params, stats = "abund", f.stats = NULL,
 
 \arguments{
   \item{com.obs}{
-a data.frame of observed individuals, the first column should contain individual labels, the second the names of the species and the third species trait values - should be the same as provided for the ABC analysis in \code{coalesc-abc}}
+a data.frame of observed individuals, the first column should contain individual labels, the second the names of the species and the third species trait values - should be the same as provided for the ABC analysis in \code{coalesc_abc}}
   
   \item{pool}{
 a data.frame containing the regional pool of species providing immigrants to the local community. It should include the label of individual on first column, its species on second column and their trait values in the third column as in \code{com.obs} - shuld be the same as provided for the ABC analysis in \code{coalesc-abc}}
