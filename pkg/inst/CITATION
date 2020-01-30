@@ -2,11 +2,11 @@ citHeader("To cite the ecolottery package:")
 
 citEntry(
 entry = "Article",
-title = "ecolottery: simulating and assessing neutral and niche-based community dynamics in R",
-journal= "-",
-year = "201-",
+title = "ecolottery: Simulating and assessing community assembly with environmental filtering and neutral dynamics in R",
+journal= "Methods in Ecology and Evolution",
+year = "2018",
 author = "F. Munoz, M. Grenié, P. Denelle, A. Taudière, F. Laroche, C. Tucker and C. Violle",
-volume = "-",
-pages = "-",
-textVersion = "Munoz et al. 201-. ecolottery: simulating and assessing neutral and niche-based community dynamics in R",
+volume = "9(3)",
+pages = "693-703",
+textVersion = "Munoz et al. 2018. ecolottery: Simulating and assessing community assembly with environmental filtering and neutral dynamics in R",
 )
