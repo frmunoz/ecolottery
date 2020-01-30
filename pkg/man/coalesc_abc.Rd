@@ -44,7 +44,7 @@
   initial_checks(comm.obs = NULL, pool = NULL, multi = "single", prop = F, traits = NULL, 
   f.sumstats = NULL, filt.abc = NULL, filt.vect = F, migr.abc = NULL, size.abc = NULL, 
   add = NULL, var.add = NULL, params = NULL,  par.filt = NULL, par.migr = NULL, 
-  par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = NULL, theta.max = NULL, 
+  par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = NULL, theta.max = NULL,
   nb.samp = 10^6, parallel = F, nb.core = NULL, tol = NULL, type = "standard", 
   method.seq = "Lenormand", method.mcmc = "Marjoram_original",
   method.abc = "rejection", alpha = 0.5, pkg = NULL)
@@ -231,9 +231,12 @@
 
 }
 \details{
-\code{coalesc_abc()} performs ABC estimation for one (if \code{multi = FALSE},
-default) or several communities (if \code{multi = TRUE}) related to the same
+\code{coalesc_abc()} performs ABC estimation for one (if \code{multi = "single"},
+default) or several communities (if \code{multi = "tab" or "seqcom"}) related to the same
 regional pool. If \code{type = "standard"}, it performs simulations with parameter values randomly drawn in priori distributions. With other options in \code{type}, the function uses optimization algorithms implemented in the package \code{EasyABC}.
+
+To assess environmental filtering, a filtering function must be defined in \code{filt.abc}. It should take two arguments, the first is a trait value of a candidate immigrant, the second is a vector including the parameter values of the filtering function. See examples below for further information on usage.
+An important point is that in many cases the function might be vectorized, that is, it can provide a vector of filtering probabilities for a vector of trait values given in first argument. In this case the user should set \code{filt.vect = T}, which will significantly accelerate simulations. 
 
 \code{coalesc_abc_std()} performs simulations as with the option \code{type = "standard"}.
 
@@ -321,10 +324,17 @@ comm <- coalesc(J = 400, m = 0.5, theta = 50,
 # Number of values to sample in prior distributions
 nb.samp <- 1000 # Should be large
 ## Warning: this function may take a while
-res.single <- coalesc_abc(comm$com, comm$pool, f.sumstats = f.sumstats,
+system.time(res.single <- coalesc_abc(comm$com, comm$pool, f.sumstats = f.sumstats,
                    filt.abc = filt_gaussian, par.filt = par.range, 
                    nb.samp = nb.samp, parallel = TRUE, tol = 0.5,
-                   pkg = c("e1071","vegan"), method.abc = "neuralnet")
+                   pkg = c("e1071","vegan"), method.abc = "neuralnet"))
+# If the filtering function can be applied directly to a vector of trait values,
+# it is strongly recommended to set "filt.vect = T"
+system.time(res.single <- coalesc_abc(comm$com, comm$pool, f.sumstats = f.sumstats,
+                   filt.abc = filt_gaussian, filt.vect = T, par.filt = par.range, 
+                   nb.samp = nb.samp, parallel = TRUE, tol = 0.5,
+                   pkg = c("e1071","vegan"), method.abc = "neuralnet"))
+
 plot(res.single$abc, param = res.single$par)
 hist(res.single$abc)
 
@@ -393,7 +403,7 @@ f.sumstats <- function(tab, traits) array(dimnames=
 # based on observed community composition 
 ## Warning: this function may take a while
 res.tab1 <- coalesc_abc(tab1, pool, multi = "tab", f.sumstats = f.sumstats,
-                   filt.abc = filt_gaussian_env, par.filt = par.range, 
+                   filt.abc = filt_gaussian_env, filt.vect = T, par.filt = par.range, 
                    add = T, var.add = env1,
                    nb.samp = nb.samp, parallel = TRUE, tol = 0.5,
                    pkg = c("vegan","Weighted.Desc.Stat"), method.abc = "neuralnet")
@@ -443,7 +453,7 @@ row.names(par.migr.range) <- c("c", "d")
 nb.samp <- 200
 res.tab2 <- coalesc_abc(tab2, pool, multi = "tab", f.sumstats = f.sumstats,
                    filt.abc = function(x, par, env) filt_gaussian_env(x, par, env[1]), 
-                   migr.abc = function(par, env) migr_env(par, env[2]),
+                   filt.vect = T, migr.abc = function(par, env) migr_env(par, env[2]),
                    par.filt = par.filt.range, par.migr = par.migr.range,
                    add = T, var.add = env,
                    nb.samp = nb.samp, parallel = FALSE, tol = 0.5,
@@ -499,7 +509,7 @@ tab3 <- tab3[, colSums(tab3)!=0]
 par.range <- data.frame(rbind(c(0, 1), c(0.05, 1)))
 row.names(par.range) <- c("topt", "sigmaopt")
 res.tab3 <- coalesc_abc(tab3, pool.loc, multi = "tab", f.sumstats = f.sumstats,
-                   filt.abc = filt_gaussian,
+                   filt.abc = filt_gaussian, filt.vect = T, 
                    par.filt = par.range, 
                    nb.samp = nb.samp, parallel = FALSE, tol = 0.5,
                    pkg = c("e1071","vegan"), method.abc = "neuralnet")
