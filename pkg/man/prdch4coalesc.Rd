@@ -5,7 +5,7 @@
 Posterior predictive checks using coalescent-based simulation of ecological communities
 }
 \description{
-This function performs posterior predicitve checks assessing a model's prediction performance of either user defined summary statistics, functional diversity (moments of the trait distribution, Enquist et al., 2015) or species rank-abundance plots}
+This function performs posterior predicitve checks assessing a model's prediction performance of either user defined summary statistics, functional diversity (intrspecific trait distributions, moments of the trait distribution, Enquist et al., 2015) or species rank-abundance plots}
 
 \usage{
 prdch4coalesc(com.obs, pool, filt, params, stats = "abund", f.stats = NULL,
@@ -32,7 +32,9 @@ statistics used for the predictive checks:
       
       \item if \code{multi = "moments"}, predictive checks using the 4 first moments of the trait distribution evaluated by comparing the observed moments to those of 100 simulated communities under the model of interest
       
-      \item if \code{multi = "abund"}, returns the confidence interval for the rank-abundance curves simulated by the model as well as the observed species rank-abundance curve distinguishing between species whose relative abundance is either over or under-estimated by the model}}
+      \item if \code{multi = "abund"}, returns the confidence interval for the rank-abundance curves simulated by the model as well as the observed species rank-abundance curve distinguishing between species whose relative abundance is either over or under-estimated by the model
+      
+      \item if \code{multi = "intra"}, returns the names of species whose trait distributions are either over or under-estimated by the model by comparing the observed mean trait value and observed trait variance per species to their simulated counterparts}}
   
   \item{f.stats}{
 the user-defined function computing the summary statistics to be used in the predictive checks when \code{stats = "custom"}}
