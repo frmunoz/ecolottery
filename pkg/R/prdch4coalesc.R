@@ -100,8 +100,8 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
     
     #comparing rank-abundance curves:
     rank.obs <- cbind(sp.rank(com.obs), mdl=rep("OK", length(unique(com.obs$sp))),stringsAsFactors = FALSE)
-    rank.obs[names(spval[which(spval<0.95)]),"mdl"] <- "Under-estimated"
-    rank.obs[names(spval[which(spval>0.05)]),"mdl"] <- "Over-estimated"
+    rank.obs[names(spval[which(spval>0.95)]),"mdl"] <- "Under-estimated"
+    rank.obs[names(spval[which(spval<0.05)]),"mdl"] <- "Over-estimated"
     
     rank.sim <- dplyr::bind_rows(lapply(all.sims, function(x) sp.rank(x)))
     #dat <- rbind(cbind(rank.sim, type = rep("simulated", nrow(rank.sim))), cbind(rank.obs[,1:3], type = rep("observed", nrow(rank.obs))))
@@ -131,14 +131,14 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
       scale_color_manual(breaks = c("Under-estimated", "Over-estimated", "OK"),
                          values=c("#E69F00","#999999", "#56B4E9")))
     
-    ret$underestim.sp <- names(spval[which(spval<0.95)])
-    ret$overestim.sp <- names(spval[which(spval>0.05)])
+    ret$underestim.sp <- names(spval[which(spval>0.95)])
+    ret$overestim.sp <- names(spval[which(spval<0.05)])
     
   }
   
   if("intra" %in% stats){
     meantr_obs = unlist(lapply(split(com.obs$trait, com.obs$sp), FUN = mean))
-    vartr_obs = unlist(lapply(split(com.obs$trait, com.obs$sp), FUN = var))
+    #vartr_obs = unlist(lapply(split(com.obs$trait, com.obs$sp), FUN = var))
     
     meantr_sim = dplyr::bind_rows(all.sims, .id = "simul" )
     meantr_sim = split(meantr_sim, meantr_sim$sp)
@@ -148,8 +148,8 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
     tr_pval <- sapply(seq(length(meantr_obs)), FUN = function(i) sum(meantr_sim[[names(meantr_obs[i])]]<meantr_obs[i])/(length(meantr_sim[[names(meantr_obs[i])]])+1))
     names(tr_pval) <- names(meantr_obs)
     
-    ret$underestim.meantr <- names(tr_pval[which(tr_pval<0.95)])
-    ret$overestim.meantr <- names(tr_pval[which(tr_pval>0.05)])
+    ret$underestim.meantr <- names(tr_pval[which(tr_pval>0.95)])
+    ret$overestim.meantr <- names(tr_pval[which(tr_pval<0.05)])
   }
   close(pb)
   return(ret)
