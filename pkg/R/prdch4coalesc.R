@@ -136,7 +136,7 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
     
   }
   
-  if(intra %in% stats){
+  if("intra" %in% stats){
      # compare simulated and observed intra-specific trait distributions
     meantr_obs = unlist(lapply(split(com.obs$trait, com.obs$sp), FUN = mean))
     vartr_obs = lapply(split(com.obs$trait, com.obs$sp), FUN = var)
