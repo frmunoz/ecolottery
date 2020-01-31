@@ -137,25 +137,19 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
   }
   
   if("intra" %in% stats){
-     # compare simulated and observed intra-specific trait distributions
     meantr_obs = unlist(lapply(split(com.obs$trait, com.obs$sp), FUN = mean))
-    vartr_obs = lapply(split(com.obs$trait, com.obs$sp), FUN = var)
+    vartr_obs = unlist(lapply(split(com.obs$trait, com.obs$sp), FUN = var))
     
-    meantr_sim = dplyr::bind_rows(all.sims)
-    meantr_sim = split(meantr_sim$trait, meantr_sim$sp)
+    meantr_sim = dplyr::bind_rows(all.sims, .id = "simul" )
+    meantr_sim = split(meantr_sim, meantr_sim$sp)
+    names = names(meantr_sim)
+    meantr_sim = sapply(seq(length(meantr_sim)), FUN =function(i) unlist(lapply(split(meantr_sim[[i]],meantr_sim[[i]]$simul), FUN = function(x) mean(x[,4]))))
+    names(meantr_sim) = names
     tr_pval <- sapply(seq(length(meantr_obs)), FUN = function(i) sum(meantr_sim[[names(meantr_obs[i])]]<meantr_obs[i])/(length(meantr_sim[[names(meantr_obs[i])]])+1))
     names(tr_pval) <- names(meantr_obs)
     
-    vartr_sim = dplyr::bind_rows(all.sims)
-    vartr_sim = split(vartr_sim$trait, vartr_sim$sp)
-    trvar_pval <- sapply(seq(length(vartr_obs)), FUN = function(i) sum(vartr_sim[[names(vartr_obs[i])]]<vartr_obs[i])/(length(vartr_sim[[names(vartr_obs[i])]])+1))
-    names(trvar_pval) <- names(vartr_obs)
-    
     ret$underestim.meantr <- names(tr_pval[which(tr_pval<0.95)])
     ret$overestim.meantr <- names(tr_pval[which(tr_pval>0.05)])
-    
-    ret$underestim.vartr <- names(trvar_pval[which(trvar_pval<0.95)])
-    ret$overestim.vartr <- names(trvar_pval[which(trvar_pval>0.05)])
   }
   close(pb)
   return(ret)

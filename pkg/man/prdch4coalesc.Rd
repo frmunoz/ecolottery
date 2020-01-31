@@ -34,7 +34,7 @@ statistics used for the predictive checks:
       
       \item if \code{multi = "abund"}, returns the confidence interval for the rank-abundance curves simulated by the model as well as the observed species rank-abundance curve distinguishing between species whose relative abundance is either over or under-estimated by the model
       
-      \item if \code{multi = "intra"}, returns the names of species whose trait distributions are either over or under-estimated by the model by comparing the observed mean trait value and observed trait variance per species to their simulated counterparts}}
+      \item if \code{multi = "intra"}, returns the names of species whose trait distributions are either over or under-estimated by the model by comparing the observed mean trait value per species to their simulated counterparts}}
   
   \item{f.stats}{
 the user-defined function computing the summary statistics to be used in the predictive checks when \code{stats = "custom"}}
