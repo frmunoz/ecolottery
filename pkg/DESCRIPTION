@@ -6,7 +6,7 @@ Authors@R: c(person("François", "Munoz", role = c("aut", "cre"),
                      email = "francois.munoz@hotmail.fr"),
               person("Matthias", "Grenié", role = "aut"),
               person("Pierre", "Denelle", role = "aut"),
-              person("Elizabeth", "Brown", role = "aut"),
+              person("Elizabeth", "Barthelemy", role = "aut"),
               person("Adrien", "Taudière", role = "ctb"),
               person("Fabien", "Laroche", role = "ctb"),
               person("Caroline", "Tucker", role = "ctb"),
@@ -53,6 +53,6 @@ Description: Coalescent-Based Simulation of Ecological Communities as proposed
     by Munoz et al. (2018) <doi:10.1111/2041-210X.12918>. The package includes
     a tool for estimating parameters of community assembly by using Approximate 
     Bayesian Computation.
-License: GPL (>= 2)
+License: GPL (3.0)
 Encoding: UTF-8
 RoxygenNote: 6.1.1
