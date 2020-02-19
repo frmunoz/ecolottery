@@ -26,8 +26,8 @@ test_that("get_rel_abund() works", {
 test_that("abund() works", {
   
   fwd_initial <- sort(rep(as.character(1:10), 10))
-  fwd_final   <- forward(initial = fwd_initial, prob = 0.1, gens = 1000)
-  fwd_keep    <- forward(initial = fwd_initial, prob = 0.1, gens = 1000,
+  fwd_final   <- forward(initial = fwd_initial, theta = 50, gens = 1000)
+  fwd_keep    <- forward(initial = fwd_initial, theta = 50, gens = 1000,
                          keep = TRUE)
   suppressWarnings({
     coal_final  <- coalesc(100, 0.9, 50)
