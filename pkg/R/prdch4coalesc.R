@@ -4,13 +4,17 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
     stop("This function requires the package ggplot2 to be installed to work")
   }
   
-  #lim <- nval 
+  if(nval>100) {
+    warning("It will take a while!")
+  }
+    
+  lim <- nval 
   getmode <- function(v) {
     uniqv <- unique(v)
     uniqv[which.max(tabulate(match(v, uniqv)))]
   }
   
-  sp.rank <- function(com){
+  sp.rank <- function(com) {
     temp <- sort(table(com[,2]), decreasing = T)
     
     return(data.frame(sp = names(temp),
@@ -19,7 +23,7 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
                       stringsAsFactors = F))
   }
   
-  rel.abund <- function(com){
+  rel.abund <- function(com) {
     temp <- sort(table(com[,2]), decreasing = T)
     sapply(temp, function(x) x /sum(temp))
   }
@@ -31,7 +35,6 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
   #if(lim > 200) print("nval is large - simulations may take some time")
   
   J <- nrow(com.obs)
-  lim = 100
   if(!is.null(estim)){
     params <- switch(estim, 
                      "mean" = apply(params,2,mean),
