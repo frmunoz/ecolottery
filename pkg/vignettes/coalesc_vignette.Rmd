@@ -244,14 +244,14 @@ In the second case, environmental filtering limits the range of trait values in 
 m <- 1
 tab <- array(0, c(2, 200)); colnames(tab) <- tre$tip.label
 # First simulation of a neutral community
-com <- abund(coalesc(J, m, pool = pool, filt = NULL))$pool
-tab[1, com$sp] <- com$ab
+com <- abund(coalesc(J, m, pool = pool, filt = NULL))$com
+tab[1, rownames(com)] <- com$ab
 # Second simulation of a community undergoing stabilizing environmental filtering
 topt <- quantile(t.sp, 0.25)
 sigma <- 0.01
 com <- abund(coalesc(J, m, pool = pool, filt = function(x)
                     exp(-(x - topt)^2/(2*sigma^2))))$com
-tab[2, com$sp] <- com$ab
+tab[2, rownames(com)] <- com$ab
 ```
 
 These patterns can be tested against a null model of random sampling in the phylogeny. The standard effect size (SES) quantifies the departure of observed phylogenetic structure from the null distribution.
