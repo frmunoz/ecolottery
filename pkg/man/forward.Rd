@@ -52,7 +52,7 @@ migration rate (if \code{m = 1} the community is a subsample of the regional poo
 parameter of neutral dynamics in the regional pool (used only if \code{pool=NULL}), it is the \dQuote{fundamental biodiversity number} (\eqn{\theta}).
 }
  \item{mu}{
-mutation rate derived from \eqn{\theta}, such as \eqn{\mu = \theta/(2*J_m), where \eqn{J_m} is the size of the metacommunity.}.
+mutation rate derived from \eqn{\theta}, such as \eqn{\mu = \theta/(2*J_m)}, where \eqn{J_m} is the size of the metacommunity.}.
 }
  \item{d}{
 number of individuals that die in each time-step.
