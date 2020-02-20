@@ -276,7 +276,7 @@ pool$tra <- t.sp[pool$sp]
 # Again simulating stabilizing environmental filtering
 com <- abund(coalesc(J, m, pool = pool, filt = function(x) 
                         exp(-(x - topt)^2/(2*sigma^2))))$com
-tab[2,com$sp] <- com$ab
+tab[2, rownames(com)] <- com$ab
 ```
 
 ```{r, message = F, eval = F}
