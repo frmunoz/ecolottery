@@ -1,4 +1,4 @@
-get_number_of_gens <- function(given_size, pool, traits = NULL, nbrep = 5, prob = 1, d = 1,
+get_number_of_gens <- function(given_size, pool, traits = NULL, nbrep = 5, m = 1, theta = NULL, d = 1,
                                gens = NULL, filt = NULL, limit.sim = NULL, par.limit = 0.1,
                                coeff.lim.sim = 1, type.filt = "immig", type.limit = "death", 
                                add = F, var.add = NULL, prob.death = NULL, 
@@ -34,7 +34,7 @@ get_number_of_gens <- function(given_size, pool, traits = NULL, nbrep = 5, prob 
     
     # Loop to simulate the communities and determine changepoint
     for (i in 1:nbrep) {
-      final <- forward(initial = start_com, prob = prob, d = d, gens = gens,
+      final <- forward(initial = start_com, m = 1, theta = NULL, d = d, gens = gens,
                        keep = FALSE, pool = pool, traits = traits, filt = filt,
                        limit.sim = limit.sim, par.limit = par.limit, coeff.lim.sim = coeff.lim.sim, 
                        type.filt = type.filt, type.limit = type.limit,  
@@ -48,7 +48,7 @@ get_number_of_gens <- function(given_size, pool, traits = NULL, nbrep = 5, prob 
       
       # Customized non-linear regression
       final_sp <- final$sp_t[length(final$sp_t)]
-      init_sp <- length(unique(start_com$sp))
+      init_sp <- length(unique(start_com[,2]))
       
       changePoint <- function(t, spf, Tval, init_sp) {
         init_sp * exp(log(spf/init_sp) * t/Tval) * as.numeric(t <= Tval) +

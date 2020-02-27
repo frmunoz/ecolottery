@@ -52,7 +52,7 @@ pool <- sort(rep(as.character(1:100), 10))
 initial <- data.frame(ind = paste("init", 1:100, sep="."),
                       sp = sort(rep(as.character(1:10), 10)),
                       trait = runif(100))
-final <- forward(initial = initial, prob = 0.5, gens = 100, pool = pool,
+final <- forward(initial = initial, m = 0.5, gens = 100, pool = pool,
                  filt = function(x) 0.5 - abs(0.5 - x))
 plot_comm(final)
 }

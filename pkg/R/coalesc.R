@@ -12,6 +12,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, filt.vect = F, add = FA
     
     # Need to define a function for environmental filtering
     if(!is.null(filt)) if(!is.function(filt)) filt <- NULL
+    if(is.null(filt)) filt.vect <- F
     
     if((add & is.null(var.add)) | (!add & !is.null(var.add))) {
       warning("No additional variables are passed to filt", call. = FALSE)

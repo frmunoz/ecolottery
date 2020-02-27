@@ -244,14 +244,14 @@ In the second case, environmental filtering limits the range of trait values in 
 m <- 1
 tab <- array(0, c(2, 200)); colnames(tab) <- tre$tip.label
 # First simulation of a neutral community
-com <- abund(coalesc(J, m, pool = pool, filt = NULL))$pool
-tab[1, com$sp] <- com$ab
+com <- abund(coalesc(J, m, pool = pool, filt = NULL))$com
+tab[1, rownames(com)] <- com$ab
 # Second simulation of a community undergoing stabilizing environmental filtering
 topt <- quantile(t.sp, 0.25)
 sigma <- 0.01
 com <- abund(coalesc(J, m, pool = pool, filt = function(x)
                     exp(-(x - topt)^2/(2*sigma^2))))$com
-tab[2, com$sp] <- com$ab
+tab[2, rownames(com)] <- com$ab
 ```
 
 These patterns can be tested against a null model of random sampling in the phylogeny. The standard effect size (SES) quantifies the departure of observed phylogenetic structure from the null distribution.
@@ -276,7 +276,7 @@ pool$tra <- t.sp[pool$sp]
 # Again simulating stabilizing environmental filtering
 com <- abund(coalesc(J, m, pool = pool, filt = function(x) 
                         exp(-(x - topt)^2/(2*sigma^2))))$com
-tab[2,com$sp] <- com$ab
+tab[2, rownames(com)] <- com$ab
 ```
 
 ```{r, message = F, eval = F}
@@ -310,7 +310,7 @@ initial$tra <- t.sp[initial$sp,]$tra
 # Forward-in-time simulation 
 sigma <- 0.1
 filt_gaussian <- function(t,x) exp(-(x-t)^2/(2*sigma^2))
-final.envfilt <- forward(initial = initial, prob = 0.25, d = 10, gens = 500, 
+final.envfilt <- forward(initial = initial, m = 0.25, d = 10, gens = 500, 
                          pool = pool, filt = function(x) filt_gaussian(0.5,x))
 ```
 
@@ -324,7 +324,7 @@ In the following example, community dynamics with limiting similarity are simula
 In this case, the probability of individual death depends on the similarity of trait values of each individual to the other individuals of the community.
 
 ```{r, message = F, eval = T}
-final.limsim <- forward(initial = initial, prob = 0.25, d = 10, gens = 1000,
+final.limsim <- forward(initial = initial, m = 0.25, d = 10, gens = 1000,
                  pool = pool, keep = F, limit.sim = T, coeff.lim.sim = 1)
 ```
 

@@ -1,6 +1,25 @@
 context("Test forward() structure and extreme cases")
 
 test_that("forward() works and returns desired result structure", {
+  
+  # Case with speciation
+  set.seed(1)
+  initial <- data.frame(ind = paste("init",1:100, sep="."),
+                        sp = rep(1:10, each = 10),
+                        trait = rep(runif(10), 10))
+  
+  sink(tempfile())
+  res <- forward(initial, theta = 50, gens = 5, pool = NULL, limit.sim = TRUE)
+  sink()
+  
+  expect_is(res, "list")
+  expect_named(res, c("com", "sp_t", "dist.t", "pool", "call"))
+  expect_is(res$com, "data.frame")
+  expect_named(res$com, c("ind", "sp", "trait"))
+  expect_is(res$com$trait, "numeric")
+  expect_equal(dim(res$com), c(100, 3))
+
+  # Cases with migration (an external pool is defined)
   pool <- data.frame(ind = paste("pool",1:10000, sep="."),
                      sp = rep(1:500, each = 20),
                      trait = rep(runif(500), 20))
@@ -11,7 +30,7 @@ test_that("forward() works and returns desired result structure", {
                         trait = rep(runif(10), 10))
   
   sink(tempfile())
-  res <- forward(initial, prob = 0.1, gens = 5, pool = pool, limit.sim = TRUE)
+  res <- forward(initial, m = 0.1, gens = 5, pool = pool, limit.sim = TRUE)
   sink()
   
   expect_is(res, "list")
@@ -25,10 +44,9 @@ test_that("forward() works and returns desired result structure", {
   expect_equal(dim(res$com), c(100, 3))
   expect_equal(dim(res$pool), dim(pool))
   
-  
   # Simulations when keeping all generations
   sink(tempfile())
-  res_keep <- forward(initial, prob = 0.1, gens = 5, pool = pool,
+  res_keep <- forward(initial, m = 0.1, gens = 5, pool = pool,
                       limit.sim = FALSE, keep = TRUE)
   sink()
   
@@ -47,7 +65,7 @@ test_that("forward() works and returns desired result structure", {
   
   # With limiting similarity
   sink(tempfile())
-  res_limit <- forward(initial, prob = 0.1, gens = 5, pool = pool,
+  res_limit <- forward(initial, m = 0.1, gens = 5, pool = pool,
                       limit.sim = TRUE, keep = TRUE)
   sink()
   

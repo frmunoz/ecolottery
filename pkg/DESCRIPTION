@@ -30,7 +30,8 @@ Imports:
     parallel,
     EasyABC,
     lazyeval,
-    moments
+    moments,
+    Rcpp
 Suggests:
     ape,
     dplyr,
@@ -47,10 +48,11 @@ Suggests:
     utils,
     vegan,
     Weighted.Desc.Stat
+#LinkingTo: Rcpp
 Description: Coalescent-Based Simulation of Ecological Communities as proposed
     by Munoz et al. (2018) <doi:10.1111/2041-210X.12918>. The package includes
     a tool for estimating parameters of community assembly by using Approximate 
     Bayesian Computation.
-License: GPL (>= 2)
+License: GPL-3
 Encoding: UTF-8
 RoxygenNote: 6.1.1
