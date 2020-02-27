@@ -1,5 +1,5 @@
 prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
-                          f.stats = NULL, estim = NULL, nval = 100) {
+                          f.stats = NULL, estim = NULL, nval = 100, pb = TRUE) {
   if(!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("This function requires the package ggplot2 to be installed to work")
   }
@@ -50,7 +50,7 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
   }
   
   all.sims <- list()
-  pb <- txtProgressBar(min = 0, max = nrow(params), style = 3)
+  if(pb) pb <- txtProgressBar(min = 0, max = nrow(params), style = 3)
   for(i in seq(nrow(params))){
     if(!is.null(filt)){
       par <- params[i,]
@@ -66,7 +66,7 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
                                   verbose = FALSE)
     }
     all.sims[[i]] <- sim$com
-    setTxtProgressBar(pb, i)
+    if(pb) setTxtProgressBar(pb, i)
   }
   ret <- list()
   
@@ -154,6 +154,6 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
     ret$underestim.meantr <- names(tr_pval[which(tr_pval>0.95)])
     ret$overestim.meantr <- names(tr_pval[which(tr_pval<0.05)])
   }
-  close(pb)
+  if(pb) close(pb)
   return(ret)
 }
