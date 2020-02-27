@@ -45,7 +45,7 @@ an estimator of the posterior distribution - can be either \code{"mean"}, \code{
  \item{nval}{
 the number of simulations to be run for computing predictive checks. If \code{"estim = NULL"} (default), a sample of size \code{nval} is used, if an estimator of the posterior distribution is used then \code{nval} replicates are used} }
 
- \item{pb}{
+ \item{progress}{
 whether to display progress bar (default is \code{TRUE})}
 
 \value{
