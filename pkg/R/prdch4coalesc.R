@@ -137,11 +137,11 @@ prdch4coalesc <- function(com.obs, pool, filt, params, stats = "abund",
   }
   
   if("intra" %in% stats){
-    meantr_obs = unlist(lapply(split(com.obs$trait, com.obs$sp), FUN = mean))
+    meantr_obs = unlist(lapply(split(com.obs[,3], com.obs[,2]), FUN = mean))
     #vartr_obs = unlist(lapply(split(com.obs$trait, com.obs$sp), FUN = var))
     
     meantr_sim = dplyr::bind_rows(all.sims, .id = "simul" )
-    meantr_sim = split(meantr_sim, meantr_sim$sp)
+    meantr_sim = split(meantr_sim, meantr_sim[,2])
     names = names(meantr_sim)
     meantr_sim = sapply(seq(length(meantr_sim)), FUN =function(i) unlist(lapply(split(meantr_sim[[i]],meantr_sim[[i]]$simul), FUN = function(x) mean(x[,4]))))
     names(meantr_sim) = names
