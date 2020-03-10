@@ -411,6 +411,7 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
     
     if (is.matrix(com)) {
       com <- as.data.frame(com, stringsAsFactors = FALSE)
+      colnames(com)[1:2] <- c("ind", "sp")
     }
     com[, 1] <- as.character(com[, 1])
     com[, 2] <- as.character(com[, 2])
