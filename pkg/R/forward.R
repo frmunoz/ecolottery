@@ -272,6 +272,7 @@ forward <- function(initial, m = 1, theta = NULL, d = 1, gens = 150, keep = FALS
   if (!is.null(limit.sim))
   {
     if (keep) return(list(com_t = comm_through_time,
+                          com = comm_through_time[[length(comm_through_time)]],
                           sp_t = sp_t,
                           dist.t = dist.t,
                           pool = pool,
