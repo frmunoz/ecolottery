@@ -9,7 +9,9 @@ test_that("forward() works and returns desired result structure", {
                         trait = rep(runif(10), 10))
   
   sink(tempfile())
-  res <- forward(initial, theta = 50, gens = 5, pool = NULL, limit.sim = TRUE)
+  suppressWarnings({
+    res <- forward(initial, theta = 50, gens = 5, pool = NULL, limit.sim = TRUE)
+  })
   sink()
   
   expect_is(res, "list")
@@ -70,7 +72,7 @@ test_that("forward() works and returns desired result structure", {
   sink()
   
   expect_is(res_limit, "list")
-  expect_named(res_limit, c("com_t", "sp_t", "dist.t", "pool", "call"))
+  expect_named(res_limit, c("com_t", "com", "sp_t", "dist.t", "pool", "call"))
   expect_is(res_limit$com_t, "list")
   expect_is(res_limit$com_t[[1]], "data.frame")
   expect_is(res_limit$pool, "data.frame")
