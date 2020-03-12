@@ -1,6 +1,13 @@
 language: r
 sudo: required
 dist: trusty
+cache: packages
+warnings_are_errors: false
+
+apt_packages:
+  - libgmp3-dev
+
+before_cache: Rscript -e 'remotes::install_cran("pkgdown")'
 
 before_install:
   - cd pkg
@@ -8,19 +15,16 @@ before_install:
 r:
   - release
   - devel
-
-os:
-  - linux
   
 matrix:
   include:
     - r: release
       os: osx
+    - r: release
+      os: linux
 
-apt_packages:
-  - libgmp3-dev
-
-cache: packages
-
-warnings_are_errors: false
+deploy:
+  provider: script
+  script: Rscript -e 'pkgdown::deploy_site_github()'
+  skip_cleanup: true
 
