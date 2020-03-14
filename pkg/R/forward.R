@@ -507,8 +507,6 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
       } else {
         prob.death <- apply(tr.dist[com[, 1], com[, 1]], 2, limit.sim)
       }
-      # Add baseline probability
-      prob.death <- prob.death + 1/J
     }
     
     # Influence of habitat filtering on mortality
@@ -520,7 +518,7 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
         stop("NA values in habitat filter", call. = FALSE)
       }
 
-      prob.death <- prob.death * (1 - com_filter / sum(com_filter))
+      prob.death <- prob.death + (1 - com_filter / sum(com_filter))
     }
     
     # If communities contained several traits prob.death object is a one column
