@@ -513,12 +513,13 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
     if("death" %in% type.filt & !is.null(filt)) { 
       
       com_filter <- unlist(env_filter(com[, -(1:2), drop = FALSE]))
+      com_filter <- com_filter/max(com_filter)
       
       if (any(is.na(com_filter))) {
         stop("NA values in habitat filter", call. = FALSE)
       }
 
-      prob.death <- prob.death + (1 - com_filter / sum(com_filter))
+      prob.death <- prob.death + (1 - com_filter)
     }
     
     # If communities contained several traits prob.death object is a one column
