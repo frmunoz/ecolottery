@@ -503,13 +503,14 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
       
       if(!is.null(limit.sim)) if(length(formals(limit.sim))>1)
       {
-        prob.death <- apply(tr.dist[com[, 1], com[, 1]], 2, function(x) limit.sim(x, par.limit))
+        prob.death <- prob.death + apply(tr.dist[com[, 1], com[, 1]], 2, function(x) limit.sim(x, par.limit))
       } else {
-        prob.death <- apply(tr.dist[com[, 1], com[, 1]], 2, limit.sim)
-        if(any(prob.death<0) | max(prob.death)==0) {
-          stop("Death probability cannot be negative, and the maximum must be 
+        prob.death <- prob.death + apply(tr.dist[com[, 1], com[, 1]], 2, limit.sim)
+      }
+      
+      if(any(prob.death<0) | max(prob.death)==0) {
+        stop("Death probability cannot be negative, and the maximum must be 
                strictly positive")
-        }
       }
     }
     
@@ -522,7 +523,7 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
       if (any(is.na(com_filter))) {
         stop("NA values in habitat filter", call. = FALSE)
       }
-
+      
       prob.death <- prob.death + (1 - com_filter)
     }
     
@@ -538,7 +539,7 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
     
     # Position of dead individuals in prob.death vector
     if(d > sum(prob.death > 0)) {
-      warning("Sampling with replacement from the pool", call. = FALSE)
+      warning("Sampling with replacement in local community (death)", call. = FALSE)
       died <- sample(J, d, replace = TRUE, prob = prob.death)
     } else 
       died <- sample(J, d, replace = FALSE, prob = prob.death)
@@ -552,11 +553,9 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
   
   immigrated <- runif(d) < m
   
-  # If probability of immigration is high, then the new individual is drawn
-  # from the regional pool
+  # Number of individuals drawn from the regional pool
   J1 <- sum(immigrated)
-  # The lower the probability of immigration, the higher the probability of
-  # drawing the new individual from the community
+  # Number of individuals drawn from local offspring
   J2 <- sum(!immigrated)
   
   if (J1 > 0) { 
@@ -594,8 +593,14 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
     }
     
     # Add new immigrated individual to community
-    com <- rbind(com, pool[sample(1:nrow(pool), J1, replace = TRUE,
+    if(J1 < sum(prob > 0)) {
+      warning("Sampling with replacement from the pool", call. = FALSE)
+      com <- rbind(com, pool[sample(1:nrow(pool), J1, replace = TRUE,
                                   prob = prob),])
+    } else {
+      com <- rbind(com, pool[sample(1:nrow(pool), J1, replace = FALSE,
+                                    prob = prob),])
+    }
     
     if (any(is.na(com[, 1]))) {
       stop("NA values in community composition (3)", call. = FALSE)
@@ -623,15 +628,21 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
       # Same constraint is used for local offspring and immigrants
       prob.estab <- prob.death/max(prob.death)
       prob.estab <- 1 - prob.estab
-      # Add baseline probability
+      # Add baseline probability - to be discussed/improved
       prob.estab <- prob.estab + 1/J
       prob <- prob * prob.estab
     }
     
     # Add new established offspring individual to community
-    com <- rbind(com, com.init[sample(1:nrow(com.init), J2, replace = TRUE,
-                                      prob = prob),])
-    
+    if(J2 < sum(prob < 0)) {
+      warning("Sampling with replacement in local community (recruitment)", call. = FALSE)
+      com <- rbind(com, com.init[sample(1:nrow(com.init), J2, replace = TRUE,
+                                        prob = prob),])
+    } else {
+      com <- rbind(com, com.init[sample(1:nrow(com.init), J2, replace = FALSE,
+                                        prob = prob),])
+    }
+        
     if (any(is.na(com[, 1]))) {
       print(J2)
       stop("NA values in community composition (4)", call. = FALSE)
