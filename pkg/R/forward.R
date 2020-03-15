@@ -506,6 +506,10 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
         prob.death <- apply(tr.dist[com[, 1], com[, 1]], 2, function(x) limit.sim(x, par.limit))
       } else {
         prob.death <- apply(tr.dist[com[, 1], com[, 1]], 2, limit.sim)
+        if(any(prob.death<0) | max(prob.death)==0) {
+          stop("Death probability cannot be negative, and the maximum must be 
+               strictly positive")
+        }
       }
     }
     
