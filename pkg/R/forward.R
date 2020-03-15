@@ -537,7 +537,12 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
     names(prob.death) <- com[, 1]      
     
     # Position of dead individuals in prob.death vector
-    died <- sample(J, d, replace = FALSE, prob = prob.death)
+    if(d > sum(prob.death > 0)) {
+      warning("Sampling with replacement from the pool", call. = FALSE)
+      died <- sample(J, d, replace = TRUE, prob = prob.death)
+    } else 
+      died <- sample(J, d, replace = FALSE, prob = prob.death)
+    
     com <- com[-died, ] 
     
     if (sum(is.na(com[, 1])) != 0) {
