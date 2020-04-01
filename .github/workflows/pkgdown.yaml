@@ -35,7 +35,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Install package
-        run: R CMD INSTALL .
+        run: R CMD INSTALL pkg/
 
       - name: Deploy package
         run: pkgdown::deploy_to_branch(pkg = "pkg", new_process = FALSE)
