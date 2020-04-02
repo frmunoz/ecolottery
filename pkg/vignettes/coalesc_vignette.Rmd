@@ -42,7 +42,7 @@ library(vegan)
 fit <- fisherfit(abund$com$ab)
 freq <- as.numeric(names(fit$fisher))
 plot(log(freq), fit$fisher, xlab = "Frequency (log)", ylab = "Species", type = "n")
-rect(log(freq - 0.5), 0, log(freq + 0.5), fit$fisher, col = "skyblue")
+rect(log(freq - 0.5), 0, log(freq + 0.5), fit$fisher, col = "skyblue", add = TRUE)
 alpha <- fit$estimate
 k <- fit$nuisance
 curve(alpha * k^exp(x)/exp(x), log(0.5), max(log(freq)), col = "red", lwd = 2,
