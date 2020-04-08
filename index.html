@@ -84,10 +84,27 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-Coalescent-Based Simulation of Ecological Communities as proposed
-    by Munoz et al. (2018) &lt;<a href="https://doi.org/10.1111/2041-210X.12918">doi:10.1111/2041-210X.12918</a>&gt;. The package includes
-    a tool for estimating parameters of community assembly by using Approximate 
-    Bayesian Computation.
+<div id="ecolottery" class="section level1">
+<div class="page-header"><h1 class="hasAnchor">
+<a href="#ecolottery" class="anchor"></a>ecolottery</h1></div>
+
+<p>Coalescent-Based Simulation of Ecological Communities</p>
+<p>This package allows quick and efficient simulation of communities with combination of environmental filtering and neutral birth-death dynamics. We also provide an Approximate Bayesian Computation tool to assess parameters of these processes from observed communities. We propose a coalescent-based approach that presents significant advantages over alternative algorithms, allowing intensive calculation schemes. It does not require simulating community dynamics from an initial state forward in time, and the genealogical approach can incorporate the influence of environmental filtering on immigration and establishment. The sampling process allows simulating varying sample size in a flexible way. The package also includes a forward-in-time simulation algorithm to investigate a broader range of niche-based dynamics, albeit it requires greater resources and computation time.</p>
+<div id="installing-the-package" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installing-the-package" class="anchor"></a>Installing the package</h2>
+<p>The version 1.0.0 is available on CRAN, <a href="https://cran.r-project.org/web/packages/ecolottery/index.html" class="uri">https://cran.r-project.org/web/packages/ecolottery/index.html</a></p>
+<div class="sourceCode" id="cb1"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"ecolottery"</span>)</pre></div>
+<p>The development version on Github can be installed using the <code>devtools</code> package:</p>
+<div class="sourceCode" id="cb2"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"frmunoz/ecolottery/pkg"</span>, <span class="kw">build_vignettes</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></div>
+</div>
+<div id="how-to-use-the-package" class="section level2">
+<h2 class="hasAnchor">
+<a href="#how-to-use-the-package" class="anchor"></a>How to use the package</h2>
+<p>The two main functions of the package are <code><a href="reference/coalesc.html">coalesc()</a></code> and <code><a href="reference/forward.html">forward()</a></code>. You can learn more on how to use them by looking at the <a href="pkg/vignettes/coalesc_vignette.Rmd">introduction vignette</a>.</p>
+<p>If you want to see how <code><a href="reference/coalesc_abc.html">coalesc_abc()</a></code> allows estimating parameters of community assembly with the ABC approach, have a look at the <a href="pkg/vignettes/Barro_Colorado.Rmd">Barro Colorado vignette</a>.</p>
+</div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -125,7 +142,13 @@ Coalescent-Based Simulation of Ecological Communities as proposed
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://travis-ci.org/frmunoz/ecolottery"><img src="https://travis-ci.org/frmunoz/ecolottery.svg?branch=master" alt="Build Status"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 
