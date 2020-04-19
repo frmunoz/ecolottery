@@ -1,5 +1,6 @@
 # ecolottery
 [![Build Status](https://travis-ci.org/frmunoz/ecolottery.svg?branch=master)](https://travis-ci.org/frmunoz/ecolottery)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/GITHUB_USERNAME/REPO?branch=master&svg=true)](https://ci.appveyor.com/project/frmunoz/ecolottery)
 
 Coalescent-Based Simulation of Ecological Communities
 
