@@ -1,4 +1,5 @@
 # ecolottery
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/ecolottery)](https://cran.r-project.org/package=ecolottery)
 ![](http://cranlogs.r-pkg.org/badges/grand-total/ecolottery?color=yellowgreen)
 [![Build Status](https://travis-ci.org/frmunoz/ecolottery.svg?branch=master)](https://travis-ci.org/frmunoz/ecolottery)
