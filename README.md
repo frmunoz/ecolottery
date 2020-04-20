@@ -1,15 +1,14 @@
-# ecolottery
+# ecolottery - Backward- and forward-in-time simulation of ecological communities
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/ecolottery)](https://cran.r-project.org/package=ecolottery)
 ![](http://cranlogs.r-pkg.org/badges/grand-total/ecolottery?color=yellowgreen)
 [![Build Status](https://travis-ci.org/frmunoz/ecolottery.svg?branch=master)](https://travis-ci.org/frmunoz/ecolottery)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/frmunoz/ecolottery?branch=master&svg=true)](https://ci.appveyor.com/project/frmunoz/ecolottery)
 
-Coalescent-Based Simulation of Ecological Communities
+The package allows quick and efficient simulation of community composition under diverse combinations of environmental filtering and neutral birth-death dynamics. The package offers a coalescent-based, backward-in-time algorithm, named *coalesc*.
+The package also includes a forward-in-time simulation algorithm, named *forward*, to investigate a broader set of niche-based dynamics, albeit at the expense of greater resources and computation time.
 
-This package allows quick and efficient simulation of communities with combination of environmental filtering and neutral birth-death dynamics. We also provide an Approximate Bayesian Computation tool to assess parameters of these processes from observed communities.
-We propose a coalescent-based approach that presents significant advantages over alternative algorithms, allowing intensive calculation schemes. It does not require simulating community dynamics from an initial state forward in time, and the genealogical approach can incorporate the influence of environmental filtering on immigration and establishment. The sampling process allows simulating varying sample size in a flexible way.
-The package also includes a forward-in-time simulation algorithm to investigate a broader range of niche-based dynamics, albeit it requires greater resources and computation time.
+*coalesc_abc* is another core function of the package, to perform Approximate Bayesian Computation (ABC) and infer parameters of the processes from observed community composition. This function relies on the *coalesc* function for intensive simulation of biodiversity parrtterns in ABC analyses.
 
 ## Installing the package
 
