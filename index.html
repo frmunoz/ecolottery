@@ -84,12 +84,12 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="ecolottery" class="section level1">
+<div id="ecolottery---backward--and-forward-in-time-simulation-of-ecological-communities" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#ecolottery" class="anchor"></a>ecolottery</h1></div>
+<a href="#ecolottery---backward--and-forward-in-time-simulation-of-ecological-communities" class="anchor"></a>ecolottery - Backward- and forward-in-time simulation of ecological communities</h1></div>
 
-<p>Coalescent-Based Simulation of Ecological Communities</p>
-<p>This package allows quick and efficient simulation of communities with combination of environmental filtering and neutral birth-death dynamics. We also provide an Approximate Bayesian Computation tool to assess parameters of these processes from observed communities. We propose a coalescent-based approach that presents significant advantages over alternative algorithms, allowing intensive calculation schemes. It does not require simulating community dynamics from an initial state forward in time, and the genealogical approach can incorporate the influence of environmental filtering on immigration and establishment. The sampling process allows simulating varying sample size in a flexible way. The package also includes a forward-in-time simulation algorithm to investigate a broader range of niche-based dynamics, albeit it requires greater resources and computation time.</p>
+<p>The package allows quick and efficient simulation of community composition under diverse combinations of environmental filtering and neutral birth-death dynamics. The package offers a coalescent-based, backward-in-time algorithm, named <em>coalesc</em>. The package also includes a forward-in-time simulation algorithm, named <em>forward</em>, to investigate a broader set of niche-based dynamics, albeit at the expense of greater resources and computation time.</p>
+<p><em>coalesc_abc</em> is another core function of the package, to perform Approximate Bayesian Computation (ABC) and infer parameters of the processes from observed community composition. This function relies on the <em>coalesc</em> function for intensive simulation of biodiversity parrtterns in ABC analyses.</p>
 <div id="installing-the-package" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installing-the-package" class="anchor"></a>Installing the package</h2>
