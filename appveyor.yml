@@ -29,7 +29,6 @@ build_script:
   - travis-tool.sh install_deps
 
 test_script:
-  - ps: cd pkg
   - travis-tool.sh run_tests
 
 on_failure:
