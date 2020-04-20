@@ -44,7 +44,6 @@ Suggests:
     rmarkdown,
     sads,
     testthat,
-    untb,
     utils,
     vegan,
     Weighted.Desc.Stat
