@@ -6,9 +6,6 @@ init:
         $ErrorActionPreference = "Stop"
         Invoke-WebRequest http://raw.github.com/krlmlr/r-appveyor/master/scripts/appveyor-tool.ps1 -OutFile "..\appveyor-tool.ps1"
         Import-Module '..\appveyor-tool.ps1'
-        
-before_install:
-  - cd pkg
 
 install:
   ps: Bootstrap
@@ -26,9 +23,11 @@ environment:
 # Adapt as necessary starting from here
 
 build_script:
+  - ps: cd pkg
   - travis-tool.sh install_deps
 
 test_script:
+  - ps: cd pkg
   - travis-tool.sh run_tests
 
 on_failure:
