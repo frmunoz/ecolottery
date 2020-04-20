@@ -23,6 +23,8 @@ environment:
 # Adapt as necessary starting from here
 
 build_script:
+  - ps: cp ..\travis-tool.sh .\travis-tool.sh
+  - ps: cp travis-tool.sh.cmd pkg\travis-tool.sh.cmd
   - ps: cd pkg
   - travis-tool.sh install_deps
 
