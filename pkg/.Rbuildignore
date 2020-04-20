@@ -1,2 +1,11 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+
+\.gitignore$
+\.RData$
+\.Rhistory$
+^_pkgdown\.yml$
+^README\.Rmd$
+^LICENSE\.md$
+^appveyor\.yml$
+^\.github$
