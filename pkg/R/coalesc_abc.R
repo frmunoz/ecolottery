@@ -760,7 +760,13 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                                          var.add = var.add,
                                          pool = pool, traits = traits,
                                          checks = F)
-        if(prop) comm.samp$com <- t(table(comm.samp$com[,2])/J)
+        if(prop) {
+          # The result is a table with relative species proportions and trait values
+          tr <- tapply(comm.samp$com[,3], comm.samp$com[,2], mean)
+          comm.samp$com <- data.frame(sp=names(tr), 
+                                         cov=tapply(comm.samp$com[,3], comm.samp$com[,2], length)/J[[i]],
+                                         tr=tr)
+        }
         if (length(formals(f.sumstats)) == 1) {
           stats.samp <- f.sumstats(comm.samp$com)
         } else if (length(formals(f.sumstats)) == 2) {
