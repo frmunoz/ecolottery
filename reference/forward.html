@@ -430,9 +430,9 @@ MacArthur, R., Levins, R., 1967. The limiting similarity, convergence, and diver
                  <span class='kw'>limit.sim</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='no'>final6</span>)
 <span class='co'># Check temporal changes</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>final6</span>$<span class='no'>sp_t</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time step"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Community richness"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>final6</span>$<span class='no'>sp_t</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time step"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Community richness"</span>)
 <span class='co'># Index of limiting similarity over time</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>final6</span>$<span class='no'>dist.t</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time step"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Limiting similarity"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>final6</span>$<span class='no'>dist.t</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time step"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Limiting similarity"</span>)
 
 <span class='co'># Higher migration rate, 5000 time steps</span>
 <span class='co'># Limiting similarity only plays on mortality</span>
@@ -444,10 +444,10 @@ MacArthur, R., Levins, R., 1967. The limiting similarity, convergence, and diver
                  <span class='kw'>limit.sim</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>type.limit</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"immig"</span>, <span class='st'>"death"</span>, <span class='st'>"loc.recr"</span>))
 <span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='no'>final8</span>)
 <span class='co'># Check temporal changes</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>final8</span>$<span class='no'>sp_t</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time step"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Community richness"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>final8</span>$<span class='no'>sp_t</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time step"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Community richness"</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span>(<span class='fl'>1</span>:<span class='fl'>5000</span>, <span class='no'>final7</span>$<span class='no'>sp_t</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"blue"</span>)
 <span class='co'># Index of limiting similarity over time</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>final8</span>$<span class='no'>dist.t</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time step"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Limiting similarity"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>final8</span>$<span class='no'>dist.t</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time step"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Limiting similarity"</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span>(<span class='fl'>1</span>:<span class='fl'>5000</span>, <span class='no'>final7</span>$<span class='no'>dist.t</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"blue"</span>)
 }</div></pre>
   </div>
