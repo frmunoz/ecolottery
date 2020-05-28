@@ -210,6 +210,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
   }
   
   # Defining a list with the bounds of prior distributions
+  # By default, a uniform prior is defined for migration rate, between 0 and 1
   prior=c();
   if(is.null(filt.abc)) {
     prior[[length(prior)+1]]  <- c("unif",0.1,1)
@@ -640,6 +641,9 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
           J <- round(params.samp[length(params.samp)-1])
           params.samp <- params.samp[-(length(params.samp)-1)]
         }
+        if(multi == "seqcom") {
+          J <- lapply(1:nb.com,function(x) J)
+        }
       }
       
       if (is.null(pool)) {
@@ -718,7 +722,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
         for (i in 1:nb.com) {
           try({
             m <- ifelse(add, migr(var.add[i,]), migr())[[1]]
-            if(is.list(pool) & length(pool)>1) {
+            if(!is.data.frame(pool) & is.list(pool) & length(pool)>1) {
               pool.loc <- pool[[i]]
             } else {
               pool.loc <- pool
@@ -730,6 +734,13 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                                                     add = add,
                                                     var.add = var.add[i,],
                                                     pool = pool.loc, traits = traits, checks = F)$com
+            if(prop) {
+              # The result is a table with relative species proportions and trait values
+              tr <- tapply(seqcom.samp[[i]][,3], seqcom.samp[[i]][,2], mean)
+              seqcom.samp[[i]] <- data.frame(sp=names(tr), 
+                                             cov=tapply(seqcom.samp[[i]][,3], seqcom.samp[[i]][,2], length)/J[[i]],
+                                             tr=tr)
+            }
           })
         }
         if (length(formals(f.sumstats)) == 1) {
@@ -970,10 +981,6 @@ initial_checks <- function(comm.obs = NULL, pool = NULL, multi = "single", prop 
   
   if (multi=="tab") if (any(rowSums(comm.obs)==0)) {
     stop("There should not be communities with 0 individuals", call. = FALSE)
-  }
-  
-  if(prop & multi!="tab") {
-    stop("prop data can only be handled in tab format", call. = FALSE)
   }
   
   if (is.null(traits)){

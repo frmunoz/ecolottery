@@ -76,14 +76,19 @@
       (\strong{sites in rows and species in columns})
       
       \item if \code{multi = "seqcom"}, \code{comm.obs} contains a list of
-      communities
+      communities. If \code{prop = F}, the local community composition is given
+      with one individual per row (first column is individual id, second column is 
+      species id, subsequent columns provide trait values).
+      If \code{prop = F}, the local community composition is given with one species
+      per row (first column if species id, second column is coverage, 
+      subsequent columns provide trait values).
     }
   }
   \item{prop}{
     indicates if the community composition is given in term of relative species abundances, 
     cover or proportions. In this case, a parameter of effective community size is estimated.
-    Presently only available with multi = "tab". Default is FALSE. If no prior is provided for
-    \code{J}, it is by default a uniform distribution between 100 and 1000.
+    Default is FALSE. If no prior is provided for \code{J} based on argumeng \code{par.size}, 
+    it is by default a uniform  distribution between 100 and 1000.
   }
   \item{traits}{
     the trait values of species in the regional pool. It is used if trait
@@ -92,14 +97,17 @@
     be included in \code{traits}.
   }
   \item{f.sumstats}{
-    a function allowing to calculate the summary statistics of local community
-    composition. Will be used to compare observed and simulated community
-    composition in the ABC estimation. It should return a vector of summary statistics.
-    There must be at least one input, i.e., the local community composition with individual and 
-    species labels as first columns and (optionally) trait values as subsequent columns. 
-    There can be a second argument taking the average trait values per species (derived from \code{pool}
-    if not provided in \code{traits}, see above), and \code{var.add} (see below) can be sent 
-    as a third argument. See examples of different options below.
+    a function calculating the summary statistics of community
+    composition. It is be used to compare observed and simulated community
+    composition in ABC estimation. The first input argument of the function concerns community
+    composition, under a format depending on \code{multi} and on \code{prop}. 
+    If \code{multi="comm"} this first argument is the local community composition with
+    individual and species labels as first columns and (optionally) trait values as subsequent
+    columns. 
+    There can be a second argument taking the average trait values per species (derived from
+    \code{pool} if not provided in \code{traits}, see above), and \code{var.add} 
+    (see below) can be sent as a third argument. See examples of different options below.
+    The function should return a vector of summary statistics.
   }
   \item{filt.abc}{
     the hypothesized environmental filtering function. It is a function of
@@ -226,7 +234,7 @@
     information). Can be "rejection", "loclinear", "neuralnet" or "ridge". Default is "rejection".
   }
   \item{alpha}{
-    a positive number between 0 and 1 (strictly) used when performing sequential ABC method. \code{alpha}     is the proportion of particles rejected at each step in the algorithm "Drovandi". This is the             proportion of particles kept at each step in the algorithms "Delmoral", "Lenormand" and "Emulation".      Default value is 0.5
+    a positive number between 0 and 1 (strictly) used when performing sequential ABC method. \code{alpha} is the proportion of particles rejected at each step in the algorithm "Drovandi". This is the proportion of particles kept at each step in the algorithms "Delmoral", "Lenormand" and "Emulation". Default value is 0.5
   }
 
 }
@@ -352,6 +360,7 @@ par.filt=par.range, nb.samp=nb.samp/10, tol=0.1, type = "mcmc")
 # immigrants
 
 # When the input is a site-species matrix, use argument multi="tab"
+# When the input is a list of community composition, use argument multi="seqcom"
 
 # 2.1/ Environment-dependent environmental filtering
 
@@ -399,6 +408,8 @@ f.sumstats <- function(tab, traits) array(dimnames=
   apply(tab, 1, vegan::diversity),
   colMeans(as.matrix(vegan::betadiver(tab,"w")))))
 
+# 2.1.1/ Using multi=tab (no local trait information)
+
 # ABC estimation of the parameters of trait-environment relationship and of migration,
 # based on observed community composition 
 ## Warning: this function may take a while
@@ -410,6 +421,45 @@ res.tab1 <- coalesc_abc(tab1, pool, multi = "tab", f.sumstats = f.sumstats,
 
 plot(res.tab1$abc, param=res.tab1$par)                   
 hist(res.tab1$abc)
+
+# 2.1.2/ Using multi=seqcom (keeping info on local trait values)
+
+seqcom <- lapply(meta1, function(x) x$com)
+
+f.sumstats.seqcom <- function(seqcom) unlist(lapply(seqcom, function(x) 
+  c(mean(x[,3]),var(x[,3]),length(unique(x[,2])),
+    vegan::diversity(table(x[,2])))))
+
+seqcom.obs <- f.sumstats.seqcom(seqcom)
+
+res.seqcom  <- coalesc_abc(seqcom, pool, multi = "seqcom", f.sumstats = f.sumstats.seqcom, 
+                                  filt.abc = filt_gaussian_env,
+                                  add = T, var.add = env1,
+                                  prop = F, par.filt = par.range, 
+                                  nb.samp = nb.samp)
+
+# Another example with proportion data in communities
+
+seqcom.prop <- lapply(seqcom, function(x) data.frame(
+                              sp=tapply(x[,2], x[,2], function(y) y[1]),
+                              cov=tapply(x[,2], x[,2], length)/nrow(x),
+                              tr=tapply(x[,3], x[,2], mean)))
+                              
+# Default prior for community size is uniform between 100 and 1000
+# Can be changed by setting par.size
+
+f.sumstats.seqcom.prop <- function(seqcom) unlist(lapply(seqcom, function(x) 
+  c(weighted.mean(x[,3], x[,2]),Weighted.Desc.Stat::w.var(x[,3], x[,2]),length(unique(x[,2])),
+    sum(x[,2]^2))))
+    
+sumstats.obs <- f.sumstats.seqcom.prop(seqcom.prop)
+
+res.seqcom.prop  <- coalesc_abc(seqcom.prop, pool, multi = "seqcom", 
+                                  f.sumstats = f.sumstats.seqcom.prop, 
+                                  filt.abc = filt_gaussian_env,
+                                  add = T, var.add = env1,
+                                  prop = T, par.filt = par.range, 
+                                  nb.samp = nb.samp)
 
 # 2.2/ Environment-dependent environmental filtering and immigration
 
