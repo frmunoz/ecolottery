@@ -19,8 +19,8 @@
   coalesc_abc(comm.obs, pool = NULL, multi = "single", prop = FALSE, traits = NULL, 
   f.sumstats, filt.abc = NULL,  filt.vect = F, migr.abc = NULL, size.abc = NULL, 
   add = FALSE, var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
-  par.size = NULL, scale = FALSE, dim.pca = NULL, svd = FALSE, theta.max = NULL,  
-  nb.samp = 10^6, parallel = FALSE, nb.core = NULL, tol = NULL, 
+  par.size = NULL, constr = NULL, scale = FALSE, dim.pca = NULL, svd = FALSE, 
+  theta.max = NULL, nb.samp = 10^6, parallel = FALSE, nb.core = NULL, tol = NULL, 
   type = "standard", method.seq = "Lenormand", method.mcmc = "Marjoram_original",
   method.abc = "rejection", alpha = 0.5, pkg = NULL)
   

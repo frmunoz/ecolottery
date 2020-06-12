@@ -2,8 +2,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
                         traits = NULL, f.sumstats, filt.abc = NULL, filt.vect = F,
                         migr.abc = NULL, size.abc = NULL, add = FALSE,
                         var.add = NULL, params  = NULL, par.filt = NULL,
-                        par.migr = NULL, par.size = NULL, scale = FALSE,
-                        dim.pca = NULL, svd = FALSE, theta.max = NULL,
+                        par.migr = NULL, par.size = NULL, constr = NULL,
+                        scale = FALSE, dim.pca = NULL, svd = FALSE, theta.max = NULL,
                         nb.samp = 10^6, parallel = FALSE, nb.core = NULL,
                         tol = NULL, type = "standard", method.seq = "Lenormand",
                         method.mcmc = "Marjoram_original",
@@ -69,15 +69,18 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
   if (type == "standard")
     return(coalesc_abc_std(comm.obs, pool, multi, prop, traits, f.sumstats,
                            filt.abc, filt.vect, migr.abc, size.abc, add, var.add, params,
-                           par.filt, par.migr, par.size, constr = NULL,
+                           par.filt, par.migr, par.size, constr,
                            scale = TRUE, dim.pca, svd, theta.max, nb.samp,
                            parallel, nb.core, tol, pkg, method.abc)) 
   else {
-    if(!is.null(migr.abc) | !is.null(size.abc))
-    {
+    if(!is.null(migr.abc) | !is.null(size.abc)) {
       migr.abc <- NULL
       size.abc <- NULL
       warning("migr.abc, size.abc not available with other sampling approach ",
+              "than standard", call. = FALSE)
+    }
+    if(!is.null(constr)) {
+      warning("constr not available with other sampling approach ",
               "than standard", call. = FALSE)
     }
     if(add)
