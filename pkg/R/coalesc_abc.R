@@ -169,8 +169,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
           } else tapply(data.frame(pool[,x]), pool[, 2], function(y) names(y[which.max(table(y))]))), 
         stringsAsFactors = F)
     }
-  } else if (!is.null(filt.abc) & is.null(traits) & ncol(pool) < 3) 
-    warning("Trait information is not provided", call. = FALSE)
+  }
   
   # Community size
   if (!(multi %in% c("single", "tab", "seqcom"))){
@@ -992,9 +991,8 @@ initial_checks <- function(comm.obs = NULL, pool = NULL, multi = "single", prop 
     stop("There should not be communities with 0 individuals", call. = FALSE)
   }
   
-  if (is.null(traits)){
+  if (!is.null(filt.abc) & is.null(traits) & ncol(pool) < 3) 
     warning("Trait information is not provided", call. = FALSE)
-  }
   
   # Other required packages
   for (i in pkg) {
