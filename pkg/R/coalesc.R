@@ -128,9 +128,6 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, filt.vect = F, add = FA
     
     if (ncol(pool) >= 3)  {
       ind_pool_traits <- data.frame(pool[,-(1:2)], stringsAsFactors = F)
-      if(any(is.na(ind_pool_traits)))
-        stop("There should not be any NA in trait values of the individuals of",
-             " the pool", call. = FALSE)
       if(!is.null(traits))  
         if(verbose) warning("Trait information already in 'pool', the 'traits'",
                             "input is ignored", call. = FALSE)
@@ -187,7 +184,11 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, filt.vect = F, add = FA
     stop("Incorrect output of the filtering function", call. = FALSE)
   }
   
-  # Environmental filter should not provide negative values
+  # Environmental filter should not provide negative NA or values
+  if (any(is.na(prob))) {
+    warning("The filtering function returns NA values, which are set to 0.")
+    prob[is.na(prob)] <- 0
+    }
   if (any(prob < 0)) {
       if (verbose) {
         warning("Negative weights yielded by filtering function are set to ",
@@ -223,6 +224,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, filt.vect = F, add = FA
     com <- data.frame(ind = rep(pool[migrant, 1], J),
                       sp = rep(pool[migrant, 2], J),
                       ind_com_traits)
+    
     return(list(com = com, pool = pool, call = match.call()))
   }
     
