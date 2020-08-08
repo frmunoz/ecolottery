@@ -65,17 +65,19 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
     } 
   
   if (length(formals(f.sumstats)) == 1) {
-    stats.obs <- f.sumstats(comm.obs)
+    stats.obs <- tryCatch(f.sumstats(comm.obs), error = function(e) stop("f.sumstats return error on observed data"))
   } else if (length(formals(f.sumstats)) == 2) {
-    stats.obs <- f.sumstats(comm.obs, traits)
+    stats.obs <- tryCatch(f.sumstats(comm.obs, traits), error = function(e) stop("f.sumstats return error on observed data"))
   } else {
-    stats.obs <- f.sumstats(comm.obs, traits, var.add)
+    stats.obs <- tryCatch(f.sumstats(comm.obs, traits, var.add), error = function(e) stop("f.sumstats return error on observed data"))
   }
   
+  nb.sumstats <- length(stats.obs)
+  
   # Community simulation
-  sim <- do.simul.coalesc(J, pool, multi, prop, nb.com, traits, f.sumstats, filt.abc, filt.vect, migr.abc,
-                          size.abc, add, var.add, params, par.filt, par.migr, par.size, constr,
-                          dim.pca, svd, theta.max, nb.samp, parallel, nb.core, tol, pkg, method.abc)
+  sim <- do.simul.coalesc(J, pool, multi, prop, nb.com, traits, f.sumstats, nb.sumstats, filt.abc,
+                          filt.vect, migr.abc, size.abc, add, var.add, params, par.filt, par.migr, par.size, 
+                          constr, dim.pca, svd, theta.max, nb.samp, parallel, nb.core, pkg)
   
   if(sum(sim$sel.ss)!=length(stats.obs))
   {
@@ -192,11 +194,10 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
 }
 
 do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
-                             traits = NULL, f.sumstats = NULL, filt.abc = NULL, filt.vect = F, migr.abc = NULL, 
-                             size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
+                             traits = NULL, f.sumstats = NULL, nb.sumstats = NULL, filt.abc = NULL, filt.vect = F, 
+                             migr.abc = NULL, size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
                              par.migr = NULL, par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, 
-                             theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, 
-                             pkg = NULL, method.abc = "rejection") 
+                             theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, pkg = NULL) 
 {
   
   if (!requireNamespace("parallel", quietly = TRUE) & parallel) {
@@ -233,7 +234,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   
   # Function to perform simulations
   mkWorker <- function(traits, nb.com, multi, prop, prior, J, pool, filt.abc, filt.vect, 
-                       migr.abc, size.abc, add, var.add, f.sumstats, pkg) {
+                       migr.abc, size.abc, add, var.add, f.sumstats, nb.sumstats, pkg) {
     force(traits)
     force(nb.com)
     force(multi)
@@ -251,7 +252,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     force(pkg)
     
     summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, filt.vect, migr.abc, add, var.add,
-                         f.sumstats) {
+                         f.sumstats, nb.sumstats) {
       
       params.samp <- unlist(lapply(prior,function(x) x[j]))
       stats.samp <- NA
@@ -337,11 +338,14 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
         }
         
         if (length(formals(f.sumstats)) == 1) {
-          stats.samp <- f.sumstats(meta.samp)
+          stats.samp <- tryCatch(f.sumstats(meta.samp), 
+                                 error = function(e) rep(NA, nb.sumstats))
         } else if (length(formals(f.sumstats)) == 2) {
-          stats.samp <- f.sumstats(meta.samp, traits)
+          stats.samp <- tryCatch(f.sumstats(meta.samp, traits), 
+                                 error = function(e) rep(NA, nb.sumstats))
         } else {
-          stats.samp <- f.sumstats(meta.samp, traits, var.add)
+          stats.samp <- tryCatch(f.sumstats(meta.samp, traits, var.add), 
+                                 error = function(e) rep(NA, nb.sumstats))
         }
         
       } else if(multi == "seqcom") {
@@ -419,7 +423,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
         }
       }
       summCalc(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, filt.vect, migr.abc, 
-               add, var.add, f.sumstats)
+               add, var.add, f.sumstats, nb.sumstats)
     }
     return(worker)
   }
@@ -428,10 +432,12 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   if (parallel) {
     err.chk <- try(models <- parallel::parLapply(parCluster, 1:nb.samp,
                                                  mkWorker(traits, nb.com, multi, prop, prior, J,
-                                                          pool, filt.abc, filt.vect, migr.abc, size.abc, add, var.add, f.sumstats, pkg)), T)
+                                                          pool, filt.abc, filt.vect, migr.abc, size.abc, add, 
+                                                          var.add, f.sumstats, nb.sumstats,pkg)), T)
   } else {
     models <- lapply(1:nb.samp, mkWorker(traits, nb.com, multi, prop, prior, J, pool,
-                                         filt.abc, filt.vect, migr.abc, size.abc, add, var.add, f.sumstats, pkg))
+                                         filt.abc, filt.vect, migr.abc, size.abc, add, 
+                                         var.add, f.sumstats, nb.sumstats, pkg))
   }
   
   if (parallel) {
