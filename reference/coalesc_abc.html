@@ -6,8 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Estimation of neutral and non-neutral parameters of community assembly using
-  Approximate Bayesian Computation (ABC), — coalesc_abc • ecolottery</title>
+<title>Estimation of parameters of community assembly using
+  Approximate Bayesian Computation (ABC) — coalesc_abc • ecolottery</title>
 
 
 <!-- jquery -->
@@ -40,8 +40,8 @@
 
 
 
-<meta property="og:title" content="Estimation of neutral and non-neutral parameters of community assembly using
-  Approximate Bayesian Computation (ABC), — coalesc_abc" />
+<meta property="og:title" content="Estimation of parameters of community assembly using
+  Approximate Bayesian Computation (ABC) — coalesc_abc" />
 <meta property="og:description" content="Estimates parameters of neutral migration-drift dynamics (through migration
   rate m and parameters of environmental filtering (through a filtering function
   filt.abc()) from the composition of a local community and the related
@@ -128,8 +128,8 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Estimation of neutral and non-neutral parameters of community assembly using
-  Approximate Bayesian Computation (ABC),</h1>
+    <h1>Estimation of parameters of community assembly using
+  Approximate Bayesian Computation (ABC)</h1>
     
     <div class="hidden name"><code>coalesc_abc.Rd</code></div>
     </div>
@@ -148,20 +148,6 @@
   theta.max = <span class='kw'>NULL</span>, nb.samp = <span class='fl'>10</span><span class='op'>^</span><span class='fl'>6</span>, parallel = <span class='fl'>FALSE</span>, nb.core = <span class='kw'>NULL</span>, tol = <span class='kw'>NULL</span>, 
   type = <span class='st'>"standard"</span>, method.seq = <span class='st'>"Lenormand"</span>, method.mcmc = <span class='st'>"Marjoram_original"</span>,
   method.abc = <span class='st'>"rejection"</span>, alpha = <span class='fl'>0.5</span>, pkg = <span class='kw'>NULL</span>)
-  
-  <span class='fu'>coalesc_abc_std</span>(<span class='kw'>comm.obs</span>, pool = <span class='kw'>NULL</span>, multi = <span class='st'>"single"</span>, prop = <span class='kw'>F</span>, traits = <span class='kw'>NULL</span>,
-  <span class='kw'>f.sumstats</span>, filt.abc = <span class='kw'>NULL</span>, filt.vect = <span class='kw'>F</span>, migr.abc = <span class='kw'>NULL</span>, size.abc = <span class='kw'>NULL</span>, add = <span class='kw'>F</span>, 
-  var.add = <span class='kw'>NULL</span>, params = <span class='kw'>NULL</span>, par.filt = <span class='kw'>NULL</span>, par.migr = <span class='kw'>NULL</span>, 
-  par.size = <span class='kw'>NULL</span>, constr = <span class='kw'>NULL</span>, scale = <span class='kw'>F</span>, dim.pca = <span class='kw'>NULL</span>, svd = <span class='kw'>F</span>, 
-  theta.max = <span class='kw'>NULL</span>, nb.samp = <span class='fl'>10</span><span class='op'>^</span><span class='fl'>6</span>, parallel = <span class='fl'>TRUE</span>, nb.core = <span class='kw'>NULL</span>, 
-  tol = <span class='kw'>NULL</span>, pkg = <span class='kw'>NULL</span>, method.abc = <span class='st'>"rejection"</span>)
-  
-  <span class='fu'>do.simul.coalesc</span>(<span class='kw'>J</span>, pool = <span class='kw'>NULL</span>, multi = <span class='st'>"single"</span>, prop = <span class='kw'>F</span>, nb.com = <span class='kw'>NULL</span>, 
-  traits = <span class='kw'>NULL</span>, f.sumstats = <span class='kw'>NULL</span>, filt.abc = <span class='kw'>NULL</span>, filt.vect = <span class='kw'>F</span>, migr.abc = <span class='kw'>NULL</span>, 
-  size.abc = <span class='kw'>NULL</span>, add = <span class='kw'>F</span>, var.add = <span class='kw'>NULL</span>, params = <span class='kw'>NULL</span>, par.filt = <span class='kw'>NULL</span>, 
-  par.migr = <span class='kw'>NULL</span>, par.size = <span class='kw'>NULL</span>, constr = <span class='kw'>NULL</span>, dim.pca = <span class='kw'>NULL</span>, svd = <span class='kw'>F</span>, 
-  theta.max = <span class='kw'>NULL</span>, nb.samp = <span class='fl'>10</span><span class='op'>^</span><span class='fl'>6</span>, parallel = <span class='fl'>TRUE</span>, nb.core = <span class='kw'>NULL</span>, 
-  tol = <span class='kw'>NULL</span>, pkg = <span class='kw'>NULL</span>, method.abc = <span class='st'>"rejection"</span>)
   
   <span class='fu'>generate_prior</span>(pool = <span class='kw'>NULL</span>, prop = <span class='kw'>F</span>, constr = <span class='kw'>NULL</span>, params = <span class='kw'>NULL</span>, 
   par.filt = <span class='kw'>NULL</span>, par.migr = <span class='kw'>NULL</span>, par.size = <span class='kw'>NULL</span>, theta.max = <span class='kw'>NULL</span>, nb.samp = <span class='fl'>10</span><span class='op'>^</span><span class='fl'>6</span>)
@@ -361,14 +347,6 @@
       <td><p>packages needed for calculation of <code>filt.abc</code> and/or <code>f.sumstats</code>.</p></td>
     </tr>
     <tr>
-      <th>J</th>
-      <td><p>local community size(s). There must be several values when multi is <code>seqcom</code> or <code>tab</code>.</p></td>
-    </tr>
-    <tr>
-      <th>nb.com</th>
-      <td><p>number of communities.</p></td>
-    </tr>
-    <tr>
       <th>type</th>
       <td><p>the type of algorithm to be used in EasyABC. Can be either "standard" (using package abc, default)" "seq" (sequential), "mcmc" or "annealing". Three later options are based on the EasyABC package.</p></td>
     </tr>
@@ -401,11 +379,10 @@ default) or several communities (if <code>multi = "tab" or "seqcom"</code>) rela
 regional pool. If <code>type = "standard"</code>, it performs simulations with parameter values randomly drawn in priori distributions. With other options in <code>type</code>, the function uses optimization algorithms implemented in the package <code>EasyABC</code>.</p>
 <p>To assess environmental filtering, a filtering function must be defined in <code>filt.abc</code>. It should take two arguments, the first is a trait value of a candidate immigrant, the second is a vector including the parameter values of the filtering function. See examples below for further information on usage.
 An important point is that in many cases the function might be vectorized, that is, it can provide a vector of filtering probabilities for a vector of trait values given in first argument. In this case the user should set <code>filt.vect = T</code>, which will significantly accelerate simulations.</p>
-<p><code>coalesc_abc_std()</code> performs simulations as with the option <code>type = "standard"</code>.</p>
-<p><code>do.simul.coalesc()</code> provides the simulated communities used in ABC estimation.
-<code>generate_prior()</code> draws parameter values from the prior distributions defined with <code>params</code>,<code>par.filt</code> and/or <code>par.size</code>.
-<code>initial_checks()</code> performs initial checks of the input arguments of <code>coalesc_abc</code> and <code>coalesc_abc_std</code>. It provides informative error and warning messages when needed.
-The three functions are not intended to be used directly.</p>
+<p>The related functions <code><a href='coalesc_abc_std.html'>coalesc_abc_std()</a></code> and <code><a href='coalesc_abc_std.html'>coalesc_abc_std()</a></code> perform simulations with the option <code>type = "standard"</code> and with the algorithms from EasyABC package, respectivelt.</p>
+<p><code>generate_prior()</code> draws parameter values from the prior distributions defined with <code>params</code>,<code>par.filt</code> and/or <code>par.size</code>.
+<code>initial_checks()</code> performs initial checks of the input arguments of <code>coalesc_abc</code>. It provides informative error and warning messages when needed.
+The two functions are not intended to be used directly.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p></p>
@@ -423,8 +400,10 @@ The three functions are not intended to be used directly.</p>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code>abc()</code> in <code>abc</code> package,
- <code>parLapply()</code> in <code>parallel</code> package.</p></div>
+    <div class='dont-index'><p><code><a href='coalesc_abc_std.html'>coalesc_abc_std()</a></code>,  
+  <code><a href='coalesc_easyABC.html'>coalesc_easyABC()</a></code>,
+  <code>abc()</code> in <code>abc</code> package,
+  <code>parLapply()</code> in <code>parallel</code> package.</p></div>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Jabot, F., and J. Chave. 2009. Inferring the parameters of the neutral theory
