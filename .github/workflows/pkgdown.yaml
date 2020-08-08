@@ -40,5 +40,5 @@ jobs:
           cp README.md pkg/
 
       - name: Deploy package
-        run: pkgdown::deploy_to_branch(pkg = "pkg", new_process = FALSE)
+        run: getwd();pkgdown::deploy_to_branch(pkg = "pkg/", new_process = FALSE)
         shell: Rscript {0}
