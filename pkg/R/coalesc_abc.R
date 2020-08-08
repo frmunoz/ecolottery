@@ -62,6 +62,17 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
     type <- "standard"
   }
   
+  initial_checks(comm.obs = comm.obs, pool = pool, multi = multi, prop = prop,
+                 traits = traits, f.sumstats = f.sumstats,
+                 filt.abc = filt.abc, filt.vect = filt.vect, migr.abc = migr.abc,
+                 size.abc = size.abc, params = params, par.filt = par.filt,
+                 par.migr = par.migr,  par.size = par.size, scale = scale,
+                 theta.max = theta.max, nb.samp = nb.samp,
+                 parallel = parallel, nb.core = nb.core, tol = tol,
+                 type = type, method.seq = method.seq,
+                 method.mcmc = method.mcmc, method.abc = method.abc,
+                 alpha = alpha, pkg = pkg)
+  
   # The options migr.abc = NULL, size.abc = NULL, add = F, 
   # var.add = NULL, par.filt = NULL, par.migr = NULL, 
   # par.size = NULL, constr = NULL, scale = T, dim.pca = NULL, svd = F, pkg = NULL
@@ -96,16 +107,6 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
       warning("dim.pca and svd not available with other sampling approach ",
               "than standard", call. = FALSE)
     } 
-    initial_checks(comm.obs = comm.obs, pool = pool, multi = multi, prop = prop,
-                   traits = traits, f.sumstats = f.sumstats,
-                   filt.abc = filt.abc, filt.vect = filt.vect, migr.abc = migr.abc,
-                   size.abc = size.abc, params = params, par.filt = par.filt,
-                   par.migr = par.migr,  par.size = par.size, scale = scale,
-                   theta.max = theta.max, nb.samp = nb.samp,
-                   parallel = parallel, nb.core = nb.core, tol = tol,
-                   type = type, method.seq = method.seq,
-                   method.mcmc = method.mcmc, method.abc = method.abc,
-                   alpha = alpha, pkg = pkg)
   }  
   
   if (parallel){
@@ -210,6 +211,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
       stats.obs <- as.vector(f.sumstats(comm.obs, traits))
     }
   }
+  nb.sumstats <- length(stats.obs)
   
   # Defining a list with the bounds of prior distributions
   # By default, a uniform prior is defined for migration rate, between 0 and 1
@@ -369,16 +371,6 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
                             nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
                             method.abc = "rejection")
 {
-  initial_checks(comm.obs = comm.obs, pool = pool, multi = multi, prop = prop,
-                 traits = traits, f.sumstats = f.sumstats, filt.abc = filt.abc,
-                 filt.vect = filt.vect, migr.abc = migr.abc, size.abc = size.abc, 
-                 add = add, var.add = var.add, params = params, par.filt = par.filt,
-                 par.migr = par.migr, par.size = par.size, constr = constr,
-                 scale = scale, dim.pca = dim.pca, svd = svd,
-                 theta.max = theta.max, nb.samp = nb.samp, parallel = parallel,
-                 nb.core = nb.core, tol = tol, pkg = pkg,
-                 method.abc = method.abc)
-  
   if(is.null(par.filt) & is.null(par.migr)){
     warning("No value provided for par.filt and par.migr arguments. ",
             "Only m and theta will be estimated.", call. = FALSE)
