@@ -465,3 +465,101 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   
   return(list(stats = stats.sel, params.sim = params.sim.sel, sel.ss=sel.ss))
 }
+
+
+generate_prior <- function(pool = NULL, prop = F, constr = NULL, 
+                           params = NULL, par.filt = NULL, par.migr = NULL,
+                           par.size = NULL, theta.max = NULL, nb.samp = 10^6)
+{
+  # Function defining constraints on parameter values
+  constr.test <- function(par.names, par.val) 
+  {
+    res <- T
+    if(!is.null(constr)) {
+      for(j in 1:length(par.names))
+        assign(par.names[j], par.val[j], envir = environment())
+      for(j in 1:length(constr)) 
+        res <- res & lazyeval::lazy_eval(constr[j], environment())
+    }
+    return(res)
+  }
+  
+  if (!is.null(constr) & !requireNamespace("lazyeval", quietly = TRUE)) {
+    stop("coalesc_abc requires package lazy_eval to be installed",
+         call. = FALSE)
+  }
+  
+  # Uniform prior distributions of parameters
+  prior <- list()
+  dim.prior <- ifelse(!is.null(nrow(par.filt)), nrow(par.filt), 0) + 
+    max(ifelse(!is.null(par.migr), nrow(par.migr), 0), 1) + 
+    prop*max(ifelse(!is.null(par.size), nrow(par.size), 0), 1) + 
+    as.numeric(is.null(pool))
+  length(prior) <- dim.prior
+  stop <- 0
+  while(length(prior[[1]]) < nb.samp & stop < 100) {
+    samp <- nb.samp - length(prior[[1]])
+    i <- 0
+    if(!is.null(par.filt)) {
+      for (i in 1:nrow(par.filt)) {
+        prior[[i]] <- c(prior[[i]], runif(samp, min = par.filt[i, 1],
+                                          max = par.filt[i, 2]))
+      }
+    }
+    if(!is.null(par.migr)) {
+      for (j in (i+1):(i+nrow(par.migr))) {
+        prior[[j]] <- c(prior[[j]], runif(samp, min = par.migr[j-i, 1], 
+                                          max = par.migr[j-i, 2]))
+        i <- j
+      }
+    } else {
+      prior[[i+1]] <- c(prior[[i+1]], runif(samp, min = 0, max = 1))
+      i <- i + 1
+      j <- i
+    }
+    if(!is.null(par.migr)) {
+      names(prior) <- c(rownames(par.filt), rownames(par.migr))
+    } else {
+      names(prior) <- c(rownames(par.filt), "m")
+    }
+    
+    # TODO - Defining a lower bound at 0 for m and theta can entail issues when
+    # species richness is 1 in simulated community; we should allow the user to
+    # define the prior for m and theta in the future
+    
+    if(prop) 
+    {
+      if(!is.null(par.size))
+      {
+        for (i in (j+1):(j + nrow(par.size))) {
+          prior[[i]] <- c(prior[[i]], runif(samp, min = par.size[i-j, 1],
+                                            max = par.size[i-j, 2]))
+        }
+        names(prior)[(j+1):(j+nrow(par.size))] <- rownames(par.size)
+      } else {
+        prior[[j+1]] <- c(prior[[j+1]], runif(samp, min = 100, max = 1000))
+        i <- j+1
+        warning("The prior of community size is uniform between 100 and 1000",
+                call. = FALSE)
+        names(prior)[i] <- "J"
+      }
+    }
+    
+    if (is.null(pool)) {
+      prior[[i + 1]] <- c(prior[[i + 1]], runif(samp, min = 0, max = theta.max))
+      names(prior)[i+1] <- "theta"
+    }
+    
+    constr.sel <- sapply(1:nb.samp, function(x) {
+      constr.test(names(prior), unlist(lapply(prior, function(y) y[x])))
+    })
+    prior <- lapply(prior, function(x) x[constr.sel])
+    
+    stop <- stop + 1
+  }
+  
+  if(stop==100) warning("Fail to meet constraints for nb.samp sets of ",
+                        "parameter values", call. = FALSE)
+  
+  return(prior)
+}

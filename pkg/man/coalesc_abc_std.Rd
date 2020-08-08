@@ -1,6 +1,7 @@
 \name{coalesc_abc_std}
 \alias{coalesc_abc_std}
 \alias{do.simul.coalesc}
+\alias{generate_prior}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
   Estimation of parameters of community assembly using
@@ -26,6 +27,9 @@
   par.migr = NULL, par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, 
   theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
   tol = NULL, pkg = NULL, method.abc = "rejection")
+  
+  generate_prior(pool = NULL, prop = F, constr = NULL, params = NULL, 
+  par.filt = NULL, par.migr = NULL, par.size = NULL, theta.max = NULL, nb.samp = 10^6)
 }
 \arguments{
   \item{comm.obs}{
@@ -205,7 +209,9 @@
 default) or several communities (if \code{multi = "tab" or "seqcom"}) related to the same
 regional pool. It performs simulations with parameter values randomly drawn in priori distributions. 
 
-\code{do.simul.coalesc()} provides the simulated communities used in ABC estimation.
+\code{generate_prior()} draws parameter values from the prior distributions defined with \code{params},\code{par.filt} and/or \code{par.size}.
+\code{do.simul.coalesc()} provides simulated communities used for ABC estimation.
+
 }
 \value{
   \item{par}{

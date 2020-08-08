@@ -1,6 +1,5 @@
 \name{coalesc_abc}
 \alias{coalesc_abc}
-\alias{generate_prior}
 \alias{initial_checks}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
@@ -21,10 +20,7 @@
   theta.max = NULL, nb.samp = 10^6, parallel = FALSE, nb.core = NULL, tol = NULL, 
   type = "standard", method.seq = "Lenormand", method.mcmc = "Marjoram_original",
   method.abc = "rejection", alpha = 0.5, pkg = NULL)
-  
-  generate_prior(pool = NULL, prop = F, constr = NULL, params = NULL, 
-  par.filt = NULL, par.migr = NULL, par.size = NULL, theta.max = NULL, nb.samp = 10^6)
-  
+    
   initial_checks(comm.obs = NULL, pool = NULL, multi = "single", prop = F, traits = NULL, 
   f.sumstats = NULL, filt.abc = NULL, filt.vect = F, migr.abc = NULL, size.abc = NULL, 
   add = NULL, var.add = NULL, params = NULL,  par.filt = NULL, par.migr = NULL, 
@@ -226,9 +222,8 @@ An important point is that in many cases the function might be vectorized, that 
 
 The related functions \code{coalesc_abc_std()} and \code{coalesc_abc_std()} perform simulations with the option \code{type = "standard"} and with the algorithms from EasyABC package, respectivelt.
 
-\code{generate_prior()} draws parameter values from the prior distributions defined with \code{params},\code{par.filt} and/or \code{par.size}.
 \code{initial_checks()} performs initial checks of the input arguments of \code{coalesc_abc}. It provides informative error and warning messages when needed.
-The two functions are not intended to be used directly.
+This function is not intended to be used directly.
 
 }
 \value{
