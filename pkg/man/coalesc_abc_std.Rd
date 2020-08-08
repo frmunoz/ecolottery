@@ -15,18 +15,18 @@
 }
 \usage{
   coalesc_abc_std(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-  f.sumstats, filt.abc = NULL, filt.vect = F, migr.abc = NULL, size.abc = NULL, add = F, 
-  var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
+  f.sumstats, filt.abc = NULL, filt.vect = F, migr.abc = NULL, size.abc = NULL, 
+  add = F, var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
   par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = F, 
   theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
   tol = NULL, pkg = NULL, method.abc = "rejection")
   
   do.simul.coalesc(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
-  traits = NULL, f.sumstats = NULL, filt.abc = NULL, filt.vect = F, migr.abc = NULL, 
-  size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
-  par.migr = NULL, par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, 
-  theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
-  tol = NULL, pkg = NULL, method.abc = "rejection")
+  traits = NULL, f.sumstats = NULL, nb.sumstats = NULL, filt.abc = NULL, 
+  filt.vect = F, migr.abc = NULL, size.abc = NULL, add = F, var.add = NULL, 
+  params = NULL, par.filt = NULL, par.migr = NULL, par.size = NULL, constr = NULL, 
+  dim.pca = NULL, svd = F,  theta.max = NULL, nb.samp = 10^6, parallel = TRUE, 
+  nb.core = NULL, pkg = NULL)
   
   generate_prior(pool = NULL, prop = F, constr = NULL, params = NULL, 
   par.filt = NULL, par.migr = NULL, par.size = NULL, theta.max = NULL, nb.samp = 10^6)
@@ -89,6 +89,9 @@
     \code{pool} if not provided in \code{traits}, see above), and \code{var.add} 
     (see below) can be sent as a third argument. See examples of different options below.
     The function should return a vector of summary statistics.
+  }
+  \item{nb.sumstats}{
+    number of summary statistics returned by \code{f.sumstats}.
   }
   \item{filt.abc}{
     the hypothesized environmental filtering function. It is a function of
