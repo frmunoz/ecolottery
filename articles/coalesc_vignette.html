@@ -79,15 +79,15 @@
 
       
 
-      </header><div class="row">
+      </header><script src="coalesc_vignette_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Appendix 1: basic functions and examples</h1>
                         <h4 class="author">François MUNOZ and Pierre DENELLE</h4>
             
-            <h4 class="date">2020-06-12</h4>
+            <h4 class="date">2020-08-08</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/frmunoz/ecolottery/blob/master/../vignettes/coalesc_vignette.Rmd"><code>../vignettes/coalesc_vignette.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/frmunoz/ecolottery/blob/master/vignettes/coalesc_vignette.Rmd"><code>vignettes/coalesc_vignette.Rmd</code></a></small>
       <div class="hidden name"><code>coalesc_vignette.Rmd</code></div>
 
     </div>
@@ -96,62 +96,74 @@
     
 <p>This vignette corresponds to the latest version of the Appendix 1 of F. Munoz et al. paper.</p>
 <p><em><code><a href="../reference/coalesc.html">coalesc()</a></code></em> is the key function of the <em><code>ecolottery</code></em> package for coalescent-based simulation of local communities. The user can define parameters of community size, migration rate, and a custom function specifying environmental filtering, according to the situation he wants to model. He can also provide relative abundances and species trait values for the regional pool.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">1</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">1</span>)
+</pre></div>
 <div id="neutral-dynamics-in-species-pool-and-communities" class="section level1">
 <h1 class="hasAnchor">
 <a href="#neutral-dynamics-in-species-pool-and-communities" class="anchor"></a>Neutral dynamics in species pool and communities</h1>
 <p>Before simulating communities, we need first to define a reference pool from which immigrants are drawn. In the neutral theory (Hubbell 2001), speciation and extinction events occur randomly irrespective of species properties and drive the composition and species abundances in the reference pool (neutral speciation-drift dynamics). We can define such dynamics by setting the input argument <em><code>theta</code></em> in <em><code>coalesc</code></em> to a non-null value, and the composition of the pool can be simulated by setting <em>m = 1</em>. The simulated species abundances are then expected to follow a logseries distribution (Hubbell 2001). The fit of simulated pool composition to the logseries distribution can be estimated using the <em><code>fisherfit</code></em> function of package <em><code>vegan</code></em>.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ecolottery</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/frmunoz/ecolottery">ecolottery</a></span>)
 
-<span class="no">Jpool</span> <span class="kw">&lt;-</span> <span class="fl">25000</span>
-<span class="no">logser</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">Jpool</span>, <span class="kw">m</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">theta</span> <span class="kw">=</span> <span class="fl">50</span>)
-<span class="no">abund</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="no">logser</span>)
+<span class="kw">Jpool</span> <span class="op">&lt;-</span> <span class="fl">25000</span>
+<span class="kw">logser</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">Jpool</span>, m = <span class="fl">1</span>, theta = <span class="fl">50</span>) 
+<span class="kw">abund</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="kw">logser</span>) 
 
 <span class="co"># The expected distribution of abundances in the reference pool is log-series</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">vegan</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://cran.r-project.org">vegan</a></span>)
+</pre></div>
 <pre><code>## Loading required package: permute</code></pre>
 <pre><code>## Loading required package: lattice</code></pre>
 <pre><code>## This is vegan 2.5-6</code></pre>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/vegan/man/fisherfit.html">fisherfit</a></span>(<span class="no">abund</span>$<span class="no">com</span>$<span class="no">ab</span>)
-<span class="no">freq</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">fit</span>$<span class="no">fisher</span>))
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="no">freq</span>), <span class="no">fit</span>$<span class="no">fisher</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"Frequency (log)"</span>, <span class="kw">ylab</span> <span class="kw">=</span> <span class="st">"Species"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"n"</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/rect.html">rect</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="no">freq</span> - <span class="fl">0.5</span>), <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="no">freq</span> + <span class="fl">0.5</span>), <span class="no">fit</span>$<span class="no">fisher</span>, <span class="kw">col</span> <span class="kw">=</span> <span class="st">"skyblue"</span>, <span class="kw">add</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="kw">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/vegan/man/fisherfit.html">fisherfit</a></span>(<span class="kw">abund</span><span class="op">$</span><span class="kw">com</span><span class="op">$</span><span class="kw">ab</span>)
+<span class="kw">freq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="kw">fit</span><span class="op">$</span><span class="kw">fisher</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="kw">freq</span>), <span class="kw">fit</span><span class="op">$</span><span class="kw">fisher</span>, xlab = <span class="st">"Frequency (log)"</span>, ylab = <span class="st">"Species"</span>, type = <span class="st">"n"</span>)
+<span class="fu"><a href="https://rdrr.io/r/graphics/rect.html">rect</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="kw">freq</span> <span class="op">-</span> <span class="fl">0.5</span>), <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="kw">freq</span> <span class="op">+</span> <span class="fl">0.5</span>), <span class="kw">fit</span><span class="op">$</span><span class="kw">fisher</span>, col = <span class="st">"skyblue"</span>, add = <span class="fl">TRUE</span>)
+</pre></div>
 <pre><code>## Warning in rect(log(freq - 0.5), 0, log(freq + 0.5), fit$fisher, col =
 ## "skyblue", : "add" is not a graphical parameter</code></pre>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">alpha</span> <span class="kw">&lt;-</span> <span class="no">fit</span>$<span class="no">estimate</span>
-<span class="no">k</span> <span class="kw">&lt;-</span> <span class="no">fit</span>$<span class="no">nuisance</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/curve.html">curve</a></span>(<span class="no">alpha</span> * <span class="no">k</span>^<span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="no">x</span>)/<span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="no">x</span>), <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="fl">0.5</span>), <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="no">freq</span>)), <span class="kw">col</span> <span class="kw">=</span> <span class="st">"red"</span>, <span class="kw">lwd</span> <span class="kw">=</span> <span class="fl">2</span>,
-      <span class="kw">add</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb8"><pre class="downlit">
+<span class="kw">alpha</span> <span class="op">&lt;-</span> <span class="kw">fit</span><span class="op">$</span><span class="kw">estimate</span>
+<span class="kw">k</span> <span class="op">&lt;-</span> <span class="kw">fit</span><span class="op">$</span><span class="kw">nuisance</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/curve.html">curve</a></span>(<span class="kw">alpha</span> <span class="op">*</span> <span class="kw">k</span><span class="op">^</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="kw">x</span>)<span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="kw">x</span>), <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="fl">0.5</span>), <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span>(<span class="kw">freq</span>)), col = <span class="st">"red"</span>, lwd = <span class="fl">2</span>,
+      add = <span class="fl">TRUE</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-2-1.png" width="576"></p>
 <p>We now simulate neutral communities of size <em>J = 500</em> in which immigrants from the pool establish at rate either <em>m = 0.01</em> or <em>m = 0.95</em>. In this case, all the species available in the reference pool have the same prospect of immigrating, persisting and reproducing in the local community. We can define such dynamics by setting the input argument <em><code>filt = NULL</code></em> in <em><code><a href="../reference/coalesc.html">coalesc()</a></code></em> (default value).<br>
 The smaller is <em>m</em> the more local species abundances fluctuate due to stochastic demographic variations. Where <em>m</em> is close to 1, most of the dead individuals are replaced by immigrants, and local species abundances are then more closely related to regional abundances.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="co"># Local abundances are averaged over 100 replicate communities</span>
-<span class="no">J</span> <span class="kw">&lt;-</span> <span class="fl">500</span>
-<span class="no">m</span> <span class="kw">&lt;-</span> <span class="fl">0.01</span>
-<span class="no">comm1a</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>()
-<span class="kw">for</span> (<span class="no">i</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fl">100</span>) {
-  <span class="no">comm1a</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(<span class="no">comm1a</span>, <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">pool</span> <span class="kw">=</span> <span class="no">logser</span>$<span class="no">com</span>)$<span class="no">com</span>)
+<div class="sourceCode" id="cb9"><pre class="downlit">
+<span class="co"># Local abundances are averaged over 100 replicate communities</span>
+<span class="kw">J</span> <span class="op">&lt;-</span> <span class="fl">500</span>
+<span class="kw">m</span> <span class="op">&lt;-</span> <span class="fl">0.01</span>
+<span class="kw">comm1a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>()
+<span class="co">for</span> (<span class="kw">i</span> <span class="co">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>) {
+  <span class="kw">comm1a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(<span class="kw">comm1a</span>, <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, pool = <span class="kw">logser</span><span class="op">$</span><span class="kw">com</span>)<span class="op">$</span><span class="kw">com</span>)
 }
-<span class="no">comm1a</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">pool</span> <span class="kw">=</span> <span class="no">logser</span>$<span class="no">com</span>, <span class="kw">com</span> <span class="kw">=</span> <span class="no">comm1a</span>)
+<span class="kw">comm1a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(pool = <span class="kw">logser</span><span class="op">$</span><span class="kw">com</span>, com = <span class="kw">comm1a</span>)
 
-<span class="no">m</span> <span class="kw">&lt;-</span> <span class="fl">0.95</span>
-<span class="no">comm1b</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>()
-<span class="kw">for</span> (<span class="no">i</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fl">100</span>) {
-  <span class="no">comm1b</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(<span class="no">comm1b</span>, <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">pool</span> <span class="kw">=</span> <span class="no">logser</span>$<span class="no">com</span>)$<span class="no">com</span>)
+<span class="kw">m</span> <span class="op">&lt;-</span> <span class="fl">0.95</span>
+<span class="kw">comm1b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>()
+<span class="co">for</span> (<span class="kw">i</span> <span class="co">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>) {
+  <span class="kw">comm1b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(<span class="kw">comm1b</span>, <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, pool = <span class="kw">logser</span><span class="op">$</span><span class="kw">com</span>)<span class="op">$</span><span class="kw">com</span>)
 }
-<span class="no">comm1b</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">pool</span> <span class="kw">=</span> <span class="no">logser</span>$<span class="no">com</span>, <span class="kw">com</span> <span class="kw">=</span> <span class="no">comm1b</span>)
+<span class="kw">comm1b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(pool = <span class="kw">logser</span><span class="op">$</span><span class="kw">com</span>, com = <span class="kw">comm1b</span>)
 
-<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="no">comm1a</span>, <span class="kw">type</span> <span class="kw">=</span><span class="st">"locreg"</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"m = 0.01"</span>)
-<span class="no">r_sqa</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span>(<span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="no">comm1a</span>)$<span class="no">pool</span>[<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="no">comm1a</span>)$<span class="no">com</span>), <span class="st">"relab"</span>] ~
-                      <span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="no">comm1a</span>)$<span class="no">com</span>$<span class="no">relab</span>))
-<span class="no">r_sqa</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">signif</a></span>(<span class="no">r_sqa</span>$<span class="no">r.squared</span>, <span class="fl">2</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span>(<span class="st">"bottomright"</span>, <span class="kw">legend</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/bquote.html">bquote</a></span>(<span class="no">R</span>^<span class="fl">2</span> ~ <span class="st">"="</span> ~<span class="fu">.</span> (<span class="no">r_sqa</span>)), <span class="kw">bty</span> <span class="kw">=</span> <span class="st">"n"</span>)</pre></body></html></div>
+<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="kw">comm1a</span>, type =<span class="st">"locreg"</span>, main = <span class="st">"m = 0.01"</span>)
+<span class="kw">r_sqa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span>(<span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="kw">comm1a</span>)<span class="op">$</span><span class="kw">pool</span>[<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="kw">comm1a</span>)<span class="op">$</span><span class="kw">com</span>), <span class="st">"relab"</span>] <span class="op">~</span>
+                      <span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="kw">comm1a</span>)<span class="op">$</span><span class="kw">com</span><span class="op">$</span><span class="kw">relab</span>))
+<span class="kw">r_sqa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">signif</a></span>(<span class="kw">r_sqa</span><span class="op">$</span><span class="kw">r.squared</span>, <span class="fl">2</span>)
+<span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span>(<span class="st">"bottomright"</span>, legend = <span class="fu"><a href="https://rdrr.io/r/base/bquote.html">bquote</a></span>(<span class="kw">R</span><span class="op">^</span><span class="fl">2</span> <span class="op">~</span> <span class="st">"="</span> <span class="op">~</span><span class="fu">.</span> (<span class="kw">r_sqa</span>)), bty = <span class="st">"n"</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-3-1.png" width="576"></p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="no">comm1b</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"locreg"</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"m = 0.95"</span>)
-<span class="no">r_sqb</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span>(<span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="no">comm1b</span>)$<span class="no">pool</span>[<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="no">comm1b</span>)$<span class="no">com</span>), <span class="st">"relab"</span>] ~
-                      <span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="no">comm1b</span>)$<span class="no">com</span>$<span class="no">relab</span>))
-<span class="no">r_sqb</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">signif</a></span>(<span class="no">r_sqb</span>$<span class="no">r.squared</span>, <span class="fl">2</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span>(<span class="st">"bottomright"</span>, <span class="kw">legend</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/bquote.html">bquote</a></span>(<span class="no">R</span>^<span class="fl">2</span> ~ <span class="st">"="</span> ~<span class="fu">.</span> (<span class="no">r_sqb</span>)), <span class="kw">bty</span> <span class="kw">=</span> <span class="st">"n"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb10"><pre class="downlit">
+<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="kw">comm1b</span>, type = <span class="st">"locreg"</span>, main = <span class="st">"m = 0.95"</span>)
+<span class="kw">r_sqb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span>(<span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="kw">comm1b</span>)<span class="op">$</span><span class="kw">pool</span>[<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="kw">comm1b</span>)<span class="op">$</span><span class="kw">com</span>), <span class="st">"relab"</span>] <span class="op">~</span>
+                      <span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="kw">comm1b</span>)<span class="op">$</span><span class="kw">com</span><span class="op">$</span><span class="kw">relab</span>))
+<span class="kw">r_sqb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">signif</a></span>(<span class="kw">r_sqb</span><span class="op">$</span><span class="kw">r.squared</span>, <span class="fl">2</span>)
+<span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span>(<span class="st">"bottomright"</span>, legend = <span class="fu"><a href="https://rdrr.io/r/base/bquote.html">bquote</a></span>(<span class="kw">R</span><span class="op">^</span><span class="fl">2</span> <span class="op">~</span> <span class="st">"="</span> <span class="op">~</span><span class="fu">.</span> (<span class="kw">r_sqb</span>)), bty = <span class="st">"n"</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-3-2.png" width="576"></p>
 <p>The first figure shows the relationship between local and regional species abundances in neutral communities with low immigration rate, and the second the relationship with a high immigration rate. Each point is averaged over 100 communities.</p>
 </div>
@@ -160,18 +172,24 @@ The smaller is <em>m</em> the more local species abundances fluctuate due to sto
 <a href="#user-defined-species-pool" class="anchor"></a>User-defined species pool</h1>
 <p>In the previous case, the composition of the reference pool was simulated depending on the parameter <em>theta</em> of neutral speciation-drift dynamics.<br>
 In the following example, the user provides a custom species pool including 500 species with equal abundances.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">Jpool</span> <span class="kw">&lt;-</span> <span class="fl">50</span>*<span class="no">J</span>
-<span class="no">pool</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fl">1</span>:<span class="no">Jpool</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>:<span class="fl">500</span>,<span class="no">Jpool</span>/<span class="fl">500</span>))
+<div class="sourceCode" id="cb11"><pre class="downlit">
+<span class="kw">Jpool</span> <span class="op">&lt;-</span> <span class="fl">50</span><span class="op">*</span><span class="kw">J</span>
+<span class="kw">pool</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fl">1</span><span class="op">:</span><span class="kw">Jpool</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span><span class="op">:</span><span class="fl">500</span>,<span class="kw">Jpool</span><span class="op">/</span><span class="fl">500</span>))
 <span class="co"># Generate a neutral community drawn from the pool</span>
-<span class="no">comm2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">pool</span><span class="kw">=</span><span class="no">pool</span>)
-<span class="no">abund2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="no">comm2</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">abund2</span>$<span class="no">pool</span>$<span class="no">relab</span>)</pre></body></html></div>
+<span class="kw">comm2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, pool=<span class="kw">pool</span>) 
+<span class="kw">abund2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="kw">comm2</span>) 
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="kw">abund2</span><span class="op">$</span><span class="kw">pool</span><span class="op">$</span><span class="kw">relab</span>)
+</pre></div>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##   0.002   0.002   0.002   0.002   0.002   0.002</code></pre>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">abund2</span>$<span class="no">com</span>$<span class="no">relab</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb13"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="kw">abund2</span><span class="op">$</span><span class="kw">com</span><span class="op">$</span><span class="kw">relab</span>)
+</pre></div>
 <pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
 ## 0.002000 0.002000 0.002000 0.003356 0.004000 0.012000</code></pre>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="no">abund2</span>$<span class="no">com</span>$<span class="no">relab</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb15"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="kw">abund2</span><span class="op">$</span><span class="kw">com</span><span class="op">$</span><span class="kw">relab</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-4-1.png" width="576"></p>
 <p>While species relative abundances are set equal in the reference pool, local species abundances fluctuate due to migration-drift dynamics.</p>
 </div>
@@ -179,57 +197,79 @@ In the following example, the user provides a custom species pool including 500 
 <h1 class="hasAnchor">
 <a href="#trait-distribution-in-communities" class="anchor"></a>Trait distribution in communities</h1>
 <p>We can also examine the trait composition of simulated communities. If the user does not provide trait values in the reference pool, the values of a unique trait are randomly assigned to the species of the reference pool following a uniform distribution between 0 and 1. Alternatively, the user can include in <em>pool</em> the values of one or several traits for each individual of the species pool, or provide a separate <em>traits</em> data frame including the values of one or several traits for each species.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="co"># With uniform trait values in the species pool</span>
-<span class="no">pool</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fl">1</span>:<span class="no">Jpool</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>:<span class="fl">500</span>, <span class="no">Jpool</span>/<span class="fl">500</span>), <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="no">Jpool</span>))
-<span class="no">comm3a</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">pool</span> <span class="kw">=</span> <span class="no">pool</span>)
-<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="no">comm3a</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"trait"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb16"><pre class="downlit">
+<span class="co"># With uniform trait values in the species pool</span>
+<span class="kw">pool</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fl">1</span><span class="op">:</span><span class="kw">Jpool</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="kw">Jpool</span><span class="op">/</span><span class="fl">500</span>), <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="kw">Jpool</span>))
+<span class="kw">comm3a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, pool = <span class="kw">pool</span>) 
+<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="kw">comm3a</span>, type = <span class="st">"trait"</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-5-1.png" width="576"></p>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="co"># With Gaussian trait values in the species pool</span>
-<span class="no">pool</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fl">1</span>:<span class="no">Jpool</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>:<span class="fl">500</span>, <span class="no">Jpool</span>/<span class="fl">500</span>), <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">Jpool</span>))
-<span class="no">comm3b</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">pool</span> <span class="kw">=</span> <span class="no">pool</span>)
-<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="no">comm3b</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">"trait"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb17"><pre class="downlit">
+<span class="co"># With Gaussian trait values in the species pool</span>
+<span class="kw">pool</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fl">1</span><span class="op">:</span><span class="kw">Jpool</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="kw">Jpool</span><span class="op">/</span><span class="fl">500</span>), <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="kw">Jpool</span>))
+<span class="kw">comm3b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, pool = <span class="kw">pool</span>) 
+<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="kw">comm3b</span>, type=<span class="st">"trait"</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-5-2.png" width="576"></p>
 <p><em><code>plot_comm</code></em> with <em><code>type = "trait"</code></em> here displays the trait distributions in species pool (red) and local community (blue). With high migration probability <em>m = 0.95</em>, the local and regional distributions are quite similar. The user may also simulate a distribution of mean species trait values, and consider additional intraspecific variation of these values around the mean.</p>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="no">pool</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fl">1</span>:<span class="no">Jpool</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>:<span class="fl">500</span>, <span class="no">Jpool</span>/<span class="fl">500</span>), <span class="fl">NA</span>)
+<div class="sourceCode" id="cb18"><pre class="downlit">
+<span class="kw">pool</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fl">1</span><span class="op">:</span><span class="kw">Jpool</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="kw">Jpool</span><span class="op">/</span><span class="fl">500</span>), <span class="fl">NA</span>)
 <span class="co"># Distribution of the mean species trait values</span>
-<span class="no">t.sp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="fl">500</span>)
+<span class="kw">t.sp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="fl">500</span>) 
 <span class="co"># Gaussian intraspecific variation with standard deviation = 0.01</span>
-<span class="kw">for</span>(<span class="no">i</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="fl">500</span>) <span class="no">pool</span>[<span class="no">pool</span>[,<span class="fl">2</span>] <span class="kw">==</span> <span class="no">i</span>, <span class="fl">3</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="no">pool</span>[,<span class="fl">2</span>]<span class="kw">==</span><span class="no">i</span>),
-                                                <span class="kw">mean</span> <span class="kw">=</span> <span class="no">t.sp</span>[<span class="no">i</span>], <span class="kw">sd</span> <span class="kw">=</span> <span class="fl">0.01</span>)
-<span class="no">comm3c</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">pool</span> <span class="kw">=</span> <span class="no">pool</span>)</pre></body></html></div>
+<span class="co">for</span>(<span class="kw">i</span> <span class="co">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">500</span>) <span class="kw">pool</span>[<span class="kw">pool</span>[,<span class="fl">2</span>] <span class="op">==</span> <span class="kw">i</span>, <span class="fl">3</span>] <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(<span class="kw">pool</span>[,<span class="fl">2</span>]<span class="op">==</span><span class="kw">i</span>), 
+                                                mean = <span class="kw">t.sp</span>[<span class="kw">i</span>], sd = <span class="fl">0.01</span>)
+<span class="kw">comm3c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, pool = <span class="kw">pool</span>) 
+</pre></div>
 </div>
 <div id="environmental-filtering" class="section level1">
 <h1 class="hasAnchor">
 <a href="#environmental-filtering" class="anchor"></a>Environmental filtering</h1>
 <p>The user can provide an environmental filtering function weighting the probability that individuals from the reference pool successfully immigrate in the community, depending on their trait value(s). In the following example, the filtering function is Gaussian with mean <em>t</em> and standard deviation 0.1 (stabilizing filtering, Shipley 2013).</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">sigma</span> <span class="kw">&lt;-</span> <span class="fl">0.1</span>
-<span class="no">filt_gaussian</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">t</span>,<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(-(<span class="no">x</span>-<span class="no">t</span>)^<span class="fl">2</span>/(<span class="fl">2</span>*<span class="no">sigma</span>^<span class="fl">2</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb19"><pre class="downlit">
+<span class="kw">sigma</span> <span class="op">&lt;-</span> <span class="fl">0.1</span>
+<span class="kw">filt_gaussian</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">t</span>,<span class="kw">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="op">-</span>(<span class="kw">x</span><span class="op">-</span><span class="kw">t</span>)<span class="op">^</span><span class="fl">2</span><span class="op">/</span>(<span class="fl">2</span><span class="op">*</span><span class="kw">sigma</span><span class="op">^</span><span class="fl">2</span>))
+</pre></div>
 <p>We simulate a community undergoing stabilizing environmental filtering around <em>t = 0.5</em>.</p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">J</span> <span class="kw">&lt;-</span> <span class="fl">500</span>; <span class="no">m</span> <span class="kw">&lt;-</span> <span class="fl">0.5</span>;
-<span class="no">comm4a</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">filt</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu">filt_gaussian</span>(<span class="fl">0.5</span>, <span class="no">x</span>), <span class="kw">pool</span> <span class="kw">=</span> <span class="no">pool</span>)
-<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="no">comm4a</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"Stabilizing filtering around t = 0.5"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb20"><pre class="downlit">
+<span class="kw">J</span> <span class="op">&lt;-</span> <span class="fl">500</span>; <span class="kw">m</span> <span class="op">&lt;-</span> <span class="fl">0.5</span>; 
+<span class="kw">comm4a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, filt = <span class="fu">function</span>(<span class="kw">x</span>) <span class="fu">filt_gaussian</span>(<span class="fl">0.5</span>, <span class="kw">x</span>), pool = <span class="kw">pool</span>)
+<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="kw">comm4a</span>, main = <span class="st">"Stabilizing filtering around t = 0.5"</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-8-1.png" width="576"></p>
 <p>We can also simulate stabilizing environmental filtering around <em>t = 0.1</em> and <em>t = 0.9</em>.</p>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">J</span> <span class="kw">&lt;-</span> <span class="fl">500</span>; <span class="no">m</span> <span class="kw">&lt;-</span> <span class="fl">0.5</span>;
-<span class="no">comm4b</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">filt</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu">filt_gaussian</span>(<span class="fl">0.1</span>, <span class="no">x</span>), <span class="kw">pool</span> <span class="kw">=</span> <span class="no">pool</span>)
-<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="no">comm4b</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"Stabilizing filtering around t = 0.1"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb21"><pre class="downlit">
+<span class="kw">J</span> <span class="op">&lt;-</span> <span class="fl">500</span>; <span class="kw">m</span> <span class="op">&lt;-</span> <span class="fl">0.5</span>; 
+<span class="kw">comm4b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, filt = <span class="fu">function</span>(<span class="kw">x</span>) <span class="fu">filt_gaussian</span>(<span class="fl">0.1</span>, <span class="kw">x</span>), pool = <span class="kw">pool</span>)
+<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="kw">comm4b</span>, main = <span class="st">"Stabilizing filtering around t = 0.1"</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-9-1.png" width="576"></p>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">comm4c</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">filt</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu">filt_gaussian</span>(<span class="fl">0.9</span>, <span class="no">x</span>), <span class="kw">pool</span> <span class="kw">=</span> <span class="no">pool</span>)
-<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="no">comm4c</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"Stabilizing filtering around t = 0.9"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb22"><pre class="downlit">
+<span class="kw">comm4c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, filt = <span class="fu">function</span>(<span class="kw">x</span>) <span class="fu">filt_gaussian</span>(<span class="fl">0.9</span>, <span class="kw">x</span>), pool = <span class="kw">pool</span>)
+<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="kw">comm4c</span>, main = <span class="st">"Stabilizing filtering around t = 0.9"</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-9-2.png" width="576"></p>
 <p>When stabilizing filtering operates around different optimal values among communities, we expect corresponding changes in the local mean trait values (Cornwell and Ackerly 2009).</p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">comm4b</span>$<span class="no">com</span>[, <span class="fl">3</span>])</pre></body></html></div>
+<div class="sourceCode" id="cb23"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="kw">comm4b</span><span class="op">$</span><span class="kw">com</span>[, <span class="fl">3</span>])
+</pre></div>
 <pre><code>## [1] 0.1321504</code></pre>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">comm4c</span>$<span class="no">com</span>[, <span class="fl">3</span>])</pre></body></html></div>
+<div class="sourceCode" id="cb25"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="kw">comm4c</span><span class="op">$</span><span class="kw">com</span>[, <span class="fl">3</span>])
+</pre></div>
 <pre><code>## [1] 0.8630003</code></pre>
 <p>Different filtering functions can be designed to represent different types of environmental filtering. By analogy with selection regimes in evolutionary theory (Shipley 2013), we can define the outcome of directional and disruptive filtering functions.</p>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="co"># Directional environmental filtering toward t = 0</span>
-<span class="no">comm4d</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">filt</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fl">1</span> - <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span>(<span class="no">x</span>,<span class="fl">1</span>), <span class="kw">pool</span> <span class="kw">=</span> <span class="no">pool</span>)
-<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="no">comm4d</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"Directional filtering"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb27"><pre class="downlit">
+<span class="co"># Directional environmental filtering toward t = 0</span>
+<span class="kw">comm4d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, filt = <span class="fu">function</span>(<span class="kw">x</span>) <span class="fl">1</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span>(<span class="kw">x</span>,<span class="fl">1</span>), pool = <span class="kw">pool</span>)
+<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="kw">comm4d</span>, main = <span class="st">"Directional filtering"</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-11-1.png" width="576"></p>
-<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="co"># Disruptive environmental filtering around t = 0.5</span>
-<span class="no">comm4e</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">filt</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span>(<span class="fl">0.5</span> - <span class="no">x</span>), <span class="kw">pool</span> <span class="kw">=</span> <span class="no">pool</span>)
-<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="no">comm4e</span>, <span class="kw">main</span> <span class="kw">=</span> <span class="st">"Disruptive filtering"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb28"><pre class="downlit">
+<span class="co"># Disruptive environmental filtering around t = 0.5</span>
+<span class="kw">comm4e</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, filt = <span class="fu">function</span>(<span class="kw">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span>(<span class="fl">0.5</span> <span class="op">-</span> <span class="kw">x</span>), pool = <span class="kw">pool</span>)
+<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="kw">comm4e</span>, main = <span class="st">"Disruptive filtering"</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-11-2.png" width="576"></p>
 <p>Disruptive filtering here represents the greater success of species with trait values away from <em>t = 0.5</em>. It corresponds to a separation of ecological groups in the community, and represents a form of niche differentiation (Vergnon et al. 2009).</p>
 </div>
@@ -237,18 +277,22 @@ In the following example, the user provides a custom species pool including 500 
 <h1 class="hasAnchor">
 <a href="#filtering-of-multiple-traits" class="anchor"></a>Filtering of multiple traits</h1>
 <p>Previous examples represented environmental filtering depending on the values of a single trait. It is also possible to define environmental filtering operating on multiple traits. In the following example, three traits have values uniformly distributed between 0 and 1 in the reference pool, and undergo stabilizing filtering in the local community with distinct optimal values, 0.5, 0.25 and 0.75.</p>
-<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="co"># An example with 3 traits</span>
-<span class="no">traits</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="no">Jpool</span>), <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="no">Jpool</span>), <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="no">Jpool</span>))
-<span class="no">filt</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">x</span>)
-  <span class="fu">filt_gaussian</span>(<span class="fl">0.5</span>, <span class="no">x</span>[<span class="fl">1</span>])*<span class="fu">filt_gaussian</span>(<span class="fl">0.25</span>, <span class="no">x</span>[<span class="fl">2</span>])*<span class="fu">filt_gaussian</span>(<span class="fl">0.75</span>, <span class="no">x</span>[<span class="fl">3</span>])
-<span class="no">comm5</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">pool</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fl">1</span>:<span class="fl">10000</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span>:<span class="fl">100</span>, <span class="fl">100</span>)),
-                 <span class="kw">filt</span> <span class="kw">=</span> <span class="no">filt</span>, <span class="kw">traits</span> <span class="kw">=</span> <span class="no">traits</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb29"><pre class="downlit">
+<span class="co"># An example with 3 traits</span>
+<span class="kw">traits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="kw">Jpool</span>), <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="kw">Jpool</span>), <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="kw">Jpool</span>)) 
+<span class="kw">filt</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">x</span>) 
+  <span class="fu">filt_gaussian</span>(<span class="fl">0.5</span>, <span class="kw">x</span>[<span class="fl">1</span>])<span class="op">*</span><span class="fu">filt_gaussian</span>(<span class="fl">0.25</span>, <span class="kw">x</span>[<span class="fl">2</span>])<span class="op">*</span><span class="fu">filt_gaussian</span>(<span class="fl">0.75</span>, <span class="kw">x</span>[<span class="fl">3</span>])
+<span class="kw">comm5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, pool = <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="fl">1</span><span class="op">:</span><span class="fl">10000</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">100</span>)),
+                 filt = <span class="kw">filt</span>, traits = <span class="kw">traits</span>)
+</pre></div>
 <p>The filtering function determines the success of immigrants depending on the combination of their trait values. It entails a correlation between the local species abundances and the species weights given by the filtering function (Shipley et al. 2006).</p>
-<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="co"># Relationship between species weight in environmental filtering and local abundance</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(<span class="kw">mfrow</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">1</span>))
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/tapply.html">tapply</a></span>(<span class="no">comm5</span>$<span class="no">com</span>[,<span class="fl">3</span>], <span class="no">comm5</span>$<span class="no">com</span>[,<span class="fl">2</span>], <span class="no">length</span>) ~
-       <span class="fu"><a href="https://rdrr.io/r/base/tapply.html">tapply</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="no">comm5</span>$<span class="no">com</span>[,<span class="fl">3</span>:<span class="fl">5</span>], <span class="fl">1</span>, <span class="kw">function</span>(<span class="no">x</span>) <span class="fu">filt</span>(<span class="no">x</span>)), <span class="no">comm5</span>$<span class="no">com</span>[,<span class="fl">2</span>], <span class="no">mean</span>),
-     <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"Species filtering weight"</span>, <span class="kw">ylab</span> <span class="kw">=</span> <span class="st">"Species abundance"</span>, <span class="kw">log</span> <span class="kw">=</span> <span class="st">"xy"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb30"><pre class="downlit">
+<span class="co"># Relationship between species weight in environmental filtering and local abundance</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span>(mfrow = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">1</span>))
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/tapply.html">tapply</a></span>(<span class="kw">comm5</span><span class="op">$</span><span class="kw">com</span>[,<span class="fl">3</span>], <span class="kw">comm5</span><span class="op">$</span><span class="kw">com</span>[,<span class="fl">2</span>], <span class="kw">length</span>) <span class="op">~</span> 
+       <span class="fu"><a href="https://rdrr.io/r/base/tapply.html">tapply</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="kw">comm5</span><span class="op">$</span><span class="kw">com</span>[,<span class="fl">3</span><span class="op">:</span><span class="fl">5</span>], <span class="fl">1</span>, <span class="fu">function</span>(<span class="kw">x</span>) <span class="fu">filt</span>(<span class="kw">x</span>)), <span class="kw">comm5</span><span class="op">$</span><span class="kw">com</span>[,<span class="fl">2</span>], <span class="kw">mean</span>),
+     xlab = <span class="st">"Species filtering weight"</span>, ylab = <span class="st">"Species abundance"</span>, log = <span class="st">"xy"</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-13-1.png" width="576"></p>
 </div>
 <div id="investigating-phylogenetic-structure-in-communities" class="section level1">
@@ -256,19 +300,25 @@ In the following example, the user provides a custom species pool including 500 
 <a href="#investigating-phylogenetic-structure-in-communities" class="anchor"></a>Investigating phylogenetic structure in communities</h1>
 <p>Species trait values are the legacy of evolutionary history. The processes that affect the distribution of trait values in the community can also affect the phylogenetic composition of the community depending, e.g, on the conservatism of traits among close relatives (Mouquet et al. 2012).</p>
 <p>We can simulate a phylogenetic tree of the species of the reference pool, and the distribution of species trait values under an assumption of niche conservatism (Wiens and Graham 2005). In this case, descendant species can retain characteristics of their ancestors, and the trait values of more closely related species are then more similar than trait values of distantly related species (phylogenetic signal, Blomberg and Garland 2002).</p>
-<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ape</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">picante</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb31"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="http://ape-package.ird.fr">ape</a></span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">picante</span>)
+</pre></div>
 <pre><code>## Loading required package: nlme</code></pre>
-<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="no">tre</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ape/man/rtree.html">rcoal</a></span>(<span class="fl">200</span>)
-<span class="no">Jpool</span> <span class="kw">&lt;-</span> <span class="fl">10000</span>
-<span class="no">J</span> <span class="kw">&lt;-</span> <span class="fl">500</span>
-<span class="no">pool</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">ind</span><span class="kw">=</span><span class="fl">1</span>:<span class="no">Jpool</span>, <span class="kw">sp</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="no">tre</span>$<span class="no">tip.label</span>,<span class="no">Jpool</span>/<span class="fl">50</span>),
-                   <span class="kw">tra</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">NA</span>,<span class="no">Jpool</span>), <span class="kw">stringsAsFactors</span><span class="kw">=</span><span class="no">F</span>)
+<div class="sourceCode" id="cb33"><pre class="downlit">
+<span class="kw">tre</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ape/man/rtree.html">rcoal</a></span>(<span class="fl">200</span>)
+<span class="kw">Jpool</span> <span class="op">&lt;-</span> <span class="fl">10000</span>
+<span class="kw">J</span> <span class="op">&lt;-</span> <span class="fl">500</span>
+<span class="kw">pool</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(ind=<span class="fl">1</span><span class="op">:</span><span class="kw">Jpool</span>, sp=<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="kw">tre</span><span class="op">$</span><span class="kw">tip.label</span>,<span class="kw">Jpool</span><span class="op">/</span><span class="fl">50</span>), 
+                   tra=<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">NA</span>,<span class="kw">Jpool</span>), stringsAsFactors=<span class="kw">F</span>)
 <span class="co"># Brownian model of trait evolution</span>
-<span class="no">t.sp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ape/man/rTraitCont.html">rTraitCont</a></span>(<span class="kw">n</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">phy</span> <span class="kw">=</span> <span class="no">tre</span>, <span class="kw">model</span> <span class="kw">=</span> <span class="st">"BM"</span>, <span class="kw">sigma</span> <span class="kw">=</span> <span class="fl">0.2</span>, <span class="kw">root.value</span> <span class="kw">=</span> <span class="fl">0.5</span>)
-<span class="no">pool</span>$<span class="no">tra</span> <span class="kw">&lt;-</span> <span class="no">t.sp</span>[<span class="no">pool</span>$<span class="no">sp</span>]</pre></body></html></div>
+<span class="kw">t.sp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ape/man/rTraitCont.html">rTraitCont</a></span>(n = <span class="fl">1</span>, phy = <span class="kw">tre</span>, model = <span class="st">"BM"</span>, sigma = <span class="fl">0.2</span>, root.value = <span class="fl">0.5</span>)
+<span class="kw">pool</span><span class="op">$</span><span class="kw">tra</span> <span class="op">&lt;-</span> <span class="kw">t.sp</span>[<span class="kw">pool</span><span class="op">$</span><span class="kw">sp</span>]
+</pre></div>
 <p><em><code><a href="https://rdrr.io/pkg/picante/man/phylosignal.html">phylosignal()</a></code></em> measures the phylogenetic signal of the simulated trait values in the phylogenetic tree, using the Blomberg’s <em>K</em> statistic (Blomberg and Garland 2002). The p-value is calculated based on the null distribution of <em>K</em> when shuffling species trait values in the phylogeny. A small p-value indicates that trait variation among close relatives is smaller than expected by chance.</p>
-<div class="sourceCode" id="cb34"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/picante/man/phylosignal.html">phylosignal</a></span>(<span class="no">t.sp</span>[<span class="no">tre</span>$<span class="no">tip.label</span>], <span class="kw">phy</span> <span class="kw">=</span> <span class="no">tre</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb34"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/pkg/picante/man/phylosignal.html">phylosignal</a></span>(<span class="kw">t.sp</span>[<span class="kw">tre</span><span class="op">$</span><span class="kw">tip.label</span>], phy = <span class="kw">tre</span>)
+</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">K</th>
@@ -286,21 +336,35 @@ In the following example, the user provides a custom species pool including 500 
 </tr></tbody>
 </table>
 <p>We then simulate two communities related to this reference pool, one undergoing neutral dynamics, the other undergoing stabilizing environmental filtering. In the first case, any species of the reference pool can perform as well in the local community, and then the phylogenetic structure of the community should not be different from the structure of a random sample with same size from the reference pool. In the second case, environmental filtering limits the range of trait values in the community around an optimal value. Because more closely related species are more likely to have similar trait values in the reference pool, we then expect that the Mean Nearest Taxon Distance (MNTD) among coexisting species of the community is smaller than the average distance in the reference pool (Webb et al. 2002).</p>
-<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="no">m</span> <span class="kw">&lt;-</span> <span class="fl">1</span>
-<span class="no">tab</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html">array</a></span>(<span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fl">200</span>)); <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">tab</span>) <span class="kw">&lt;-</span> <span class="no">tre</span>$<span class="no">tip.label</span>
+<div class="sourceCode" id="cb35"><pre class="downlit">
+<span class="kw">m</span> <span class="op">&lt;-</span> <span class="fl">1</span>
+<span class="kw">tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html">array</a></span>(<span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fl">200</span>)); <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="kw">tab</span>) <span class="op">&lt;-</span> <span class="kw">tre</span><span class="op">$</span><span class="kw">tip.label</span>
 <span class="co"># First simulation of a neutral community</span>
-<span class="no">com</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">pool</span> <span class="kw">=</span> <span class="no">pool</span>, <span class="kw">filt</span> <span class="kw">=</span> <span class="kw">NULL</span>))$<span class="no">com</span>
-<span class="no">tab</span>[<span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">com</span>)] <span class="kw">&lt;-</span> <span class="no">com</span>$<span class="no">ab</span>
+<span class="kw">com</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, pool = <span class="kw">pool</span>, filt = <span class="kw">NULL</span>))<span class="op">$</span><span class="kw">com</span>
+<span class="kw">tab</span>[<span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw">com</span>)] <span class="op">&lt;-</span> <span class="kw">com</span><span class="op">$</span><span class="kw">ab</span>
 <span class="co"># Second simulation of a community undergoing stabilizing environmental filtering</span>
-<span class="no">topt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span>(<span class="no">t.sp</span>, <span class="fl">0.25</span>)
-<span class="no">sigma</span> <span class="kw">&lt;-</span> <span class="fl">0.01</span>
-<span class="no">com</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">pool</span> <span class="kw">=</span> <span class="no">pool</span>, <span class="kw">filt</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>)
-                    <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(-(<span class="no">x</span> - <span class="no">topt</span>)^<span class="fl">2</span>/(<span class="fl">2</span>*<span class="no">sigma</span>^<span class="fl">2</span>))))$<span class="no">com</span>
-<span class="no">tab</span>[<span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">com</span>)] <span class="kw">&lt;-</span> <span class="no">com</span>$<span class="no">ab</span></pre></body></html></div>
+<span class="kw">topt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span>(<span class="kw">t.sp</span>, <span class="fl">0.25</span>)
+<span class="kw">sigma</span> <span class="op">&lt;-</span> <span class="fl">0.01</span>
+<span class="kw">com</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, pool = <span class="kw">pool</span>, filt = <span class="fu">function</span>(<span class="kw">x</span>)
+                    <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="op">-</span>(<span class="kw">x</span> <span class="op">-</span> <span class="kw">topt</span>)<span class="op">^</span><span class="fl">2</span><span class="op">/</span>(<span class="fl">2</span><span class="op">*</span><span class="kw">sigma</span><span class="op">^</span><span class="fl">2</span>))))<span class="op">$</span><span class="kw">com</span>
+<span class="kw">tab</span>[<span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw">com</span>)] <span class="op">&lt;-</span> <span class="kw">com</span><span class="op">$</span><span class="kw">ab</span>
+</pre></div>
 <p>These patterns can be tested against a null model of random sampling in the phylogeny. The standard effect size (SES) quantifies the departure of observed phylogenetic structure from the null distribution.</p>
-<div class="sourceCode" id="cb36"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/picante/man/ses.mntd.html">ses.mntd</a></span>(<span class="no">tab</span>[, <span class="no">tre</span>$<span class="no">tip.label</span>], <span class="fu"><a href="https://rdrr.io/r/stats/cophenetic.html">cophenetic</a></span>(<span class="no">tre</span>), <span class="kw">null.model</span> <span class="kw">=</span> <span class="st">"taxa.labels"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb36"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/pkg/picante/man/ses.mntd.html">ses.mntd</a></span>(<span class="kw">tab</span>[, <span class="kw">tre</span><span class="op">$</span><span class="kw">tip.label</span>], <span class="fu"><a href="https://rdrr.io/r/stats/cophenetic.html">cophenetic</a></span>(<span class="kw">tre</span>), null.model = <span class="st">"taxa.labels"</span>)
+</pre></div>
 <table class="table">
 <caption>Standard Effect Size of Mean Nearest Taxon Distance</caption>
+<colgroup>
+<col width="7%">
+<col width="11%">
+<col width="17%">
+<col width="15%">
+<col width="16%">
+<col width="12%">
+<col width="12%">
+<col width="5%">
+</colgroup>
 <thead><tr class="header">
 <th align="right">ntaxa</th>
 <th align="right">mntd.obs</th>
@@ -336,15 +400,29 @@ In the following example, the user provides a custom species pool including 500 
 </table>
 <p>The first community does not depart from random phylogenetic structure, while the second shows phylogenetic structuring, i.e., smaller Mean Nearest Taxon Distance than expected by chance (<em>mntd.obs.p &lt; 0.01</em>).</p>
 <p>Alternatively, in the absence of niche conservatism in the phylogeny, environmental filtering in community assembly would not result in phylogenetic clustering. To illustrate this case, we shuffle the trait values of species in the reference pool, and simulate a new local community with stabilizing environmental filtering.</p>
-<div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">t.sp</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">t.sp</span>))
-<span class="no">pool</span>$<span class="no">tra</span> <span class="kw">&lt;-</span> <span class="no">t.sp</span>[<span class="no">pool</span>$<span class="no">sp</span>]
+<div class="sourceCode" id="cb37"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="kw">t.sp</span>) <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="kw">t.sp</span>))
+<span class="kw">pool</span><span class="op">$</span><span class="kw">tra</span> <span class="op">&lt;-</span> <span class="kw">t.sp</span>[<span class="kw">pool</span><span class="op">$</span><span class="kw">sp</span>]
 <span class="co"># Again simulating stabilizing environmental filtering</span>
-<span class="no">com</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="no">J</span>, <span class="no">m</span>, <span class="kw">pool</span> <span class="kw">=</span> <span class="no">pool</span>, <span class="kw">filt</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>)
-                        <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(-(<span class="no">x</span> - <span class="no">topt</span>)^<span class="fl">2</span>/(<span class="fl">2</span>*<span class="no">sigma</span>^<span class="fl">2</span>))))$<span class="no">com</span>
-<span class="no">tab</span>[<span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">com</span>)] <span class="kw">&lt;-</span> <span class="no">com</span>$<span class="no">ab</span></pre></body></html></div>
-<div class="sourceCode" id="cb38"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/picante/man/ses.mntd.html">ses.mntd</a></span>(<span class="no">tab</span>[,<span class="no">tre</span>$<span class="no">tip.label</span>], <span class="fu"><a href="https://rdrr.io/r/stats/cophenetic.html">cophenetic</a></span>(<span class="no">tre</span>), <span class="kw">null.model</span> <span class="kw">=</span> <span class="st">"taxa.labels"</span>)</pre></body></html></div>
+<span class="kw">com</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/abund.html">abund</a></span>(<span class="fu"><a href="../reference/coalesc.html">coalesc</a></span>(<span class="kw">J</span>, <span class="kw">m</span>, pool = <span class="kw">pool</span>, filt = <span class="fu">function</span>(<span class="kw">x</span>) 
+                        <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="op">-</span>(<span class="kw">x</span> <span class="op">-</span> <span class="kw">topt</span>)<span class="op">^</span><span class="fl">2</span><span class="op">/</span>(<span class="fl">2</span><span class="op">*</span><span class="kw">sigma</span><span class="op">^</span><span class="fl">2</span>))))<span class="op">$</span><span class="kw">com</span>
+<span class="kw">tab</span>[<span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw">com</span>)] <span class="op">&lt;-</span> <span class="kw">com</span><span class="op">$</span><span class="kw">ab</span>
+</pre></div>
+<div class="sourceCode" id="cb38"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/pkg/picante/man/ses.mntd.html">ses.mntd</a></span>(<span class="kw">tab</span>[,<span class="kw">tre</span><span class="op">$</span><span class="kw">tip.label</span>], <span class="fu"><a href="https://rdrr.io/r/stats/cophenetic.html">cophenetic</a></span>(<span class="kw">tre</span>), null.model = <span class="st">"taxa.labels"</span>)
+</pre></div>
 <table class="table">
 <caption>Standard Effect Size of Mean Nearest Taxon Distance</caption>
+<colgroup>
+<col width="7%">
+<col width="11%">
+<col width="17%">
+<col width="15%">
+<col width="16%">
+<col width="12%">
+<col width="12%">
+<col width="5%">
+</colgroup>
 <thead><tr class="header">
 <th align="right">ntaxa</th>
 <th align="right">mntd.obs</th>
@@ -385,20 +463,22 @@ In the following example, the user provides a custom species pool including 500 
 <a href="#forward-in-time-simulation" class="anchor"></a>Forward-in-time simulation</h1>
 <p>The <em>ecolottery</em> package also includes a function <em>forward</em> to perform simulation of community dynamics from an initial composition. As for <em>coalesc</em>, the user can define the composition of the species pool from which immigrants are drawn, and can specify environmental filtering based on one or several traits.</p>
 <p>We can for instance simulate stabilizing environmental filtering in a way analogous to the previous example with <em><code><a href="../reference/coalesc.html">coalesc()</a></code></em>. <em><code>d = 10</code></em> represents the number of individuals that die in the community at each time step, <em><code>prob = 0.5</code></em> represents the immigration rate at each time step. The number of simulated time steps is <em><code>gens = 500</code></em>.</p>
-<div class="sourceCode" id="cb39"><html><body><pre class="r"><span class="no">pool</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">ind</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"pool"</span>, <span class="fl">1</span>:<span class="no">Jpool</span>, <span class="kw">sep</span><span class="kw">=</span><span class="st">"."</span>), <span class="kw">sp</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fl">1</span>:<span class="fl">500</span>),<span class="no">Jpool</span>/<span class="fl">500</span>),
-                   <span class="kw">tra</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">NA</span>,<span class="no">Jpool</span>), <span class="kw">stringsAsFactors</span><span class="kw">=</span><span class="no">F</span>)
-<span class="no">t.sp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">rownames</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fl">1</span>:<span class="fl">500</span>), <span class="kw">tra</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="fl">500</span>))
-<span class="no">pool</span>$<span class="no">tra</span> <span class="kw">&lt;-</span> <span class="no">t.sp</span>[<span class="no">pool</span>$<span class="no">sp</span>,]$<span class="no">tra</span>
+<div class="sourceCode" id="cb39"><pre class="downlit">
+<span class="kw">pool</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(ind = <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"pool"</span>, <span class="fl">1</span><span class="op">:</span><span class="kw">Jpool</span>, sep=<span class="st">"."</span>), sp = <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fl">1</span><span class="op">:</span><span class="fl">500</span>),<span class="kw">Jpool</span><span class="op">/</span><span class="fl">500</span>), 
+                   tra = <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">NA</span>,<span class="kw">Jpool</span>), stringsAsFactors=<span class="kw">F</span>)
+<span class="kw">t.sp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(rownames = <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fl">1</span><span class="op">:</span><span class="fl">500</span>), tra = <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="fl">500</span>))
+<span class="kw">pool</span><span class="op">$</span><span class="kw">tra</span> <span class="op">&lt;-</span> <span class="kw">t.sp</span>[<span class="kw">pool</span><span class="op">$</span><span class="kw">sp</span>,]<span class="op">$</span><span class="kw">tra</span>
 <span class="co"># Initial community composed of 500 individuals</span>
-<span class="no">J</span> <span class="kw">&lt;-</span> <span class="fl">500</span>
-<span class="no">initial</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">ind</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"init"</span>, <span class="fl">1</span>:<span class="no">J</span>, <span class="kw">sep</span><span class="kw">=</span><span class="st">"."</span>), <span class="kw">sp</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fl">1</span>:<span class="fl">50</span>),<span class="no">J</span>/<span class="fl">50</span>),
-                   <span class="kw">tra</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">NA</span>,<span class="no">J</span>), <span class="kw">stringsAsFactors</span><span class="kw">=</span><span class="no">F</span>)
-<span class="no">initial</span>$<span class="no">tra</span> <span class="kw">&lt;-</span> <span class="no">t.sp</span>[<span class="no">initial</span>$<span class="no">sp</span>,]$<span class="no">tra</span>
+<span class="kw">J</span> <span class="op">&lt;-</span> <span class="fl">500</span>
+<span class="kw">initial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(ind = <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"init"</span>, <span class="fl">1</span><span class="op">:</span><span class="kw">J</span>, sep=<span class="st">"."</span>), sp = <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span>(<span class="fl">1</span><span class="op">:</span><span class="fl">50</span>),<span class="kw">J</span><span class="op">/</span><span class="fl">50</span>), 
+                   tra = <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fl">NA</span>,<span class="kw">J</span>), stringsAsFactors=<span class="kw">F</span>)
+<span class="kw">initial</span><span class="op">$</span><span class="kw">tra</span> <span class="op">&lt;-</span> <span class="kw">t.sp</span>[<span class="kw">initial</span><span class="op">$</span><span class="kw">sp</span>,]<span class="op">$</span><span class="kw">tra</span>
 <span class="co"># Forward-in-time simulation </span>
-<span class="no">sigma</span> <span class="kw">&lt;-</span> <span class="fl">0.1</span>
-<span class="no">filt_gaussian</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">t</span>,<span class="no">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(-(<span class="no">x</span>-<span class="no">t</span>)^<span class="fl">2</span>/(<span class="fl">2</span>*<span class="no">sigma</span>^<span class="fl">2</span>))
-<span class="no">final.envfilt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/forward.html">forward</a></span>(<span class="kw">initial</span> <span class="kw">=</span> <span class="no">initial</span>, <span class="kw">m</span> <span class="kw">=</span> <span class="fl">0.25</span>, <span class="kw">d</span> <span class="kw">=</span> <span class="fl">10</span>, <span class="kw">gens</span> <span class="kw">=</span> <span class="fl">500</span>,
-                         <span class="kw">pool</span> <span class="kw">=</span> <span class="no">pool</span>, <span class="kw">filt</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">x</span>) <span class="fu">filt_gaussian</span>(<span class="fl">0.5</span>,<span class="no">x</span>))</pre></body></html></div>
+<span class="kw">sigma</span> <span class="op">&lt;-</span> <span class="fl">0.1</span>
+<span class="kw">filt_gaussian</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">t</span>,<span class="kw">x</span>) <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="op">-</span>(<span class="kw">x</span><span class="op">-</span><span class="kw">t</span>)<span class="op">^</span><span class="fl">2</span><span class="op">/</span>(<span class="fl">2</span><span class="op">*</span><span class="kw">sigma</span><span class="op">^</span><span class="fl">2</span>))
+<span class="kw">final.envfilt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/forward.html">forward</a></span>(initial = <span class="kw">initial</span>, m = <span class="fl">0.25</span>, d = <span class="fl">10</span>, gens = <span class="fl">500</span>, 
+                         pool = <span class="kw">pool</span>, filt = <span class="fu">function</span>(<span class="kw">x</span>) <span class="fu">filt_gaussian</span>(<span class="fl">0.5</span>,<span class="kw">x</span>))
+</pre></div>
 <pre><code>## Warning: Sampling with replacement from the pool
 
 ## Warning: Sampling with replacement from the pool
@@ -1352,12 +1432,16 @@ In the following example, the user provides a custom species pool including 500 
 ## Warning: Sampling with replacement from the pool
 
 ## Warning: Sampling with replacement from the pool</code></pre>
-<div class="sourceCode" id="cb41"><html><body><pre class="r"><span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="no">final.envfilt</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb41"><pre class="downlit">
+<span class="fu"><a href="../reference/plot_comm.html">plot_comm</a></span>(<span class="kw">final.envfilt</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-25-1.png" width="576"></p>
 <p>A specific advantage of <code><a href="../reference/forward.html">forward()</a></code> is to simulate the sequence of community assembly events over time. If the birth, death and immigration probabilities depend on community composition at a specific time, the coalescent-based approach may not be appropriate.</p>
 <p>In the following example, community dynamics with limiting similarity are simulated. In this case, the probability of individual death depends on the similarity of trait values of each individual to the other individuals of the community.</p>
-<div class="sourceCode" id="cb42"><html><body><pre class="r"><span class="no">final.limsim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/forward.html">forward</a></span>(<span class="kw">initial</span> <span class="kw">=</span> <span class="no">initial</span>, <span class="kw">m</span> <span class="kw">=</span> <span class="fl">0.25</span>, <span class="kw">d</span> <span class="kw">=</span> <span class="fl">10</span>, <span class="kw">gens</span> <span class="kw">=</span> <span class="fl">1000</span>,
-                 <span class="kw">pool</span> <span class="kw">=</span> <span class="no">pool</span>, <span class="kw">keep</span> <span class="kw">=</span> <span class="no">F</span>, <span class="kw">limit.sim</span> <span class="kw">=</span> <span class="no">T</span>, <span class="kw">coeff.lim.sim</span> <span class="kw">=</span> <span class="fl">1</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb42"><pre class="downlit">
+<span class="kw">final.limsim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/forward.html">forward</a></span>(initial = <span class="kw">initial</span>, m = <span class="fl">0.25</span>, d = <span class="fl">10</span>, gens = <span class="fl">1000</span>,
+                 pool = <span class="kw">pool</span>, keep = <span class="kw">F</span>, limit.sim = <span class="kw">T</span>, coeff.lim.sim = <span class="fl">1</span>)
+</pre></div>
 <pre><code>## Warning: Sampling with replacement from the pool
 
 ## Warning: Sampling with replacement from the pool
@@ -3241,13 +3325,17 @@ In the following example, the user provides a custom species pool including 500 
 ## Warning: Sampling with replacement from the pool
 
 ## Warning: Sampling with replacement from the pool</code></pre>
-<div class="sourceCode" id="cb44"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">final.limsim</span>$<span class="no">dist.t</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"Time"</span>, <span class="kw">ylab</span> <span class="kw">=</span> <span class="st">"Average distance to other individuals"</span>)
-<span class="no">init.dist</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span>(<span class="no">initial</span>$<span class="no">tra</span>))
-<span class="fu"><a href="https://rdrr.io/r/base/diag.html">diag</a></span>(<span class="no">init.dist</span>) <span class="kw">&lt;-</span> <span class="fl">NA</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">init.dist</span>, <span class="kw">na.rm</span><span class="kw">=</span><span class="no">T</span>), <span class="fl">0</span>, <span class="kw">col</span><span class="kw">=</span><span class="st">"red"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb44"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">final.limsim</span><span class="op">$</span><span class="kw">dist.t</span>, xlab = <span class="st">"Time"</span>, ylab = <span class="st">"Average distance to other individuals"</span>)
+<span class="kw">init.dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span>(<span class="kw">initial</span><span class="op">$</span><span class="kw">tra</span>))
+<span class="fu"><a href="https://rdrr.io/r/base/diag.html">diag</a></span>(<span class="kw">init.dist</span>) <span class="op">&lt;-</span> <span class="fl">NA</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="kw">init.dist</span>, na.rm=<span class="kw">T</span>), <span class="fl">0</span>, col=<span class="st">"red"</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-27-1.png" width="576"></p>
-<div class="sourceCode" id="cb45"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">final.limsim</span>$<span class="no">sp_t</span>, <span class="kw">xlab</span> <span class="kw">=</span> <span class="st">"Time"</span>, <span class="kw">ylab</span> <span class="kw">=</span> <span class="st">"Richness"</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="no">initial</span>$<span class="no">sp</span>)), <span class="fl">0</span>, <span class="kw">col</span> <span class="kw">=</span> <span class="st">"red"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb45"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">final.limsim</span><span class="op">$</span><span class="kw">sp_t</span>, xlab = <span class="st">"Time"</span>, ylab = <span class="st">"Richness"</span>)
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="kw">initial</span><span class="op">$</span><span class="kw">sp</span>)), <span class="fl">0</span>, col = <span class="st">"red"</span>)
+</pre></div>
 <p><img src="coalesc_vignette_files/figure-html/unnamed-chunk-27-2.png" width="576"></p>
 <p>The first figure represents the temporal trajectory of the average distance of each individual to the other individuals of the community. The distance fluctuates and increases over time due to the influence of limiting similarity. The second figure shows the variation of richness, basically decreasing due to limiting similarity, until reaching stationarity.</p>
 </div>

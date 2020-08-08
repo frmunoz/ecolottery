@@ -136,7 +136,7 @@ communities and in the corresponding species pools. The input must be an output 
 either <code><a href='coalesc.html'>coalesc</a></code> or the <code><a href='forward.html'>forward</a></code> functions.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>abund</span>(<span class='no'>x</span>)</pre>
+    <pre class="usage"><span class='fu'>abund</span>(<span class='kw'>x</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -161,41 +161,41 @@ community composition (<code>x$com</code>)</p></td>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Simulation of a neutral community including 500 individuals</span>
-<span class='no'>J</span> <span class='kw'>&lt;-</span> <span class='fl'>500</span>; <span class='no'>theta</span> <span class='kw'>&lt;-</span> <span class='fl'>50</span>; <span class='no'>m</span> <span class='kw'>&lt;-</span> <span class='fl'>0.05</span>;
-<span class='no'>comm1a</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='coalesc.html'>coalesc</a></span>(<span class='no'>J</span>, <span class='no'>m</span>, <span class='no'>theta</span>)
-<span class='no'>abund1a</span> <span class='kw'>&lt;-</span> <span class='fu'>abund</span>(<span class='no'>comm1a</span>)
-
+<span class='kw'>J</span> <span class='op'>&lt;-</span> <span class='fl'>500</span>; <span class='kw'>theta</span> <span class='op'>&lt;-</span> <span class='fl'>50</span>; <span class='kw'>m</span> <span class='op'>&lt;-</span> <span class='fl'>0.05</span>;
+<span class='kw'>comm1a</span> <span class='op'>&lt;-</span> <span class='fu'><a href='coalesc.html'>coalesc</a></span>(<span class='kw'>J</span>, <span class='kw'>m</span>, <span class='kw'>theta</span>) 
+<span class='kw'>abund1a</span> <span class='op'>&lt;-</span> <span class='fu'>abund</span>(<span class='kw'>comm1a</span>) 
+  
 <span class='co'># Log-series distribution of regional abundances</span>
-<span class='no'>fit</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>vegan</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/vegan/man/fisherfit.html'>fisherfit</a></span>(<span class='no'>abund1a</span>$<span class='no'>pool</span>$<span class='no'>ab</span>)
-<span class='no'>freq</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>fit</span>$<span class='no'>fisher</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='no'>freq</span>), <span class='no'>fit</span>$<span class='no'>fisher</span>,
-     <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Frequency (log)"</span>,
-     <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Species"</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"n"</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/rect.html'>rect</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='no'>freq</span> - <span class='fl'>0.5</span>), <span class='fl'>0</span>, <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='no'>freq</span> + <span class='fl'>0.5</span>), <span class='no'>fit</span>$<span class='no'>fisher</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='st'>"skyblue"</span>)</div><div class='input'>
-<span class='no'>alpha</span> <span class='kw'>&lt;-</span> <span class='no'>fit</span>$<span class='no'>estimate</span>
-<span class='no'>k</span> <span class='kw'>&lt;-</span> <span class='no'>fit</span>$<span class='no'>nuisance</span>
+<span class='kw'>fit</span> <span class='op'>&lt;-</span> <span class='kw'>vegan</span>::<span class='fu'><a href='https://rdrr.io/pkg/vegan/man/fisherfit.html'>fisherfit</a></span>(<span class='kw'>abund1a</span><span class='op'>$</span><span class='kw'>pool</span><span class='op'>$</span><span class='kw'>ab</span>)
+<span class='kw'>freq</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='kw'>fit</span><span class='op'>$</span><span class='kw'>fisher</span>))
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='kw'>freq</span>), <span class='kw'>fit</span><span class='op'>$</span><span class='kw'>fisher</span>,
+     xlab = <span class='st'>"Frequency (log)"</span>,
+     ylab = <span class='st'>"Species"</span>, type = <span class='st'>"n"</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/rect.html'>rect</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='kw'>freq</span> <span class='op'>-</span> <span class='fl'>0.5</span>), <span class='fl'>0</span>, <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='kw'>freq</span> <span class='op'>+</span> <span class='fl'>0.5</span>), <span class='kw'>fit</span><span class='op'>$</span><span class='kw'>fisher</span>, col=<span class='st'>"skyblue"</span>)</div><div class='input'>
+<span class='kw'>alpha</span> <span class='op'>&lt;-</span> <span class='kw'>fit</span><span class='op'>$</span><span class='kw'>estimate</span>
+<span class='kw'>k</span> <span class='op'>&lt;-</span> <span class='kw'>fit</span><span class='op'>$</span><span class='kw'>nuisance</span>
 
-<span class='fu'><a href='https://rdrr.io/r/graphics/curve.html'>curve</a></span>(<span class='no'>alpha</span> * <span class='no'>k</span>^<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='no'>x</span>) / <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='no'>x</span>), <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='fl'>0.5</span>), <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='no'>freq</span>)),
-      <span class='kw'>col</span> <span class='kw'>=</span> <span class='st'>"red"</span>, <span class='kw'>lwd</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='img'><img src='abund-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/graphics/curve.html'>curve</a></span>(<span class='kw'>alpha</span> <span class='op'>*</span> <span class='kw'>k</span><span class='op'>^</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='kw'>x</span>) <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='kw'>x</span>), <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='fl'>0.5</span>), <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span>(<span class='kw'>freq</span>)),
+      col = <span class='st'>"red"</span>, lwd = <span class='fl'>2</span>, add = <span class='fl'>TRUE</span>)</div><div class='img'><img src='abund-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Relationship between local and regional abundances</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(<span class='kw'>mfrow</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>abund1a</span>$<span class='no'>pool</span>[<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='no'>abund1a</span>$<span class='no'>com</span>), <span class='st'>"relab"</span>],
-  <span class='no'>abund1a</span>$<span class='no'>com</span>$<span class='no'>relab</span>,
-  <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"m = 0.05"</span>,
-  <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Regional abundance"</span>,
-  <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Local abundance"</span>,
-  <span class='kw'>log</span> <span class='kw'>=</span> <span class='st'>"xy"</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span>(mfrow=<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>))
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>abund1a</span><span class='op'>$</span><span class='kw'>pool</span>[<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='kw'>abund1a</span><span class='op'>$</span><span class='kw'>com</span>), <span class='st'>"relab"</span>],
+  <span class='kw'>abund1a</span><span class='op'>$</span><span class='kw'>com</span><span class='op'>$</span><span class='kw'>relab</span>,
+  main = <span class='st'>"m = 0.05"</span>,
+  xlab = <span class='st'>"Regional abundance"</span>,
+  ylab = <span class='st'>"Local abundance"</span>,
+  log = <span class='st'>"xy"</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='fl'>0</span>,<span class='fl'>1</span>)
 
 <span class='co'># With higher immigration rate</span>
-<span class='no'>m</span> <span class='kw'>&lt;-</span> <span class='fl'>0.95</span>
-<span class='no'>comm1b</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='coalesc.html'>coalesc</a></span>(<span class='no'>J</span>, <span class='no'>m</span>, <span class='no'>theta</span>)
-<span class='no'>abund1b</span> <span class='kw'>&lt;-</span> <span class='fu'>abund</span>(<span class='no'>comm1b</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>abund1b</span>$<span class='no'>pool</span>[<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='no'>abund1b</span>$<span class='no'>com</span>),<span class='st'>"relab"</span>],
-  <span class='no'>abund1b</span>$<span class='no'>com</span>$<span class='no'>relab</span>,
-  <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"m = 0.95"</span>,
-  <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Regional abundance"</span>,
-  <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Local abundance"</span>,
-  <span class='kw'>log</span> <span class='kw'>=</span> <span class='st'>"xy"</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='fl'>0</span>,<span class='fl'>1</span>)</div><div class='img'><img src='abund-2.png' alt='' width='700' height='433' /></div></pre>
+<span class='kw'>m</span> <span class='op'>&lt;-</span> <span class='fl'>0.95</span>
+<span class='kw'>comm1b</span> <span class='op'>&lt;-</span> <span class='fu'><a href='coalesc.html'>coalesc</a></span>(<span class='kw'>J</span>, <span class='kw'>m</span>, <span class='kw'>theta</span>) 
+<span class='kw'>abund1b</span> <span class='op'>&lt;-</span> <span class='fu'>abund</span>(<span class='kw'>comm1b</span>) 
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>abund1b</span><span class='op'>$</span><span class='kw'>pool</span>[<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='kw'>abund1b</span><span class='op'>$</span><span class='kw'>com</span>),<span class='st'>"relab"</span>],
+  <span class='kw'>abund1b</span><span class='op'>$</span><span class='kw'>com</span><span class='op'>$</span><span class='kw'>relab</span>,
+  main = <span class='st'>"m = 0.95"</span>,
+  xlab = <span class='st'>"Regional abundance"</span>,
+  ylab = <span class='st'>"Local abundance"</span>,
+  log = <span class='st'>"xy"</span>)</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='fl'>0</span>,<span class='fl'>1</span>)</div><div class='img'><img src='abund-2.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
