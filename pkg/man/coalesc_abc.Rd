@@ -1,13 +1,11 @@
 \name{coalesc_abc}
 \alias{coalesc_abc}
-\alias{coalesc_abc_std}
-\alias{do.simul.coalesc}
 \alias{generate_prior}
 \alias{initial_checks}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-  Estimation of neutral and non-neutral parameters of community assembly using
-  Approximate Bayesian Computation (ABC), 
+  Estimation of parameters of community assembly using
+  Approximate Bayesian Computation (ABC)
 }
 \description{
   Estimates parameters of neutral migration-drift dynamics (through migration
@@ -23,20 +21,6 @@
   theta.max = NULL, nb.samp = 10^6, parallel = FALSE, nb.core = NULL, tol = NULL, 
   type = "standard", method.seq = "Lenormand", method.mcmc = "Marjoram_original",
   method.abc = "rejection", alpha = 0.5, pkg = NULL)
-  
-  coalesc_abc_std(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-  f.sumstats, filt.abc = NULL, filt.vect = F, migr.abc = NULL, size.abc = NULL, add = F, 
-  var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
-  par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = F, 
-  theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
-  tol = NULL, pkg = NULL, method.abc = "rejection")
-  
-  do.simul.coalesc(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
-  traits = NULL, f.sumstats = NULL, filt.abc = NULL, filt.vect = F, migr.abc = NULL, 
-  size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
-  par.migr = NULL, par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, 
-  theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
-  tol = NULL, pkg = NULL, method.abc = "rejection")
   
   generate_prior(pool = NULL, prop = F, constr = NULL, params = NULL, 
   par.filt = NULL, par.migr = NULL, par.size = NULL, theta.max = NULL, nb.samp = 10^6)
@@ -211,12 +195,6 @@
   \item{pkg}{
     packages needed for calculation of \code{filt.abc} and/or \code{f.sumstats}.
   }
-  \item{J}{
-    local community size(s). There must be several values when multi is \code{seqcom} or \code{tab}.
-  }
-  \item{nb.com}{
-    number of communities.
-  }
   \item{type}{
     the type of algorithm to be used in EasyABC. Can be either "standard" (using package abc, default)" "seq" (sequential), "mcmc" or "annealing". Three later options are based on the EasyABC package.
   }
@@ -246,12 +224,11 @@ regional pool. If \code{type = "standard"}, it performs simulations with paramet
 To assess environmental filtering, a filtering function must be defined in \code{filt.abc}. It should take two arguments, the first is a trait value of a candidate immigrant, the second is a vector including the parameter values of the filtering function. See examples below for further information on usage.
 An important point is that in many cases the function might be vectorized, that is, it can provide a vector of filtering probabilities for a vector of trait values given in first argument. In this case the user should set \code{filt.vect = T}, which will significantly accelerate simulations. 
 
-\code{coalesc_abc_std()} performs simulations as with the option \code{type = "standard"}.
+The related functions \code{coalesc_abc_std()} and \code{coalesc_abc_std()} perform simulations with the option \code{type = "standard"} and with the algorithms from EasyABC package, respectivelt.
 
-\code{do.simul.coalesc()} provides the simulated communities used in ABC estimation.
 \code{generate_prior()} draws parameter values from the prior distributions defined with \code{params},\code{par.filt} and/or \code{par.size}.
-\code{initial_checks()} performs initial checks of the input arguments of \code{coalesc_abc} and \code{coalesc_abc_std}. It provides informative error and warning messages when needed.
-The three functions are not intended to be used directly.
+\code{initial_checks()} performs initial checks of the input arguments of \code{coalesc_abc}. It provides informative error and warning messages when needed.
+The two functions are not intended to be used directly.
 
 }
 \value{
@@ -280,8 +257,10 @@ The three functions are not intended to be used directly.
   }
 }
 \seealso{
- \code{\link[=abc]{abc()}} in \code{abc} package,
- \code{\link[=parLapply]{parLapply()}} in \code{parallel} package.
+  \code{\link[=coalesc_abc_std]{coalesc_abc_std()}},  
+  \code{\link[=coalesc_easyABC]{coalesc_easyABC()}},
+  \code{\link[=abc]{abc()}} in \code{abc} package,
+  \code{\link[=parLapply]{parLapply()}} in \code{parallel} package.
 }
 \references{
   Jabot, F., and J. Chave. 2009. Inferring the parameters of the neutral theory
@@ -571,6 +550,6 @@ hist(res.tab3$abc)
 
 \keyword{coalescent}
 \keyword{Approximate Bayesian Computation}
-\keyword{niche-based dynamics}
+\keyword{environmental filtering}
 \keyword{neutral dynamics}
 \keyword{EasyABC}

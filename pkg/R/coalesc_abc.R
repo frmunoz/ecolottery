@@ -83,11 +83,11 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
                            par.filt, par.migr, par.size, constr,
                            scale = TRUE, dim.pca, svd, theta.max, nb.samp,
                            parallel, nb.core, tol, pkg, method.abc)) 
-  else return(coalesc_abc_std(comm.obs, pool, multi, prop, traits, f.sumstats,
+  else return(coalesc_easyABC(comm.obs, pool, multi, prop, traits, f.sumstats,
                               filt.abc, filt.vect, migr.abc, size.abc, add, var.add, params,
                               par.filt, par.migr, par.size, constr,
                               scale = TRUE, dim.pca, svd, theta.max, nb.samp,
-                              parallel, nb.core, tol, pkg, method.abc)) 
+                              parallel, nb.core, tol, pkg, method.seq, method.mcmc, method.abc, alpha)) 
 }
 
 coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
@@ -563,7 +563,8 @@ coalesc_easyABC <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
                             add = F, var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
                             par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = F, theta.max = NULL, 
                             nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
-                            method.mcmc = "Marjoram_original", method.abc = "rejection") 
+                            method.seq = "Lenormand", method.mcmc = "Marjoram_original", method.abc = "rejection",
+                            alpha = 0.5) 
 {
   if(!is.null(migr.abc) | !is.null(size.abc)) {
     migr.abc <- NULL
