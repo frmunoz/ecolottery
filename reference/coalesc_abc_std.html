@@ -153,7 +153,10 @@
   size.abc = <span class='kw'>NULL</span>, add = <span class='kw'>F</span>, var.add = <span class='kw'>NULL</span>, params = <span class='kw'>NULL</span>, par.filt = <span class='kw'>NULL</span>, 
   par.migr = <span class='kw'>NULL</span>, par.size = <span class='kw'>NULL</span>, constr = <span class='kw'>NULL</span>, dim.pca = <span class='kw'>NULL</span>, svd = <span class='kw'>F</span>, 
   theta.max = <span class='kw'>NULL</span>, nb.samp = <span class='fl'>10</span><span class='op'>^</span><span class='fl'>6</span>, parallel = <span class='fl'>TRUE</span>, nb.core = <span class='kw'>NULL</span>, 
-  tol = <span class='kw'>NULL</span>, pkg = <span class='kw'>NULL</span>, method.abc = <span class='st'>"rejection"</span>)</pre>
+  tol = <span class='kw'>NULL</span>, pkg = <span class='kw'>NULL</span>, method.abc = <span class='st'>"rejection"</span>)
+  
+  <span class='fu'>generate_prior</span>(pool = <span class='kw'>NULL</span>, prop = <span class='kw'>F</span>, constr = <span class='kw'>NULL</span>, params = <span class='kw'>NULL</span>, 
+  par.filt = <span class='kw'>NULL</span>, par.migr = <span class='kw'>NULL</span>, par.size = <span class='kw'>NULL</span>, theta.max = <span class='kw'>NULL</span>, nb.samp = <span class='fl'>10</span><span class='op'>^</span><span class='fl'>6</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -362,7 +365,8 @@
     <p><code>coalesc_abc_std()</code> provides ABC estimation of assembly parameters for one (if <code>multi = "single"</code>,
 default) or several communities (if <code>multi = "tab" or "seqcom"</code>) related to the same
 regional pool. It performs simulations with parameter values randomly drawn in priori distributions.</p>
-<p><code>do.simul.coalesc()</code> provides the simulated communities used in ABC estimation.</p>
+<p><code>generate_prior()</code> draws parameter values from the prior distributions defined with <code>params</code>,<code>par.filt</code> and/or <code>par.size</code>.
+<code>do.simul.coalesc()</code> provides simulated communities used for ABC estimation.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p></p>
