@@ -9,6 +9,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
                         method.mcmc = "Marjoram_original",
                         method.abc = "rejection", alpha = 0.5, pkg = NULL) 
 {
+  # Work in global environment
+  globalenv()
   
   if (is.null(pool)) {
     warning("No species pool provided: pool will be simulated and logseries ",
@@ -81,12 +83,12 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
     return(coalesc_abc_std(comm.obs, pool, multi, prop, traits, f.sumstats,
                            filt.abc, filt.vect, migr.abc, size.abc, add, var.add, params,
                            par.filt, par.migr, par.size, constr,
-                           scale = TRUE, dim.pca, svd, theta.max, nb.samp,
+                           scale, dim.pca, svd, theta.max, nb.samp,
                            parallel, nb.core, tol, pkg, method.abc)) 
   else return(coalesc_easyABC(comm.obs, pool, multi, prop, traits, f.sumstats,
                               filt.abc, filt.vect, migr.abc, size.abc, add, var.add, params,
                               par.filt, par.migr, par.size, constr,
-                              scale = TRUE, dim.pca, svd, theta.max, nb.samp,
+                              scale, dim.pca, svd, theta.max, nb.samp,
                               parallel, nb.core, tol, pkg, type, method.seq, 
                               method.mcmc, method.abc, alpha)) 
 }
