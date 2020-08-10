@@ -1,9 +1,9 @@
 coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-                            f.sumstats, filt.abc = NULL, filt.vect = F, migr.abc = NULL, size.abc = NULL, 
-                            add = F, var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
-                            par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = F, theta.max = NULL, 
-                            nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
-                            method.abc = "rejection")
+                            f.sumstats, filt.abc = NULL, filt.vect = F, migr.abc = NULL, 
+                            size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
+                            par.migr = NULL, par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, 
+                            svd = F, theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL,
+                            tol = NULL, pkg = NULL, method.abc = "rejection")
 {
   if(is.null(par.filt) & is.null(par.migr)){
     warning("No value provided for par.filt and par.migr arguments. ",
@@ -471,7 +471,6 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   
   return(list(stats = stats.sel, params.sim = params.sim.sel, sel.ss=sel.ss))
 }
-
 
 generate_prior <- function(pool = NULL, prop = F, constr = NULL, 
                            params = NULL, par.filt = NULL, par.migr = NULL,
