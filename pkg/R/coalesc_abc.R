@@ -144,10 +144,7 @@ initial_checks <- function(comm.obs = NULL, pool = NULL, multi = "single", prop 
   if (multi=="tab") if (any(rowSums(comm.obs)==0)) {
     stop("There should not be communities with 0 individuals", call. = FALSE)
   }
-  
-  if (!is.null(filt.abc) & is.null(traits) & ncol(pool) < 3) 
-    warning("Trait information is not provided", call. = FALSE)
-  
+
   # Other required packages
   for (i in pkg) {
     if (!requireNamespace(pkg, quietly = TRUE)) {
