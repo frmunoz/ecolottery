@@ -191,6 +191,7 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
                   ss = sim$stats, abc = res.abc, call = match.call()))
     }
   }
+  return(NULL)
 }
 
 do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
@@ -225,7 +226,10 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   if(parallel) {
     # Start up a parallel cluster
     if(is.null(nb.core)) nb.core <- parallel::detectCores() - 1
-    parCluster <- parallel::makeCluster(max(1, nb.core))
+    if(nb.core > nb.samp) {
+      warning("Parallel turned to F when nb.core > nb.samp")
+      parallel <- F
+    } else parCluster <- parallel::makeCluster(max(1, nb.core))
   }
   
   # Generate a set of parameter values drawn from prior distributions
