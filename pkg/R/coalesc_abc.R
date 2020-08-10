@@ -87,7 +87,8 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
                               filt.abc, filt.vect, migr.abc, size.abc, add, var.add, params,
                               par.filt, par.migr, par.size, constr,
                               scale = TRUE, dim.pca, svd, theta.max, nb.samp,
-                              parallel, nb.core, tol, pkg, method.seq, method.mcmc, method.abc, alpha)) 
+                              parallel, nb.core, tol, pkg, type, method.seq, 
+                              method.mcmc, method.abc, alpha)) 
 }
 
 initial_checks <- function(comm.obs = NULL, pool = NULL, multi = "single", prop = F, traits = NULL, 
