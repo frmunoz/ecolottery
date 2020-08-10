@@ -290,17 +290,19 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                             function(x) filt.abc(x, params.samp[1:nrow(par.filt)]),
                             function(x, var.add) filt.abc(x, params.samp[1:nrow(par.filt)], var.add))
      else filt <- NULL
+      m.start <- ifelse(!is.null(filt.abc), nrow(par.filt), 0)
       migr <- ifelse(!is.null(migr.abc),
                      ifelse(!add, 
-                            function() migr.abc(params.samp[(nrow(par.filt)+1):(nrow(par.filt)+nrow(par.migr))]),
-                            function(var.add) migr.abc(params.samp[(nrow(par.filt)+1):(nrow(par.filt)+nrow(par.migr))], var.add)),
+                            function() migr.abc(params.samp[(m.start+1):(m.start+nrow(par.migr))]),
+                            function(var.add) migr.abc(params.samp[(m.start+1):(m.start+nrow(par.migr))], var.add)),
                      ifelse(!add,
                             function() params.samp["m"],
                             function(var.add) params.samp["m"]))
+      s.start <- m.start + ifelse(!is.null(migr.abc), nrow(par.migr), 0)
       size <- ifelse(!is.null(size.abc),
                      ifelse(!add, 
-                            function() size.abc(params.samp[(nrow(par.filt)+1):(nrow(par.filt)+nrow(par.migr))]),
-                            function(var.add) size.abc(params.samp[(nrow(par.filt)+1):(nrow(par.filt)+nrow(par.migr))], var.add)),
+                            function() size.abc(params.samp[(s.start+1):(s.start+nrow(par.size))]),
+                            function(var.add) size.abc(params.samp[(s.start+1):(s.start+nrow(par.size))], var.add)),
                      ifelse(!add,
                             function() function() params.samp["J"],
                             function(var.add) params.samp["J"]))
