@@ -232,27 +232,9 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   prior <- generate_prior(pool, prop, constr, params, par.filt, par.migr, par.size, 
                           theta.max, nb.samp)
   
-  # Function to perform simulations
-  mkWorker <- function(traits, nb.com, multi, prop, prior, J, pool, filt.abc, filt.vect, 
-                       migr.abc, size.abc, add, var.add, f.sumstats, nb.sumstats, pkg) {
-    force(traits)
-    force(nb.com)
-    force(multi)
-    force(prop)
-    force(prior)
-    force(J)
-    force(pool)
-    force(filt.abc)
-    force(filt.vect)
-    force(migr.abc)
-    force(size.abc)
-    force(add)
-    force(var.add)
-    force(f.sumstats)
-    force(pkg)
-    
-    summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, filt.vect, migr.abc, add, var.add,
-                         f.sumstats, nb.sumstats) {
+  # Function to perform simulations and calculate summary statistics
+  summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, filt.vect, migr.abc, 
+                       size.abc, add, var.add, f.sumstats, nb.sumstats, pkg) {
       
       params.samp <- unlist(lapply(prior,function(x) x[j]))
       stats.samp <- NA
@@ -411,35 +393,24 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
       }
       
       return(list(sum.stats = stats.samp, param = params.samp.all))
-    }
-    
-    worker <- function(j) {
-      if (!requireNamespace("ecolottery", quietly = TRUE)) {
-        stop("Package ecolottery is not available", call. = FALSE)
-      }
-      # Other required packages
-      if (!is.null(pkg)) for (i in 1:length(pkg)) {
-        if (!requireNamespace(pkg[i], quietly = TRUE)) {
-          stop(paste("Package ", pkg[i], " is not available", sep = ""),
-               call. = FALSE)
-        }
-      }
-      summCalc(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, filt.vect, migr.abc, 
-               add, var.add, f.sumstats, nb.sumstats)
-    }
-    return(worker)
   }
   
   # Calculation of summary statistics over the whole range of parameters
   if (parallel) {
     err.chk <- try(models <- parallel::parLapply(parCluster, 1:nb.samp,
-                                                 mkWorker(traits, nb.com, multi, prop, prior, J,
-                                                          pool, filt.abc, filt.vect, migr.abc, size.abc, add, 
-                                                          var.add, f.sumstats, nb.sumstats,pkg)), T)
+                                                 summCalc, multi=multi, traits=traits, nb.com=nb.com, prior=prior,
+                                                          J=J, prop=prop, pool=pool,
+                                                          filt.abc=filt.abc, filt.vect=filt.vect, 
+                                                          migr.abc=migr.abc, size.abc=size.abc, 
+                                                          add=add, var.add=var.add, f.sumstats=f.sumstats,
+                                                          nb.sumstats=nb.sumstats, pkg=pkg))
   } else {
-    models <- lapply(1:nb.samp, mkWorker(traits, nb.com, multi, prop, prior, J, pool,
-                                         filt.abc, filt.vect, migr.abc, size.abc, add, 
-                                         var.add, f.sumstats, nb.sumstats, pkg))
+    models <- lapply(1:nb.samp, function(x) summCalc(x, multi=multi, traits=traits, nb.com=nb.com, prior=prior,
+                                                     J=J, prop=prop, pool=pool,
+                                                     filt.abc=filt.abc, filt.vect=filt.vect, 
+                                                     migr.abc=migr.abc, size.abc=size.abc, 
+                                                     add=add, var.add=var.add, f.sumstats=f.sumstats,
+                                                     nb.sumstats=nb.sumstats, pkg=pkg))
   }
   
   if (parallel) {
