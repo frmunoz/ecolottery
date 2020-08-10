@@ -175,7 +175,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, filt.vect = F, add = FA
     env_filter <- filt
   }
     
-  if (!add) 
+  if (!add | (add & is.null(filt))) 
   {
     prob <- unlist(env_filter(ind_pool_traits))
   } else prob <- unlist(env_filter(ind_pool_traits, var.add))
