@@ -9,10 +9,7 @@ coalesc_abc <- function(comm.obs, pool = NULL, multi = "single", prop = FALSE,
                         method.mcmc = "Marjoram_original",
                         method.abc = "rejection", alpha = 0.5, pkg = NULL) 
 {
-  # Work in global environment
-  globalenv()
-  
-  if (is.null(pool)) {
+   if (is.null(pool)) {
     warning("No species pool provided: pool will be simulated and logseries ",
             "theta estimated", call. = FALSE)
     if (is.null(theta.max))
