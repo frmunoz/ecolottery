@@ -15,7 +15,7 @@ importFrom("plyr", "adply")
 importFrom("data.table", "data.table")
 importFrom("abc", "abc")
 importFrom("parallel", "parLapply")
-importFrom("utils", "setTxtProgressBar", "txtProgressBar")
+importFrom("utils", "setTxtProgressBar", "txtProgressBar", "lsf.str")
 #importFrom("Rcpp", "evalCpp")
 
 # Registered S3 methods
