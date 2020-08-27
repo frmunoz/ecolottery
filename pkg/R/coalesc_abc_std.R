@@ -229,10 +229,12 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     if(nb.core > nb.samp) {
       warning("Parallel turned to F when nb.core > nb.samp")
       parallel <- F
-    } else parCluster <- parallel::makeCluster(max(1, nb.core))
-    # Export functions of the global environment, in case they are
-    # needed during parallel computation
-    parallel::clusterExport(parCluster, as.character(lsf.str(envir=.GlobalEnv)))
+    } else {
+      parCluster <- parallel::makeCluster(max(1, nb.core))
+      # Export functions of the global environment, in case they are
+      # needed during parallel computation
+      parallel::clusterExport(parCluster, as.character(lsf.str(envir=.GlobalEnv)))
+    }
   }
   
   # Generate a set of parameter values drawn from prior distributions
