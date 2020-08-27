@@ -196,11 +196,17 @@
     <pre class="examples"><div class='input'><span class='co'># Simulation of a neutral community including 100 individuals</span>
 <span class='kw'>J</span> <span class='op'>&lt;-</span> <span class='fl'>500</span>; <span class='kw'>theta</span> <span class='op'>&lt;-</span> <span class='fl'>50</span>; <span class='kw'>m</span> <span class='op'>&lt;-</span> <span class='fl'>0.1</span>;
 <span class='kw'>comm1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='coalesc.html'>coalesc</a></span>(<span class='kw'>J</span>, <span class='kw'>m</span>, <span class='kw'>theta</span>) 
-<span class='fu'>plot_comm</span>(<span class='kw'>comm1</span>)</div><div class='img'><img src='plot_comm-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>plot_comm</span>(<span class='kw'>comm1</span>, type = <span class='st'>"locreg"</span>)</div><div class='img'><img src='plot_comm-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>plot_comm</span>(<span class='kw'>comm1</span>, type = <span class='st'>"sad"</span>)</div><div class='img'><img src='plot_comm-3.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'>plot_comm</span>(<span class='kw'>comm1</span>)
+</div><div class='img'><img src='plot_comm-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>plot_comm</span>(<span class='kw'>comm1</span>, type = <span class='st'>"locreg"</span>)
+</div><div class='img'><img src='plot_comm-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>plot_comm</span>(<span class='kw'>comm1</span>, type = <span class='st'>"sad"</span>)
+</div><div class='img'><img src='plot_comm-3.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Stabilizing habitat filtering around t = 0.5</span>
 <span class='kw'>filt_gaussian</span> <span class='op'>&lt;-</span> <span class='fu'>function</span>(<span class='kw'>x</span>) <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='op'>-</span>(<span class='kw'>x</span> <span class='op'>-</span> <span class='fl'>0.5</span>)<span class='op'>^</span><span class='fl'>2</span><span class='op'>/</span>(<span class='fl'>2</span><span class='op'>*</span><span class='fl'>0.1</span><span class='op'>^</span><span class='fl'>2</span>))
 <span class='kw'>comm2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='coalesc.html'>coalesc</a></span>(<span class='kw'>J</span>, <span class='kw'>m</span>, <span class='kw'>theta</span>, filt = <span class='kw'>filt_gaussian</span>)
-<span class='fu'>plot_comm</span>(<span class='kw'>comm2</span>)</div><div class='img'><img src='plot_comm-4.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>plot_comm</span>(<span class='kw'>comm2</span>, type = <span class='st'>"locreg"</span>)</div><div class='img'><img src='plot_comm-5.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>plot_comm</span>(<span class='kw'>comm1</span>, type = <span class='st'>"sad"</span>)</div><div class='img'><img src='plot_comm-6.png' alt='' width='700' height='433' /></div></pre>
+<span class='fu'>plot_comm</span>(<span class='kw'>comm2</span>)
+</div><div class='img'><img src='plot_comm-4.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>plot_comm</span>(<span class='kw'>comm2</span>, type = <span class='st'>"locreg"</span>)
+</div><div class='img'><img src='plot_comm-5.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>plot_comm</span>(<span class='kw'>comm1</span>, type = <span class='st'>"sad"</span>)
+</div><div class='img'><img src='plot_comm-6.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -219,7 +219,8 @@ See example below.</p>
 <span class='kw'>J</span> <span class='op'>&lt;-</span> <span class='fl'>500</span>; <span class='kw'>theta</span> <span class='op'>&lt;-</span> <span class='fl'>50</span>; <span class='kw'>m</span> <span class='op'>&lt;-</span> <span class='fl'>0.1</span>
 <span class='kw'>comm1</span> <span class='op'>&lt;-</span> <span class='fu'>coalesc</span>(<span class='kw'>J</span>, <span class='kw'>m</span>, <span class='kw'>theta</span>) 
 <span class='co'># Regional and local trait distributions</span>
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm1</span>)</div><div class='img'><img src='coalesc-1.png' alt='' width='700' height='433' /></div><div class='input'> 
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm1</span>)
+</div><div class='img'><img src='coalesc-1.png' alt='' width='700' height='433' /></div><div class='input'> 
 <span class='co'># Define a regional pool of species with equal abundances</span>
 <span class='kw'>pool</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='fl'>1</span><span class='op'>:</span><span class='fl'>10000</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span><span class='op'>:</span><span class='fl'>500</span>, <span class='fl'>20</span>), <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>NA</span>, <span class='fl'>10000</span>))
 <span class='co'># Uniform distribution of trait values</span>
@@ -228,34 +229,44 @@ See example below.</p>
 <span class='kw'>pool</span>[,<span class='fl'>3</span>] <span class='op'>&lt;-</span> <span class='kw'>t.sp</span>[<span class='kw'>pool</span>[,<span class='fl'>2</span>]]
 <span class='co'># Generate a neutral community drawn from the pool</span>
 <span class='kw'>comm2</span><span class='op'>&lt;-</span> <span class='fu'>coalesc</span>(<span class='kw'>J</span>, <span class='kw'>m</span>, pool = <span class='kw'>pool</span>) 
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm2</span>)</div><div class='img'><img src='coalesc-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm2</span>)
+</div><div class='img'><img src='coalesc-2.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Directional habitat filtering toward t = 0</span>
 <span class='kw'>comm3</span> <span class='op'>&lt;-</span> <span class='fu'>coalesc</span>(<span class='kw'>J</span>, <span class='kw'>m</span>, filt = <span class='fu'>function</span>(<span class='kw'>x</span>) <span class='fl'>1</span> <span class='op'>-</span> <span class='kw'>x</span>, pool = <span class='kw'>pool</span>)
 <span class='co'># Regional and local trait distributions</span>
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm3</span>)</div><div class='img'><img src='coalesc-3.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm3</span>)
+</div><div class='img'><img src='coalesc-3.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Function for environmental filtering</span>
 <span class='kw'>sigma</span> <span class='op'>&lt;-</span> <span class='fl'>0.1</span>
 <span class='kw'>filt_gaussian</span> <span class='op'>&lt;-</span> <span class='fu'>function</span>(<span class='kw'>t</span>, <span class='kw'>x</span>) <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='op'>-</span>(<span class='kw'>x</span> <span class='op'>-</span> <span class='kw'>t</span>)<span class='op'>^</span><span class='fl'>2</span><span class='op'>/</span>(<span class='fl'>2</span><span class='op'>*</span><span class='kw'>sigma</span><span class='op'>^</span><span class='fl'>2</span>))
 
 <span class='co'># Stabilizing habitat filtering around t = 0.1</span>
 <span class='kw'>comm4a</span> <span class='op'>&lt;-</span> <span class='fu'>coalesc</span>(<span class='kw'>J</span>, <span class='kw'>m</span>, filt = <span class='fu'>function</span>(<span class='kw'>x</span>) <span class='fu'>filt_gaussian</span>(<span class='fl'>0.1</span>, <span class='kw'>x</span>), pool = <span class='kw'>pool</span>)
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm4a</span>)</div><div class='img'><img src='coalesc-4.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Stabilizing habitat filtering around t = 0.5</span>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm4a</span>)
+</div><div class='img'><img src='coalesc-4.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Stabilizing habitat filtering around t = 0.5</span>
 <span class='kw'>comm4b</span> <span class='op'>&lt;-</span> <span class='fu'>coalesc</span>(<span class='kw'>J</span>, <span class='kw'>m</span>, filt = <span class='fu'>function</span>(<span class='kw'>x</span>) <span class='fu'>filt_gaussian</span>(<span class='fl'>0.5</span>, <span class='kw'>x</span>),
                   pool = <span class='kw'>pool</span>)
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm4b</span>)</div><div class='img'><img src='coalesc-5.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Stabilizing habitat filtering around t = 0.9</span>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm4b</span>)
+</div><div class='img'><img src='coalesc-5.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Stabilizing habitat filtering around t = 0.9</span>
 <span class='kw'>comm4c</span> <span class='op'>&lt;-</span> <span class='fu'>coalesc</span>(<span class='kw'>J</span>, <span class='kw'>m</span>, filt = <span class='fu'>function</span>(<span class='kw'>x</span>) <span class='fu'>filt_gaussian</span>(<span class='fl'>0.9</span>, <span class='kw'>x</span>),
                   pool = <span class='kw'>pool</span>)
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm4c</span>)</div><div class='img'><img src='coalesc-6.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm4c</span>)
+</div><div class='img'><img src='coalesc-6.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Mean trait values in communities reflect the influence of habitat filtering</span>
-<span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='kw'>comm4a</span><span class='op'>$</span><span class='kw'>com</span>[, <span class='fl'>3</span>])</div><div class='output co'>#&gt; [1] 0.1334203</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='kw'>comm4b</span><span class='op'>$</span><span class='kw'>com</span>[, <span class='fl'>3</span>])</div><div class='output co'>#&gt; [1] 0.5028231</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='kw'>comm4c</span><span class='op'>$</span><span class='kw'>com</span>[, <span class='fl'>3</span>])</div><div class='output co'>#&gt; [1] 0.8803218</div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='kw'>comm4a</span><span class='op'>$</span><span class='kw'>com</span>[, <span class='fl'>3</span>])
+</div><div class='output co'>#&gt; [1] 0.1334203</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='kw'>comm4b</span><span class='op'>$</span><span class='kw'>com</span>[, <span class='fl'>3</span>])
+</div><div class='output co'>#&gt; [1] 0.5028231</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='kw'>comm4c</span><span class='op'>$</span><span class='kw'>com</span>[, <span class='fl'>3</span>])
+</div><div class='output co'>#&gt; [1] 0.8803218</div><div class='input'>
 <span class='co'># Disruptive habitat filtering around t = 0.5</span>
 <span class='kw'>comm5</span> <span class='op'>&lt;-</span> <span class='fu'>coalesc</span>(<span class='kw'>J</span>, <span class='kw'>m</span>, filt = <span class='fu'>function</span>(<span class='kw'>x</span>) <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span>(<span class='fl'>0.5</span> <span class='op'>-</span> <span class='kw'>x</span>), pool = <span class='kw'>pool</span>)
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm5</span>)</div><div class='img'><img src='coalesc-7.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm5</span>)
+</div><div class='img'><img src='coalesc-7.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Multi-modal habitat filtering </span>
 <span class='kw'>t.sp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>500</span>)
 <span class='kw'>pool</span>[, <span class='fl'>3</span>] <span class='op'>&lt;-</span> <span class='kw'>t.sp</span>[<span class='kw'>pool</span>[,<span class='fl'>2</span>]]
 <span class='kw'>comm6</span> <span class='op'>&lt;-</span> <span class='fu'>coalesc</span>(<span class='kw'>J</span>, <span class='kw'>m</span>, filt = <span class='fu'>function</span>(<span class='kw'>x</span>) <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span>(<span class='fl'>3</span><span class='op'>*</span><span class='kw'>x</span>) <span class='op'>+</span> <span class='fl'>1</span>, pool = <span class='kw'>pool</span>)
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm6</span>)</div><div class='img'><img src='coalesc-8.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm6</span>)
+</div><div class='img'><img src='coalesc-8.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Filtering depending on multiple traits</span>
 <span class='co'># We define two traits</span>
 <span class='kw'>t1.sp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>500</span>)
@@ -269,8 +280,10 @@ See example below.</p>
 <span class='fu'>filt_gaussian</span>(<span class='fl'>0.75</span>, <span class='kw'>x</span>[<span class='fl'>1</span>])<span class='op'>*</span><span class='fu'>filt_gaussian</span>(<span class='fl'>0.25</span>, <span class='kw'>x</span>[<span class='fl'>2</span>]), 
 pool = <span class='kw'>pool</span>)
 <span class='co'># Distribution of trait 1</span>
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm7</span>, seltrait = <span class='fl'>1</span>)</div><div class='img'><img src='coalesc-9.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Distribution of trait 2</span>
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm7</span>, seltrait = <span class='fl'>2</span>)</div><div class='img'><img src='coalesc-10.png' alt='' width='700' height='433' /></div></pre>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm7</span>, seltrait = <span class='fl'>1</span>)
+</div><div class='img'><img src='coalesc-9.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Distribution of trait 2</span>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm7</span>, seltrait = <span class='fl'>2</span>)
+</div><div class='img'><img src='coalesc-10.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
