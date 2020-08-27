@@ -230,6 +230,9 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
       warning("Parallel turned to F when nb.core > nb.samp")
       parallel <- F
     } else parCluster <- parallel::makeCluster(max(1, nb.core))
+    # Export functions of the global environment, in case they are
+    # needed during parallel computation
+    parallel::clusterExport(parCluster, as.character(lsf.str(envir=.GlobalEnv)))
   }
   
   # Generate a set of parameter values drawn from prior distributions
@@ -238,165 +241,166 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   
   # Function to perform simulations and calculate summary statistics
   summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, filt.vect, migr.abc, 
-                       size.abc, add, var.add, f.sumstats, nb.sumstats, pkg) {
+                       size.abc, par.filt, par.migr, par.size, add, var.add, 
+                       f.sumstats, nb.sumstats, pkg) {
       
-      params.samp <- unlist(lapply(prior,function(x) x[j]))
-      stats.samp <- NA
-      params.samp.all <- params.samp
-      names(params.samp.all) <- names(prior)
-      
-      if(prop) 
+    params.samp <- unlist(lapply(prior,function(x) x[j]))
+    stats.samp <- NA
+    params.samp.all <- params.samp
+    names(params.samp.all) <- names(prior)
+    
+    if(prop) 
+    {
+      if(!is.null(pool))
       {
-        if(!is.null(pool))
-        {
-          J <- round(params.samp[length(params.samp)])
-          params.samp <- params.samp[-length(params.samp)]
-        } else 
-        {
-          J <- round(params.samp[length(params.samp)-1])
-          params.samp <- params.samp[-(length(params.samp)-1)]
-        }
-        if(multi == "seqcom") {
-          J <- lapply(1:nb.com,function(x) J)
-        }
-      }
-      
-      if (is.null(pool)) {
-        if (multi == "seqcom"){
-          pool <- coalesc(mean(unlist(J))*100,
-                          theta = params.samp[length(params.samp)], checks = F)$com
-        } else {
-          pool <- coalesc(mean(J)*100,
-                          theta = params.samp[length(params.samp)], checks = F)$com
-        }
+        J <- round(params.samp[length(params.samp)])
         params.samp <- params.samp[-length(params.samp)]
+      } else 
+      {
+        J <- round(params.samp[length(params.samp)-1])
+        params.samp <- params.samp[-(length(params.samp)-1)]
+      }
+      if(multi == "seqcom") {
+        J <- lapply(1:nb.com,function(x) J)
+      }
+    }
+    
+    if (is.null(pool)) {
+      if (multi == "seqcom"){
+        pool <- coalesc(mean(unlist(J))*100,
+                        theta = params.samp[length(params.samp)], checks = F)$com
+      } else {
+        pool <- coalesc(mean(J)*100,
+                        theta = params.samp[length(params.samp)], checks = F)$com
+      }
+      params.samp <- params.samp[-length(params.samp)]
+    }
+    
+    if(!is.null(filt.abc))  filt <- ifelse(!add, 
+                                           function(x) filt.abc(x, params.samp[1:nrow(par.filt)]),
+                                           function(x, var.add) filt.abc(x, params.samp[1:nrow(par.filt)], var.add))
+    else filt <- NULL
+    m.start <- ifelse(!is.null(filt.abc), nrow(par.filt), 0)
+    migr <- ifelse(!is.null(migr.abc),
+                   ifelse(!add, 
+                          function() migr.abc(params.samp[(m.start+1):(m.start+nrow(par.migr))]),
+                          function(var.add) migr.abc(params.samp[(m.start+1):(m.start+nrow(par.migr))], var.add)),
+                   ifelse(!add,
+                          function() params.samp["m"],
+                          function(var.add) params.samp["m"]))
+    s.start <- m.start + ifelse(!is.null(migr.abc), nrow(par.migr), 0)
+    size <- ifelse(!is.null(size.abc),
+                   ifelse(!add, 
+                          function() size.abc(params.samp[(s.start+1):(s.start+nrow(par.size))]),
+                          function(var.add) size.abc(params.samp[(s.start+1):(s.start+nrow(par.size))], var.add)),
+                   ifelse(!add,
+                          function() function() params.samp["J"],
+                          function(var.add) params.samp["J"]))
+    
+    if(multi == "tab") {
+      # It is too slow
+      if(!is.data.frame(pool) & is.list(pool) & length(pool) > 1) {
+        pool.sp <- unique(Reduce(rbind , pool)[,2])
+      } else {
+        pool.sp <- unique(pool[,2])
+      }
+      meta.samp <- array(0, c(nb.com, length(pool.sp)))
+      colnames(meta.samp) <- pool.sp
+      
+      for (i in 1:nb.com) {
+        try({
+          J.loc <- ifelse(length(J)>1, J[i], J)
+          m <- unlist(ifelse(add, migr(var.add[i,]), migr()))
+          if(!is.data.frame(pool) & is.list(pool) & length(pool)>1) {
+            pool.loc <- pool[[i]]
+          } else {
+            pool.loc <- pool
+          }
+          comm.samp <- ecolottery::coalesc(J.loc, m = m,
+                                           filt = filt,
+                                           filt.vect = filt.vect,
+                                           add = add,
+                                           var.add = var.add[i,],
+                                           pool = pool.loc, traits = traits,
+                                           checks = F)
+          tab <- table(comm.samp$com[,2])
+          meta.samp[i,names(tab)] <- tab
+          if(prop) meta.samp[i,] <- meta.samp[i,]/J.loc #sum(meta.samp[i,])
+        })
       }
       
-     if(!is.null(filt.abc))  filt <- ifelse(!add, 
-                            function(x) filt.abc(x, params.samp[1:nrow(par.filt)]),
-                            function(x, var.add) filt.abc(x, params.samp[1:nrow(par.filt)], var.add))
-     else filt <- NULL
-      m.start <- ifelse(!is.null(filt.abc), nrow(par.filt), 0)
-      migr <- ifelse(!is.null(migr.abc),
-                     ifelse(!add, 
-                            function() migr.abc(params.samp[(m.start+1):(m.start+nrow(par.migr))]),
-                            function(var.add) migr.abc(params.samp[(m.start+1):(m.start+nrow(par.migr))], var.add)),
-                     ifelse(!add,
-                            function() params.samp["m"],
-                            function(var.add) params.samp["m"]))
-      s.start <- m.start + ifelse(!is.null(migr.abc), nrow(par.migr), 0)
-      size <- ifelse(!is.null(size.abc),
-                     ifelse(!add, 
-                            function() size.abc(params.samp[(s.start+1):(s.start+nrow(par.size))]),
-                            function(var.add) size.abc(params.samp[(s.start+1):(s.start+nrow(par.size))], var.add)),
-                     ifelse(!add,
-                            function() function() params.samp["J"],
-                            function(var.add) params.samp["J"]))
-      
-      if(multi == "tab") {
-        # It is too slow
-        if(!is.data.frame(pool) & is.list(pool) & length(pool) > 1) {
-          pool.sp <- unique(Reduce(rbind , pool)[,2])
-        } else {
-          pool.sp <- unique(pool[,2])
-        }
-        meta.samp <- array(0, c(nb.com, length(pool.sp)))
-        colnames(meta.samp) <- pool.sp
-        
-        for (i in 1:nb.com) {
-          try({
-            J.loc <- ifelse(length(J)>1, J[i], J)
-            m <- unlist(ifelse(add, migr(var.add[i,]), migr()))
-            if(!is.data.frame(pool) & is.list(pool) & length(pool)>1) {
-              pool.loc <- pool[[i]]
-            } else {
-              pool.loc <- pool
-            }
-            comm.samp <- ecolottery::coalesc(J.loc, m = m,
-                                             filt = filt,
-                                             filt.vect = filt.vect,
-                                             add = add,
-                                             var.add = var.add[i,],
-                                             pool = pool.loc, traits = traits,
-                                             checks = F)
-            tab <- table(comm.samp$com[,2])
-            meta.samp[i,names(tab)] <- tab
-            if(prop) meta.samp[i,] <- meta.samp[i,]/J.loc #sum(meta.samp[i,])
-          })
-        }
-        
-        if (length(formals(f.sumstats)) == 1) {
-          stats.samp <- tryCatch(f.sumstats(meta.samp), 
-                                 error = function(e) rep(NA, nb.sumstats))
-        } else if (length(formals(f.sumstats)) == 2) {
-          stats.samp <- tryCatch(f.sumstats(meta.samp, traits), 
-                                 error = function(e) rep(NA, nb.sumstats))
-        } else {
-          stats.samp <- tryCatch(f.sumstats(meta.samp, traits, var.add), 
-                                 error = function(e) rep(NA, nb.sumstats))
-        }
-        
-      } else if(multi == "seqcom") {
-        seqcom.samp <- list()
-        
-        for (i in 1:nb.com) {
-          try({
-            m <- ifelse(add, migr(var.add[i,]), migr())[[1]]
-            if(!is.data.frame(pool) & is.list(pool) & length(pool)>1) {
-              pool.loc <- pool[[i]]
-            } else {
-              pool.loc <- pool
-            }
-            seqcom.samp[[i]] <- ecolottery::coalesc(J[[i]],
-                                                    m = m,
-                                                    filt = filt,
-                                                    filt.vect = filt.vect,
-                                                    add = add,
-                                                    var.add = var.add[i,],
-                                                    pool = pool.loc, traits = traits, checks = F)$com
-            if(prop) {
-              # The result is a table with relative species proportions and trait values
-              tr <- tapply(seqcom.samp[[i]][,3], seqcom.samp[[i]][,2], mean)
-              seqcom.samp[[i]] <- data.frame(sp=names(tr), 
-                                             cov=tapply(seqcom.samp[[i]][,3], seqcom.samp[[i]][,2], length)/J[[i]],
-                                             tr=tr)
-            }
-          })
-        }
-        if (length(formals(f.sumstats)) == 1) {
-          stats.samp <- f.sumstats(seqcom.samp)
-        } else if (length(formals(f.sumstats)) == 2) {
-          stats.samp <- f.sumstats(seqcom.samp, traits)
-        } else {
-          stats.samp <- f.sumstats(seqcom.samp, traits, var.add)
-        }
-      } else { # single community
-        m <- ifelse(add, migr(var.add[i,]), migr())[[1]]
-        comm.samp <- ecolottery::coalesc(J,
-                                         m = m,
-                                         filt = filt,
-                                         filt.vect = filt.vect,
-                                         add = add,
-                                         var.add = var.add,
-                                         pool = pool, traits = traits,
-                                         checks = F)
-        if(prop) {
-          # The result is a table with relative species proportions and trait values
-          tr <- tapply(comm.samp$com[,3], comm.samp$com[,2], mean)
-          comm.samp$com <- data.frame(sp=names(tr), 
-                                         cov=tapply(comm.samp$com[,3], comm.samp$com[,2], length)/J[[i]],
-                                         tr=tr)
-        }
-        if (length(formals(f.sumstats)) == 1) {
-          stats.samp <- f.sumstats(comm.samp$com)
-        } else if (length(formals(f.sumstats)) == 2) {
-          stats.samp <- f.sumstats(comm.samp$com, traits)
-        } else {
-          stats.samp <- f.sumstats(comm.samp$com, traits, var.add)
-        }
+      if (length(formals(f.sumstats)) == 1) {
+        stats.samp <- tryCatch(f.sumstats(meta.samp), 
+                               error = function(e) rep(NA, nb.sumstats))
+      } else if (length(formals(f.sumstats)) == 2) {
+        stats.samp <- tryCatch(f.sumstats(meta.samp, traits), 
+                               error = function(e) rep(NA, nb.sumstats))
+      } else {
+        stats.samp <- tryCatch(f.sumstats(meta.samp, traits, var.add), 
+                               error = function(e) rep(NA, nb.sumstats))
       }
       
-      return(list(sum.stats = stats.samp, param = params.samp.all))
+    } else if(multi == "seqcom") {
+      seqcom.samp <- list()
+      
+      for (i in 1:nb.com) {
+        try({
+          m <- ifelse(add, migr(var.add[i,]), migr())[[1]]
+          if(!is.data.frame(pool) & is.list(pool) & length(pool)>1) {
+            pool.loc <- pool[[i]]
+          } else {
+            pool.loc <- pool
+          }
+          seqcom.samp[[i]] <- ecolottery::coalesc(J[[i]],
+                                                  m = m,
+                                                  filt = filt,
+                                                  filt.vect = filt.vect,
+                                                  add = add,
+                                                  var.add = var.add[i,],
+                                                  pool = pool.loc, traits = traits, checks = F)$com
+          if(prop) {
+            # The result is a table with relative species proportions and trait values
+            tr <- tapply(seqcom.samp[[i]][,3], seqcom.samp[[i]][,2], mean)
+            seqcom.samp[[i]] <- data.frame(sp=names(tr), 
+                                           cov=tapply(seqcom.samp[[i]][,3], seqcom.samp[[i]][,2], length)/J[[i]],
+                                           tr=tr)
+          }
+        })
+      }
+      if (length(formals(f.sumstats)) == 1) {
+        stats.samp <- f.sumstats(seqcom.samp)
+      } else if (length(formals(f.sumstats)) == 2) {
+        stats.samp <- f.sumstats(seqcom.samp, traits)
+      } else {
+        stats.samp <- f.sumstats(seqcom.samp, traits, var.add)
+      }
+    } else { # single community
+      m <- ifelse(add, migr(var.add[i,]), migr())[[1]]
+      comm.samp <- ecolottery::coalesc(J,
+                                       m = m,
+                                       filt = filt,
+                                       filt.vect = filt.vect,
+                                       add = add,
+                                       var.add = var.add,
+                                       pool = pool, traits = traits,
+                                       checks = F)
+      if(prop) {
+        # The result is a table with relative species proportions and trait values
+        tr <- tapply(comm.samp$com[,3], comm.samp$com[,2], mean)
+        comm.samp$com <- data.frame(sp=names(tr), 
+                                    cov=tapply(comm.samp$com[,3], comm.samp$com[,2], length)/J[[i]],
+                                    tr=tr)
+      }
+      if (length(formals(f.sumstats)) == 1) {
+        stats.samp <- f.sumstats(comm.samp$com)
+      } else if (length(formals(f.sumstats)) == 2) {
+        stats.samp <- f.sumstats(comm.samp$com, traits)
+      } else {
+        stats.samp <- f.sumstats(comm.samp$com, traits, var.add)
+      }
+    }
+    
+    return(list(sum.stats = stats.samp, param = params.samp.all))
   }
   
   # Calculation of summary statistics over the whole range of parameters
@@ -406,6 +410,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                                                           J=J, prop=prop, pool=pool,
                                                           filt.abc=filt.abc, filt.vect=filt.vect, 
                                                           migr.abc=migr.abc, size.abc=size.abc, 
+                                                          par.filt=par.filt, par.migr=par.migr, par.size=par.size,
                                                           add=add, var.add=var.add, f.sumstats=f.sumstats,
                                                           nb.sumstats=nb.sumstats, pkg=pkg))
   } else {
@@ -413,6 +418,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                                                      J=J, prop=prop, pool=pool,
                                                      filt.abc=filt.abc, filt.vect=filt.vect, 
                                                      migr.abc=migr.abc, size.abc=size.abc, 
+                                                     par.filt=par.filt, par.migr=par.migr, par.size=par.size,
                                                      add=add, var.add=var.add, f.sumstats=f.sumstats,
                                                      nb.sumstats=nb.sumstats, pkg=pkg))
   }
