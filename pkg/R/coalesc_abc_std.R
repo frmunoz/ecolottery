@@ -233,7 +233,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
       parCluster <- parallel::makeCluster(max(1, nb.core))
       # Export functions of the global environment, in case they are
       # needed during parallel computation
-      parallel::clusterExport(parCluster, as.character(utils::lsf.str(envir=.GlobalEnv)))
+      parallel::clusterExport(parCluster, 
+                              as.character(utils::lsf.str(envir=.GlobalEnv)))
     }
   }
   
