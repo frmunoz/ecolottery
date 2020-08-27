@@ -375,7 +375,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
         stats.samp <- f.sumstats(seqcom.samp, traits, var.add)
       }
     } else { # single community
-      m <- ifelse(add, migr(var.add[i,]), migr())[[1]]
+      m <- ifelse(add, migr(var.add), migr())[[1]]
       comm.samp <- ecolottery::coalesc(J,
                                        m = m,
                                        filt = filt,
