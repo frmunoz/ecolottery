@@ -31,15 +31,14 @@ Imports:
     EasyABC,
     lazyeval,
     moments,
+    pbapply,
     Rcpp
 Suggests:
     ape,
-    basicPlotteR,
     dplyr,
     e1071,
     changepoint,
     knitr,
-    pbapply,
     picante,
     RColorBrewer,
     reshape,
