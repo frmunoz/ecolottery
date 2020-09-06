@@ -245,7 +245,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   # Function to perform simulations and calculate summary statistics
   summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, filt.vect, migr.abc, 
                        size.abc, par.filt, par.migr, par.size, add, var.add, 
-                       f.sumstats, nb.sumstats, pkg) {
+                       f.sumstats, nb.sumstats, pkg, nb.samp, parallel) {
       
     params.samp <- unlist(lapply(prior,function(x) x[j]))
     stats.samp <- NA
@@ -403,19 +403,40 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
       }
     }
     
+    if(!parallel & requireNamespace("basicPlotteR", quietly = TRUE)) {
+      basicPlotteR::progress(j, nb.samp)
+    }
+    
     return(list(sum.stats = stats.samp, param = params.samp.all))
   }
   
+  # Raw evaluation of simulation time for a single set of parameter values
+  # Too much imprecise. Not considered at the time
+  #t.sumcalc <- system.time(summCalc(1, multi=multi, traits=traits, nb.com=nb.com, prior=prior,
+  #                                  J=J, prop=prop, pool=pool,
+  #                                  filt.abc=filt.abc, filt.vect=filt.vect, 
+  #                                  migr.abc=migr.abc, size.abc=size.abc, 
+  #                                  par.filt=par.filt, par.migr=0.5, par.size=par.size,
+  #                                  add=add, var.add=var.add, f.sumstats=f.sumstats,
+  #                                  nb.sumstats=nb.sumstats, pkg=pkg, nb.samp=nb.samp))[3]
+  #if (parallel) t.sumcalc <- t.sumcalc*nb.samp/nb.core
+  #else t.sumcalc <- t.sumcalc*nb.samp
+  #t.sumcalc.h <- floor(t.sumcalc/3600)
+  #t.sumcalc.m <- floor((t.sumcalc-3600*t.sumcalc.h)/60)
+  #t.sumcalc.s <- floor(t.sumcalc-3600*t.sumcalc.h-60*t.sumcalc.m)
+  #if(nb.samp >= 10)
+  #  print(paste("Raw estimation of simulation time:", t.sumcalc.h, "hours", t.sumcalc.m, "minutes", t.sumcalc.s, "seconds", sep=" "))
+  
   # Calculation of summary statistics over the whole range of parameters
   if (parallel) {
-    err.chk <- try(models <- parallel::parLapply(parCluster, 1:nb.samp,
-                                                 summCalc, multi=multi, traits=traits, nb.com=nb.com, prior=prior,
+     err.chk <- try(models <- pbapply::pblapply(cl = parCluster, X = 1:nb.samp,
+                                                 FUN = summCalc, multi=multi, traits=traits, nb.com=nb.com, prior=prior,
                                                           J=J, prop=prop, pool=pool,
                                                           filt.abc=filt.abc, filt.vect=filt.vect, 
                                                           migr.abc=migr.abc, size.abc=size.abc, 
                                                           par.filt=par.filt, par.migr=par.migr, par.size=par.size,
                                                           add=add, var.add=var.add, f.sumstats=f.sumstats,
-                                                          nb.sumstats=nb.sumstats, pkg=pkg))
+                                                          nb.sumstats=nb.sumstats, pkg=pkg, nb.samp=nb.samp, parallel=parallel))
   } else {
     models <- lapply(1:nb.samp, function(x) summCalc(x, multi=multi, traits=traits, nb.com=nb.com, prior=prior,
                                                      J=J, prop=prop, pool=pool,
@@ -423,7 +444,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                                                      migr.abc=migr.abc, size.abc=size.abc, 
                                                      par.filt=par.filt, par.migr=par.migr, par.size=par.size,
                                                      add=add, var.add=var.add, f.sumstats=f.sumstats,
-                                                     nb.sumstats=nb.sumstats, pkg=pkg))
+                                                     nb.sumstats=nb.sumstats, pkg=pkg, nb.samp=nb.samp, parallel=parallel))
   }
   
   if (parallel) {
