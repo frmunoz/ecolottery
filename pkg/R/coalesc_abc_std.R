@@ -403,8 +403,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
       }
     }
     
-    if(!parallel & requireNamespace("basicPlotteR", quietly = TRUE)) {
-      basicPlotteR::progress(j, nb.samp)
+    if(!parallel) {
+      utils::setTxtProgressBar(pb, j)
     }
     
     return(list(sum.stats = stats.samp, param = params.samp.all))
@@ -438,6 +438,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                                                           add=add, var.add=var.add, f.sumstats=f.sumstats,
                                                           nb.sumstats=nb.sumstats, pkg=pkg, nb.samp=nb.samp, parallel=parallel))
   } else {
+    # create progress bar
+    pb <- utils::txtProgressBar(min = 0, max = nb.samp, style = 3)
     models <- lapply(1:nb.samp, function(x) summCalc(x, multi=multi, traits=traits, nb.com=nb.com, prior=prior,
                                                      J=J, prop=prop, pool=pool,
                                                      filt.abc=filt.abc, filt.vect=filt.vect, 
@@ -445,6 +447,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                                                      par.filt=par.filt, par.migr=par.migr, par.size=par.size,
                                                      add=add, var.add=var.add, f.sumstats=f.sumstats,
                                                      nb.sumstats=nb.sumstats, pkg=pkg, nb.samp=nb.samp, parallel=parallel))
+    
+    close(pb)
   }
   
   if (parallel) {
