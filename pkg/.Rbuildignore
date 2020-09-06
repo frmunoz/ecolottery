@@ -9,3 +9,5 @@
 ^LICENSE\.md$
 ^appveyor\.yml$
 ^\.github$
+^packrat/
+^\.Rprofile$
