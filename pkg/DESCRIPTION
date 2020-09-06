@@ -34,10 +34,12 @@ Imports:
     Rcpp
 Suggests:
     ape,
+    basicPlotteR,
     dplyr,
     e1071,
     changepoint,
     knitr,
+    pbapply,
     picante,
     RColorBrewer,
     reshape,
