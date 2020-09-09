@@ -8,9 +8,9 @@ Coalescent-based simulation of ecological communities undergoing both neutral an
 Simulates the composition of a community based on immigration from a regional pool, habitat filtering depending on local environment and species traits, and local birth-death stochastic dynamics. 
 }
 \usage{
-coalesc(J, m = 1, theta = NULL, filt = NULL, filt.vect = F, add = FALSE,
-        var.add =NULL, pool = NULL, traits = NULL, Jpool = 50 * J, 
-        verbose = FALSE, checks = TRUE)
+coalesc(J, m = 1, theta = NULL, filt = NULL, filt.vect = F, m.replace = T,
+        add = FALSE, var.add =NULL, pool = NULL, traits = NULL, 
+        Jpool = 50 * J, verbose = FALSE, checks = TRUE)
 }
 \arguments{
  \item{J}{
@@ -21,6 +21,9 @@ migration rate (if \code{m = 1} the community is a subsample of the regional poo
 }
  \item{theta}{
 parameter of neutral dynamics in the regional pool (used only if \code{pool=NULL}), it is the \dQuote{fundamental biodiversity number} (\eqn{\theta}).
+}
+\item{m.replace}{
+should the immigrants be drawn with replacement from the source pool. Default is \code{TRUE}.
 }
  \item{filt}{
 a function representing the effect of local habitat filtering. For an individual that displays the value(s)\code{t} of a single or several trait(s), \code{filt(t)} represents the probability that the individual enters the local community. If \code{filt = NULL}, \code{coalesc()} provides a neutral community.

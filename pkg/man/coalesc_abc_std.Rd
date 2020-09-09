@@ -15,18 +15,18 @@
 }
 \usage{
   coalesc_abc_std(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-  f.sumstats, filt.abc = NULL, filt.vect = F, migr.abc = NULL, size.abc = NULL, 
-  add = F, var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
-  par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = F, 
-  theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
+  f.sumstats, filt.abc = NULL, filt.vect = F, migr.abc = NULL, m.replace = T,
+  size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
+  par.migr = NULL, par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, 
+  svd = F, theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, 
   tol = NULL, pkg = NULL, method.abc = "rejection")
   
   do.simul.coalesc(J, pool = NULL, multi = "single", prop = F, nb.com = NULL, 
   traits = NULL, f.sumstats = NULL, nb.sumstats = NULL, filt.abc = NULL, 
-  filt.vect = F, migr.abc = NULL, size.abc = NULL, add = F, var.add = NULL, 
-  params = NULL, par.filt = NULL, par.migr = NULL, par.size = NULL, constr = NULL, 
-  dim.pca = NULL, svd = F,  theta.max = NULL, nb.samp = 10^6, parallel = TRUE, 
-  nb.core = NULL, pkg = NULL)
+  filt.vect = F, migr.abc = NULL, m.replace = T, size.abc = NULL, add = F, 
+  var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, par.size = NULL,
+  constr = NULL, dim.pca = NULL, svd = F,  theta.max = NULL, nb.samp = 10^6, 
+  parallel = TRUE, nb.core = NULL, pkg = NULL)
   
   generate_prior(pool = NULL, prop = F, constr = NULL, params = NULL, 
   par.filt = NULL, par.migr = NULL, par.size = NULL, theta.max = NULL, nb.samp = 10^6)
@@ -108,6 +108,9 @@
     a function defining immigration probability in local communities. It can be a function of 
     environmental variables defined in \code{var.add} and of parameters to be estimated.
   }
+  \item{m.replace}{
+should the immigrants be drawn with replacement from the source pool. Default is \code{TRUE}.
+}
   \item{size.abc}{
     a function defining local community sizes. It can be used when \code{prop = T}.
     It can be a function of environmental variables defined in \code{var.add} and of 

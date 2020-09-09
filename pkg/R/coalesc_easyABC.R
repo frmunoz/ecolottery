@@ -1,10 +1,10 @@
 coalesc_easyABC <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-                            f.sumstats, filt.abc = NULL, filt.vect = F, migr.abc = NULL, size.abc = NULL, 
-                            add = F, var.add = NULL, params = NULL, par.filt = NULL, par.migr = NULL, 
-                            par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = F, theta.max = NULL, 
-                            nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
-                            type = NULL, method.seq = "Lenormand", method.mcmc = "Marjoram_original", method.abc = "rejection",
-                            alpha = 0.5) 
+                            f.sumstats, filt.abc = NULL, filt.vect = F, migr.abc = NULL, m.replace = T,
+                            size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
+                            par.migr = NULL, par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, svd = F, 
+                            theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, tol = NULL, pkg = NULL, 
+                            type = NULL, method.seq = "Lenormand", method.mcmc = "Marjoram_original", 
+                            method.abc = "rejection", alpha = 0.5) 
 {
   if(!is.null(migr.abc) | !is.null(size.abc)) {
     migr.abc <- NULL
@@ -150,13 +150,14 @@ coalesc_easyABC <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
     }
   }
   
-  coalesc_model <- function(par, traits, prop, J, pool, filt.abc, filt.vect, f.sumstats, 
-                            parallel) {
+  coalesc_model <- function(par, traits, prop, J, pool, filt.abc, filt.vect, m.replace,
+                            f.sumstats, parallel) {
     stats.samp <- NA
     try({
       if(is.null(filt.abc)){
         if(!prop){
           comm.samp <- coalesc(J, m = par[length(par)], filt = NULL,
+                               m.replace = m.replace,
                                add = F,  var.add = NULL, pool = pool, 
                                traits = NULL,
                                checks = F)
@@ -171,7 +172,7 @@ coalesc_easyABC <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
           if(parallel){
             set.seed(par[1])
             comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(x, par[2:(length(par)-1)]),
-                                 filt.vect = filt.vect,
+                                 filt.vect = filt.vect, m.replace = m.replace,
                                  add = F,  var.add = NULL, pool = pool, 
                                  traits = NULL, Jpool = 50 * J, verbose = FALSE, checks = F)
             if (length(formals(f.sumstats))==1) {
@@ -180,7 +181,7 @@ coalesc_easyABC <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
               stats.samp <- as.vector(f.sumstats(comm.samp$com, traits))
             }} else {
               comm.samp <- coalesc(J, m = par[length(par)], filt = function(x) filt.abc(x, par[1:(length(par)-1)]),
-                                   filt.vect = filt.vect,
+                                   filt.vect = filt.vect, m.replace = m.replace,
                                    add = F,  var.add = NULL, pool = pool, 
                                    traits = NULL, checks = F)
               if (length(formals(f.sumstats))==1) {
@@ -193,7 +194,7 @@ coalesc_easyABC <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
           comm.samp <- coalesc(
             par[length(par)], m = par[length(par)-1], 
             filt = function(x) filt.abc(x, par[-((length(par)-1):length(par))]),
-            filt.vect = filt.vect,
+            filt.vect = filt.vect, m.replace = m.replace,
             pool = pool, traits = traits, checks = F)
           comm.samp$com <- t(table(comm.samp$com[,2])/par[length(par)])
         }
@@ -225,7 +226,7 @@ coalesc_easyABC <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
         method              = method.seq, 
         model               = function(x) {
           coalesc_model(x, traits, prop, J, pool, filt.abc, 
-                        filt.vect, f.sumstats, parallel)
+                        filt.vect, m.replace, f.sumstats, parallel)
         },
         prior               = prior, 
         nb_simul            = nb.samp,
@@ -239,8 +240,8 @@ coalesc_easyABC <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
       tol_tab <- c(tol,tol/2,tol/5)
       res.abc <- EasyABC::ABC_sequential(method=method.seq,
                                          model=function(par) coalesc_model(par, traits, prop, 
-                                                                           J, pool, filt.abc, 
-                                                                           filt.vect, f.sumstats, parallel),
+                                                                           J, pool, filt.abc, filt.vect,
+                                                                           m.replace, f.sumstats, parallel),
                                          prior=prior,
                                          nb_simul=nb.samp, 
                                          summary_stat_target=stats.obs,
@@ -250,7 +251,8 @@ coalesc_easyABC <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
     } else if(method.seq=="Drovandi") 
     {stop("Drovandi method not implemented - ongoing work", call. = FALSE)
       res.abc <- EasyABC::ABC_sequential(method=method.seq, 
-                                         model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, filt.vect, f.sumstats, parallel),
+                                         model=function(par) coalesc_model(par, traits, prop, J, pool, filt.abc, 
+                                                                           filt.vect, m.replace, f.sumstats, parallel),
                                          prior=prior, 
                                          nb_simul=nb.samp, summary_stat_target=stats.obs, first_tolerance_level_auto = T, use_seed=F, 
                                          n_cluster=nb.core)
@@ -260,7 +262,7 @@ coalesc_easyABC <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
   { if(method.mcmc == "Marjoram_original"){
     res.abc <- EasyABC::ABC_mcmc(
       method=method.mcmc, 
-      model=function(x) coalesc_model(x, traits, prop, J, pool,filt.abc, filt.vect, f.sumstats, parallel),
+      model=function(x) coalesc_model(x, traits, prop, J, pool, filt.abc, filt.vect, m.replace, f.sumstats, parallel),
       prior=prior, 
       summary_stat_target=stats.obs,
       n_cluster=nb.core,

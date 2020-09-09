@@ -1,5 +1,5 @@
 coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, traits = NULL,
-                            f.sumstats, filt.abc = NULL, filt.vect = F, migr.abc = NULL, 
+                            f.sumstats, filt.abc = NULL, filt.vect = F, migr.abc = NULL, m.replace = T, 
                             size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
                             par.migr = NULL, par.size = NULL, constr = NULL, scale = F, dim.pca = NULL, 
                             svd = F, theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL,
@@ -76,8 +76,8 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
   
   # Community simulation
   sim <- do.simul.coalesc(J, pool, multi, prop, nb.com, traits, f.sumstats, nb.sumstats, filt.abc,
-                          filt.vect, migr.abc, size.abc, add, var.add, params, par.filt, par.migr, par.size, 
-                          constr, dim.pca, svd, theta.max, nb.samp, parallel, nb.core, pkg)
+                          filt.vect, migr.abc, m.replace, size.abc, add, var.add, params, par.filt, 
+                          par.migr, par.size, constr, dim.pca, svd, theta.max, nb.samp, parallel, nb.core, pkg)
   
   if(sum(sim$sel.ss)!=length(stats.obs))
   {
@@ -196,9 +196,10 @@ coalesc_abc_std <- function(comm.obs, pool = NULL, multi = "single", prop = F, t
 
 do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com = NULL,
                              traits = NULL, f.sumstats = NULL, nb.sumstats = NULL, filt.abc = NULL, filt.vect = F, 
-                             migr.abc = NULL, size.abc = NULL, add = F, var.add = NULL, params = NULL, par.filt = NULL, 
-                             par.migr = NULL, par.size = NULL, constr = NULL, dim.pca = NULL, svd = F, 
-                             theta.max = NULL, nb.samp = 10^6, parallel = TRUE, nb.core = NULL, pkg = NULL) 
+                             migr.abc = NULL, m.replace = T, size.abc = NULL, add = F, var.add = NULL, 
+                             params = NULL, par.filt = NULL, par.migr = NULL, par.size = NULL, constr = NULL, 
+                             dim.pca = NULL, svd = F, theta.max = NULL, nb.samp = 10^6, parallel = TRUE, 
+                             nb.core = NULL, pkg = NULL) 
 {
   
   if (!requireNamespace("parallel", quietly = TRUE) & parallel) {
@@ -243,8 +244,8 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                           theta.max, nb.samp)
   
   # Function to perform simulations and calculate summary statistics
-  summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, filt.vect, migr.abc, 
-                       size.abc, par.filt, par.migr, par.size, add, var.add, 
+  summCalc <- function(j, multi, traits, nb.com, prior, J, prop, pool, filt.abc, filt.vect, 
+                       migr.abc, m.replace, size.abc, par.filt, par.migr, par.size, add, var.add, 
                        f.sumstats, nb.sumstats, pkg, nb.samp, parallel) {
       
     params.samp <- unlist(lapply(prior,function(x) x[j]))
@@ -322,6 +323,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
           comm.samp <- ecolottery::coalesc(J.loc, m = m,
                                            filt = filt,
                                            filt.vect = filt.vect,
+                                           m.replace = m.replace,
                                            add = add,
                                            var.add = var.add[i,],
                                            pool = pool.loc, traits = traits,
@@ -358,6 +360,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                                                   m = m,
                                                   filt = filt,
                                                   filt.vect = filt.vect,
+                                                  m.replace = m.replace,
                                                   add = add,
                                                   var.add = var.add[i,],
                                                   pool = pool.loc, traits = traits, checks = F)$com
@@ -383,6 +386,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                                        m = m,
                                        filt = filt,
                                        filt.vect = filt.vect,
+                                       m.replace = m.replace,
                                        add = add,
                                        var.add = var.add,
                                        pool = pool, traits = traits,
@@ -433,7 +437,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
                                                  FUN = summCalc, multi=multi, traits=traits, nb.com=nb.com, prior=prior,
                                                           J=J, prop=prop, pool=pool,
                                                           filt.abc=filt.abc, filt.vect=filt.vect, 
-                                                          migr.abc=migr.abc, size.abc=size.abc, 
+                                                          migr.abc=migr.abc, m.replace=m.replace, size.abc=size.abc, 
                                                           par.filt=par.filt, par.migr=par.migr, par.size=par.size,
                                                           add=add, var.add=var.add, f.sumstats=f.sumstats,
                                                           nb.sumstats=nb.sumstats, pkg=pkg, nb.samp=nb.samp, parallel=parallel))
@@ -443,7 +447,7 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
     models <- lapply(1:nb.samp, function(x) summCalc(x, multi=multi, traits=traits, nb.com=nb.com, prior=prior,
                                                      J=J, prop=prop, pool=pool,
                                                      filt.abc=filt.abc, filt.vect=filt.vect, 
-                                                     migr.abc=migr.abc, size.abc=size.abc, 
+                                                     migr.abc=migr.abc, m.replace = m.replace, size.abc=size.abc, 
                                                      par.filt=par.filt, par.migr=par.migr, par.size=par.size,
                                                      add=add, var.add=var.add, f.sumstats=f.sumstats,
                                                      nb.sumstats=nb.sumstats, pkg=pkg, nb.samp=nb.samp, parallel=parallel))

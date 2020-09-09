@@ -1,5 +1,5 @@
-coalesc <- function(J, m = 1, theta = NULL, filt = NULL, filt.vect = F, add = FALSE,
-                    var.add = NULL, pool = NULL, traits = NULL, Jpool = 50*J,
+coalesc <- function(J, m = 1, theta = NULL, filt = NULL, filt.vect = F, m.replace = T,
+                    add = FALSE, var.add = NULL, pool = NULL, traits = NULL, Jpool = 50*J,
                     verbose = FALSE, checks = TRUE) {
   
   if(checks)
@@ -216,7 +216,7 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, filt.vect = F, add = FA
   # If J = 1, the community is made of an individual drawn from the pool
   if (m == 0 | J == 1) {
     
-    migrant <- sample(1:nrow(pool), 1, prob = prob)
+    migrant <- sample(1:nrow(pool), 1, prob = prob, replace = m.replace)
     
     ind_com_traits <- t(apply(ind_com_traits, 1,
                               function(x) ind_pool_traits[migrant, ]))
@@ -246,11 +246,11 @@ coalesc <- function(J, m = 1, theta = NULL, filt = NULL, filt.vect = F, add = FA
   # Number of individuals taken from the regional pool
   com_species <- length(assign_com) 
  
-  if(com_species > sum(prob > 0)) {
+  if(!m.replace & com_species > sum(prob > 0)) {
     warning("Sampling with replacement from the pool", call. = FALSE)
     migrants <- sample(1:nrow(pool), com_species, replace = T, prob = prob)
   } else 
-    migrants <- sample(1:nrow(pool), com_species, prob = prob)
+    migrants <- sample(1:nrow(pool), com_species, replace = m.replace, prob = prob)
   
   # Assign individuals
   ind_com_lab[assign_com] <- pool[migrants[1:com_species], 1] 
