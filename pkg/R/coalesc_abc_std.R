@@ -473,16 +473,18 @@ do.simul.coalesc <- function(J, pool = NULL, multi = "single", prop = F, nb.com 
   rownames(params.sim) <- NULL
   colnames(params.sim) <- names(prior)
   
-  # Remove simulations for which some summary statistics are NA
-  #sel <- which(rowSums(is.na(stats)) == 0)
-  #params.sim <- params.sim[sel,]
-  #stats <- stats[sel,]
-  # Remove summary statistics with more than 50% NA
-  sel.ss <- colSums(is.na(stats))<nrow(stats)/2
-  # Remove rows with NA
-  sel.row <- rowSums(is.na(data.frame(stats[, sel.ss])))==0
-  stats.sel <- stats[sel.row, sel.ss, drop = FALSE]
-  params.sim.sel  <- params.sim[sel.row, , drop = FALSE]
+  if(!is.null(stats)) {
+    # Remove simulations for which some summary statistics are NA
+    #sel <- which(rowSums(is.na(stats)) == 0)
+    #params.sim <- params.sim[sel,]
+    #stats <- stats[sel,]
+    # Remove summary statistics with more than 50% NA
+    sel.ss <- colSums(is.na(stats))<nrow(stats)/2
+    # Remove rows with NA
+    sel.row <- rowSums(is.na(data.frame(stats[, sel.ss])))==0
+    stats.sel <- stats[sel.row, sel.ss, drop = FALSE]
+    params.sim.sel  <- params.sim[sel.row, , drop = FALSE]
+  } else stats.sel <- stats
   
   return(list(stats = stats.sel, params.sim = params.sim.sel, sel.ss=sel.ss))
 }
