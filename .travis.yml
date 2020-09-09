@@ -1,6 +1,6 @@
 language: r
 sudo: required
-dist: precise
+dist: xenial
 cache: packages
 warnings_are_errors: false
 
