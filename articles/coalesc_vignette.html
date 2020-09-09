@@ -85,7 +85,7 @@
       <h1 data-toc-skip>Appendix 1: basic functions and examples</h1>
                         <h4 class="author">François MUNOZ and Pierre DENELLE</h4>
             
-            <h4 class="date">2020-09-06</h4>
+            <h4 class="date">2020-09-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/frmunoz/ecolottery/blob/master/vignettes/coalesc_vignette.Rmd"><code>vignettes/coalesc_vignette.Rmd</code></a></small>
       <div class="hidden name"><code>coalesc_vignette.Rmd</code></div>
@@ -186,7 +186,7 @@ In the following example, the user provides a custom species pool including 500 
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="kw">abund2</span><span class="op">$</span><span class="kw">com</span><span class="op">$</span><span class="kw">relab</span>)
 </pre></div>
 <pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## 0.002000 0.002000 0.002000 0.003356 0.004000 0.012000</code></pre>
+## 0.002000 0.002000 0.002000 0.003185 0.004000 0.012000</code></pre>
 <div class="sourceCode" id="cb15"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(<span class="kw">abund2</span><span class="op">$</span><span class="kw">com</span><span class="op">$</span><span class="kw">relab</span>)
 </pre></div>
@@ -253,11 +253,11 @@ In the following example, the user provides a custom species pool including 500 
 <div class="sourceCode" id="cb23"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="kw">comm4b</span><span class="op">$</span><span class="kw">com</span>[, <span class="fl">3</span>])
 </pre></div>
-<pre><code>## [1] 0.1321504</code></pre>
+<pre><code>## [1] 0.1268257</code></pre>
 <div class="sourceCode" id="cb25"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="kw">comm4c</span><span class="op">$</span><span class="kw">com</span>[, <span class="fl">3</span>])
 </pre></div>
-<pre><code>## [1] 0.8630003</code></pre>
+<pre><code>## [1] 0.8639424</code></pre>
 <p>Different filtering functions can be designed to represent different types of environmental filtering. By analogy with selection regimes in evolutionary theory (Shipley 2013), we can define the outcome of directional and disruptive filtering functions.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit">
 <span class="co"># Directional environmental filtering toward t = 0</span>
@@ -328,11 +328,11 @@ In the following example, the user provides a custom species pool including 500 
 <th align="right">PIC.variance.Z</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="right">2.372806</td>
-<td align="right">0.0429596</td>
-<td align="right">47.6928</td>
+<td align="right">0.4353206</td>
+<td align="right">0.0379655</td>
+<td align="right">5.597743</td>
 <td align="right">0.001</td>
-<td align="right">-4.179866</td>
+<td align="right">-3.684698</td>
 </tr></tbody>
 </table>
 <p>We then simulate two communities related to this reference pool, one undergoing neutral dynamics, the other undergoing stabilizing environmental filtering. In the first case, any species of the reference pool can perform as well in the local community, and then the phylogenetic structure of the community should not be different from the structure of a random sample with same size from the reference pool. In the second case, environmental filtering limits the range of trait values in the community around an optimal value. Because more closely related species are more likely to have similar trait values in the reference pool, we then expect that the Mean Nearest Taxon Distance (MNTD) among coexisting species of the community is smaller than the average distance in the reference pool (Webb et al. 2002).</p>
@@ -377,23 +377,23 @@ In the following example, the user provides a custom species pool including 500 
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">183</td>
-<td align="right">0.0216674</td>
-<td align="right">0.0248327</td>
-<td align="right">0.0013607</td>
-<td align="right">19</td>
-<td align="right">-2.326287</td>
-<td align="right">0.019</td>
+<td align="right">188</td>
+<td align="right">0.0223628</td>
+<td align="right">0.0226298</td>
+<td align="right">0.0008848</td>
+<td align="right">336</td>
+<td align="right">-0.3017737</td>
+<td align="right">0.336</td>
 <td align="right">999</td>
 </tr>
 <tr class="even">
-<td align="right">32</td>
-<td align="right">0.0371010</td>
-<td align="right">0.1318937</td>
-<td align="right">0.0306897</td>
-<td align="right">1</td>
-<td align="right">-3.088749</td>
-<td align="right">0.001</td>
+<td align="right">18</td>
+<td align="right">0.0643427</td>
+<td align="right">0.2167746</td>
+<td align="right">0.0616037</td>
+<td align="right">4</td>
+<td align="right">-2.4743941</td>
+<td align="right">0.004</td>
 <td align="right">999</td>
 </tr>
 </tbody>
@@ -435,23 +435,23 @@ In the following example, the user provides a custom species pool including 500 
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">183</td>
-<td align="right">0.0216674</td>
-<td align="right">0.0247098</td>
-<td align="right">0.0013499</td>
-<td align="right">30</td>
-<td align="right">-2.253792</td>
-<td align="right">0.030</td>
+<td align="right">188</td>
+<td align="right">0.0223628</td>
+<td align="right">0.0226819</td>
+<td align="right">0.0008646</td>
+<td align="right">320</td>
+<td align="right">-0.3690727</td>
+<td align="right">0.320</td>
 <td align="right">999</td>
 </tr>
 <tr class="even">
-<td align="right">58</td>
-<td align="right">0.0509440</td>
-<td align="right">0.0724459</td>
-<td align="right">0.0134398</td>
-<td align="right">54</td>
-<td align="right">-1.599867</td>
-<td align="right">0.054</td>
+<td align="right">35</td>
+<td align="right">0.0598282</td>
+<td align="right">0.1208284</td>
+<td align="right">0.0291028</td>
+<td align="right">12</td>
+<td align="right">-2.0960266</td>
+<td align="right">0.012</td>
 <td align="right">999</td>
 </tr>
 </tbody>
@@ -480,20 +480,6 @@ In the following example, the user provides a custom species pool including 500 
                          pool = <span class="kw">pool</span>, filt = <span class="fu">function</span>(<span class="kw">x</span>) <span class="fu">filt_gaussian</span>(<span class="fl">0.5</span>,<span class="kw">x</span>))
 </pre></div>
 <pre><code>## Warning: Sampling with replacement from the pool
-
-## Warning: Sampling with replacement from the pool
-
-## Warning: Sampling with replacement from the pool
-
-## Warning: Sampling with replacement from the pool
-
-## Warning: Sampling with replacement from the pool
-
-## Warning: Sampling with replacement from the pool
-
-## Warning: Sampling with replacement from the pool
-
-## Warning: Sampling with replacement from the pool
 
 ## Warning: Sampling with replacement from the pool
 
@@ -3324,6 +3310,8 @@ In the following example, the user provides a custom species pool including 500 
 
 ## Warning: Sampling with replacement from the pool
 
+## Warning: Sampling with replacement from the pool
+
 ## Warning: Sampling with replacement from the pool</code></pre>
 <div class="sourceCode" id="cb44"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">final.limsim</span><span class="op">$</span><span class="kw">dist.t</span>, xlab = <span class="st">"Time"</span>, ylab = <span class="st">"Average distance to other individuals"</span>)
@@ -3368,7 +3356,7 @@ In the following example, the user provides a custom species pool including 500 
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.0.9000.</p>
 </div>
 
       </footer>

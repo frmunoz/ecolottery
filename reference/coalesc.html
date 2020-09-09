@@ -132,9 +132,9 @@
     <p>Simulates the composition of a community based on immigration from a regional pool, habitat filtering depending on local environment and species traits, and local birth-death stochastic dynamics.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>coalesc</span>(<span class='kw'>J</span>, m = <span class='fl'>1</span>, theta = <span class='kw'>NULL</span>, filt = <span class='kw'>NULL</span>, filt.vect = <span class='kw'>F</span>, add = <span class='fl'>FALSE</span>,
-        var.add =<span class='kw'>NULL</span>, pool = <span class='kw'>NULL</span>, traits = <span class='kw'>NULL</span>, Jpool = <span class='fl'>50</span> <span class='op'>*</span> <span class='kw'>J</span>, 
-        verbose = <span class='fl'>FALSE</span>, checks = <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>coalesc</span>(<span class='kw'>J</span>, m = <span class='fl'>1</span>, theta = <span class='kw'>NULL</span>, filt = <span class='kw'>NULL</span>, filt.vect = <span class='kw'>F</span>, m.replace = <span class='kw'>T</span>,
+        add = <span class='fl'>FALSE</span>, var.add =<span class='kw'>NULL</span>, pool = <span class='kw'>NULL</span>, traits = <span class='kw'>NULL</span>, 
+        Jpool = <span class='fl'>50</span> <span class='op'>*</span> <span class='kw'>J</span>, verbose = <span class='fl'>FALSE</span>, checks = <span class='fl'>TRUE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -150,6 +150,10 @@
     <tr>
       <th>theta</th>
       <td><p>parameter of neutral dynamics in the regional pool (used only if <code>pool=NULL</code>), it is the &#8220;fundamental biodiversity number&#8221; (\(\theta\)).</p></td>
+    </tr>
+    <tr>
+      <th>m.replace</th>
+      <td><p>should the immigrants be drawn with replacement from the source pool. Default is <code>TRUE</code>.</p></td>
     </tr>
     <tr>
       <th>filt</th>
@@ -254,9 +258,9 @@ See example below.</p>
 </div><div class='img'><img src='coalesc-6.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Mean trait values in communities reflect the influence of habitat filtering</span>
 <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='kw'>comm4a</span><span class='op'>$</span><span class='kw'>com</span>[, <span class='fl'>3</span>])
-</div><div class='output co'>#&gt; [1] 0.1334203</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='kw'>comm4b</span><span class='op'>$</span><span class='kw'>com</span>[, <span class='fl'>3</span>])
-</div><div class='output co'>#&gt; [1] 0.5028231</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='kw'>comm4c</span><span class='op'>$</span><span class='kw'>com</span>[, <span class='fl'>3</span>])
-</div><div class='output co'>#&gt; [1] 0.8803218</div><div class='input'>
+</div><div class='output co'>#&gt; [1] 0.1251756</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='kw'>comm4b</span><span class='op'>$</span><span class='kw'>com</span>[, <span class='fl'>3</span>])
+</div><div class='output co'>#&gt; [1] 0.4978791</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='kw'>comm4c</span><span class='op'>$</span><span class='kw'>com</span>[, <span class='fl'>3</span>])
+</div><div class='output co'>#&gt; [1] 0.871528</div><div class='input'>
 <span class='co'># Disruptive habitat filtering around t = 0.5</span>
 <span class='kw'>comm5</span> <span class='op'>&lt;-</span> <span class='fu'>coalesc</span>(<span class='kw'>J</span>, <span class='kw'>m</span>, filt = <span class='fu'>function</span>(<span class='kw'>x</span>) <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span>(<span class='fl'>0.5</span> <span class='op'>-</span> <span class='kw'>x</span>), pool = <span class='kw'>pool</span>)
 <span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>comm5</span>)
@@ -299,7 +303,7 @@ pool = <span class='kw'>pool</span>)
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.0.9000.</p>
 </div>
 
       </footer>

@@ -142,12 +142,13 @@
     </div>
 
     <pre class="usage"><span class='fu'>coalesc_abc</span>(<span class='kw'>comm.obs</span>, pool = <span class='kw'>NULL</span>, multi = <span class='st'>"single"</span>, prop = <span class='fl'>FALSE</span>, traits = <span class='kw'>NULL</span>, 
-  <span class='kw'>f.sumstats</span>, filt.abc = <span class='kw'>NULL</span>,  filt.vect = <span class='kw'>F</span>, migr.abc = <span class='kw'>NULL</span>, size.abc = <span class='kw'>NULL</span>, 
-  add = <span class='fl'>FALSE</span>, var.add = <span class='kw'>NULL</span>, params = <span class='kw'>NULL</span>, par.filt = <span class='kw'>NULL</span>, par.migr = <span class='kw'>NULL</span>, 
-  par.size = <span class='kw'>NULL</span>, constr = <span class='kw'>NULL</span>, scale = <span class='fl'>FALSE</span>, dim.pca = <span class='kw'>NULL</span>, svd = <span class='fl'>FALSE</span>, 
-  theta.max = <span class='kw'>NULL</span>, nb.samp = <span class='fl'>10</span><span class='op'>^</span><span class='fl'>6</span>, parallel = <span class='fl'>FALSE</span>, nb.core = <span class='kw'>NULL</span>, tol = <span class='kw'>NULL</span>, 
-  type = <span class='st'>"standard"</span>, method.seq = <span class='st'>"Lenormand"</span>, method.mcmc = <span class='st'>"Marjoram_original"</span>,
-  method.abc = <span class='st'>"rejection"</span>, alpha = <span class='fl'>0.5</span>, pkg = <span class='kw'>NULL</span>)
+  <span class='kw'>f.sumstats</span>, filt.abc = <span class='kw'>NULL</span>,  filt.vect = <span class='kw'>F</span>, migr.abc = <span class='kw'>NULL</span>, m.replace = <span class='fl'>TRUE</span>,
+  size.abc = <span class='kw'>NULL</span>, add = <span class='fl'>FALSE</span>, var.add = <span class='kw'>NULL</span>, params = <span class='kw'>NULL</span>, par.filt = <span class='kw'>NULL</span>, 
+  par.migr = <span class='kw'>NULL</span>, par.size = <span class='kw'>NULL</span>, constr = <span class='kw'>NULL</span>, scale = <span class='fl'>FALSE</span>, dim.pca = <span class='kw'>NULL</span>, 
+  svd = <span class='fl'>FALSE</span>, theta.max = <span class='kw'>NULL</span>, nb.samp = <span class='fl'>10</span><span class='op'>^</span><span class='fl'>6</span>, parallel = <span class='fl'>FALSE</span>, nb.core = <span class='kw'>NULL</span>,
+  tol = <span class='kw'>NULL</span>, type = <span class='st'>"standard"</span>, method.seq = <span class='st'>"Lenormand"</span>, 
+  method.mcmc = <span class='st'>"Marjoram_original"</span>, method.abc = <span class='st'>"rejection"</span>, alpha = <span class='fl'>0.5</span>, 
+  pkg = <span class='kw'>NULL</span>)
     
   <span class='fu'>initial_checks</span>(comm.obs = <span class='kw'>NULL</span>, pool = <span class='kw'>NULL</span>, multi = <span class='st'>"single"</span>, prop = <span class='kw'>F</span>, traits = <span class='kw'>NULL</span>, 
   f.sumstats = <span class='kw'>NULL</span>, filt.abc = <span class='kw'>NULL</span>, filt.vect = <span class='kw'>F</span>, migr.abc = <span class='kw'>NULL</span>, size.abc = <span class='kw'>NULL</span>, 
@@ -238,6 +239,10 @@
       <th>migr.abc</th>
       <td><p>a function defining immigration probability in local communities. It can be a function of 
     environmental variables defined in <code>var.add</code> and of parameters to be estimated.</p></td>
+    </tr>
+    <tr>
+      <th>m.replace</th>
+      <td><p>should the immigrants be drawn with replacement from the source pool. Default is <code>TRUE</code>.</p></td>
     </tr>
     <tr>
       <th>size.abc</th>
@@ -698,7 +703,7 @@ xlab = <span class='st'>"Expected migration value"</span>, ylab = <span class='s
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.0.9000.</p>
 </div>
 
       </footer>
