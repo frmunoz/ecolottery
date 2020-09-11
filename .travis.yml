@@ -6,6 +6,7 @@ warnings_are_errors: false
 
 apt_packages:
   - libgmp3-dev
+  - libmagick++-dev
 
 before_install:
   - cd pkg
