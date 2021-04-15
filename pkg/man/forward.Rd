@@ -29,14 +29,14 @@ get_number_of_gens(given_size, pool, traits = NULL, nbrep = 5, m = 1, theta = NU
                    plot_gens = FALSE)
 pick(com, d = 1, m = 1, theta = NULL, pool = NULL, prob.death = NULL,
      filt = NULL, filt.vect = F, limit.sim = NULL,  limit.intra = F, par.limit = 0.1, 
-     coeff.lim.sim = 1, type.filt = "immig", type.limit = "death", add = add, 
-     var.add = var.add, new.index = new.index, method.dist = "euclidean")
+     coeff.lim.sim = 1, type.filt = "immig", type.limit = "death", 
+     m.replace = T, add = F, var.add = NULL, new.index = 0, method.dist = "euclidean")
 pick.mutate(com, d = 1, mu = 0, new.index = 0)
 pick.immigrate(com, d = 1, m = 1, pool, prob.death = NULL, 
               filt = NULL, filt.vect = F, limit.sim = NULL,  limit.intra = F, 
               par.limit = 0.1, coeff.lim.sim = 1, 
-              type.filt = "immig", type.limit = "death", add = F, var.add = NULL,
-              method.dist = "euclidean")
+              type.filt = "immig", type.limit = "death", m.replace = T, 
+              add = F, var.add = NULL, method.dist = "euclidean")
 }
 
 \arguments{
