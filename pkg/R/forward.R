@@ -227,6 +227,7 @@ forward <- function(initial, m = 1, theta = NULL, d = 1, gens = 150, keep = FALS
                       par.limit = par.limit, 
                       coeff.lim.sim = coeff.lim.sim, 
                       type.filt = type.filt, type.limit = type.limit, 
+                      m.replace = m.replace,
                       add = add, var.add = var.add,
                       new.index = new.index,
                       method.dist = "euclidean")
@@ -295,7 +296,7 @@ pick <- function(com, d = 1, m = 1, theta = NULL, pool = NULL, prob.death = NULL
                  filt = NULL, filt.vect = F, limit.sim = NULL, limit.intra = F, 
                  par.limit = 0.1, coeff.lim.sim = 1, 
                  type.filt = "immig", type.limit = "death", 
-                 add = add, var.add = var.add, new.index = new.index,
+                 m.replace = T, add = F, var.add = NULL, new.index = 0,
                  method.dist = "euclidean") {
   
   
@@ -320,8 +321,8 @@ pick <- function(com, d = 1, m = 1, theta = NULL, pool = NULL, prob.death = NULL
                           prob.death = prob.death, filt = filt, filt.vect = filt.vect, 
                           limit.sim = limit.sim, limit.intra = limit.intra, 
                           par.limit = par.limit, coeff.lim.sim = coeff.lim.sim, 
-                          type.filt = type.filt, type.limit = type.limit, 
-                          add = add, var.add = var.add,
+                          type.filt = type.filt, type.limit = type.limit,
+                          m.replace = m.replace, add = add, var.add = var.add,
                           method.dist = "euclidean"))
   }
 }
@@ -394,8 +395,8 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
                            prob.death = NULL, filt= NULL, filt.vect = F,
                            limit.sim = NULL, limit.intra = F, par.limit = 0.1,
                            coeff.lim.sim = 1, type.filt = "immig", 
-                           type.limit = "death", add = F, var.add = NULL, 
-                           method.dist = "euclidean") {
+                           type.limit = "death", m.replace = T, add = F,
+                           var.add = NULL, method.dist = "euclidean") {
   
   if (is.vector(com)) {
     # If community only defined by species names
