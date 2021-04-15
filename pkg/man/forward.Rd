@@ -24,7 +24,7 @@ gauss_limit(dist, par)
 get_number_of_gens(given_size, pool, traits = NULL, nbrep = 5, m = 1, theta = NULL,
                    d = 1, gens = NULL, filt = NULL,  limit.sim = NULL,
                    par.limit = 0.1, coeff.lim.sim = 1, type.filt = "immig", 
-                   type.limit = "death", add = F, var.add = NULL, 
+                   type.limit = "death", m.replace = T, add = F, var.add = NULL, 
                    prob.death = NULL, method.dist = "euclidean", 
                    plot_gens = FALSE)
 pick(com, d = 1, m = 1, theta = NULL, pool = NULL, prob.death = NULL,
@@ -124,6 +124,9 @@ trait \code{t} enters the local community.
 }
  \item{filt.vect}{
 indicates whether the filtering function can be vectorized. It means that the function can take as input a vector of trait values and provide a vector of the corresponding weights.
+}
+ \item{m.replace}{
+should the immigrants be drawn with replacement from the source pool. Default is \code{TRUE}.
 }
  \item{add}{
 indicates if additional variables must be passed to \code{filt}. It can be, for instance, environmental data conditioning the trait-based filtering in the community. Default is FALSE.

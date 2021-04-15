@@ -3,7 +3,7 @@
 forward <- function(initial, m = 1, theta = NULL, d = 1, gens = 150, keep = FALSE,
                     pool = NULL, traits = NULL, filt = NULL, filt.vect = F,
                     limit.sim = NULL, limit.intra = F, par.limit = 0.1, coeff.lim.sim = 1, 
-                    type.filt = "immig", type.limit = "death", add = F, var.add = NULL,
+                    type.filt = "immig", type.limit = "death", m.replace = T, add = F, var.add = NULL,
                     prob.death = NULL, method.dist = "euclidean", checks = T, plot_gens = FALSE) {
   # The function will stop if niche - based dynamics is requested, but trait
   # information is missing in the local community
@@ -538,7 +538,7 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
     names(prob.death) <- com[, 1]      
     
     # Position of dead individuals in prob.death vector
-    if(d > sum(prob.death > 0)) {
+    if(d > sum(prob.death > 0)){
       warning("Sampling with replacement in local community (death)", call. = FALSE)
       died <- sample(J, d, replace = TRUE, prob = prob.death)
     } else 
@@ -593,12 +593,12 @@ pick.immigrate <- function(com, d = 1, m = 1, pool,
     }
     
     # Add new immigrated individual to community
-    if(J1 < sum(prob > 0)) {
+    if(J1 < sum(prob > 0) & !m.replace) {
       warning("Sampling with replacement from the pool", call. = FALSE)
       com <- rbind(com, pool[sample(1:nrow(pool), J1, replace = TRUE,
                                   prob = prob),])
     } else {
-      com <- rbind(com, pool[sample(1:nrow(pool), J1, replace = FALSE,
+      com <- rbind(com, pool[sample(1:nrow(pool), J1, replace = m.replace,
                                     prob = prob),])
     }
     
