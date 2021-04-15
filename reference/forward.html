@@ -47,6 +47,8 @@ generations." />
 
 
 
+
+
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
@@ -58,9 +60,18 @@ generations." />
 
 
 
+<!-- dependencies from examples -->
+
+
+  
+
+  
+
   </head>
 
   <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -81,12 +92,6 @@ generations." />
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -108,7 +113,7 @@ generations." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/frmunoz/ecolottery/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -136,28 +141,28 @@ community dynamics from a given initial composition, over a given number of
 generations.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>forward</span>(<span class='kw'>initial</span>, m = <span class='fl'>1</span>, theta = <span class='kw'>NULL</span>, d = <span class='fl'>1</span>, gens = <span class='fl'>150</span>, keep = <span class='fl'>FALSE</span>,
-        pool = <span class='kw'>NULL</span>, traits = <span class='kw'>NULL</span>, filt = <span class='kw'>NULL</span>, filt.vect = <span class='kw'>F</span>, limit.sim = <span class='kw'>NULL</span>,
-        limit.intra = <span class='kw'>F</span>, par.limit = <span class='fl'>0.1</span>, coeff.lim.sim = <span class='fl'>1</span>, 
-        type.filt = <span class='st'>"immig"</span>, type.limit = <span class='st'>"death"</span>, add = <span class='kw'>F</span>, var.add = <span class='kw'>NULL</span>, 
-        prob.death = <span class='kw'>NULL</span>, method.dist = <span class='st'>"euclidean"</span>, checks = <span class='kw'>T</span>, plot_gens = <span class='fl'>FALSE</span>)
-<span class='fu'>gauss_limit</span>(<span class='kw'>dist</span>, <span class='kw'>par</span>)
-<span class='fu'>get_number_of_gens</span>(<span class='kw'>given_size</span>, <span class='kw'>pool</span>, traits = <span class='kw'>NULL</span>, nbrep = <span class='fl'>5</span>, m = <span class='fl'>1</span>, theta = <span class='kw'>NULL</span>,
-                   d = <span class='fl'>1</span>, gens = <span class='kw'>NULL</span>, filt = <span class='kw'>NULL</span>,  limit.sim = <span class='kw'>NULL</span>,
-                   par.limit = <span class='fl'>0.1</span>, coeff.lim.sim = <span class='fl'>1</span>, type.filt = <span class='st'>"immig"</span>, 
-                   type.limit = <span class='st'>"death"</span>, add = <span class='kw'>F</span>, var.add = <span class='kw'>NULL</span>, 
-                   prob.death = <span class='kw'>NULL</span>, method.dist = <span class='st'>"euclidean"</span>, 
-                   plot_gens = <span class='fl'>FALSE</span>)
-<span class='fu'>pick</span>(<span class='kw'>com</span>, d = <span class='fl'>1</span>, m = <span class='fl'>1</span>, theta = <span class='kw'>NULL</span>, pool = <span class='kw'>NULL</span>, prob.death = <span class='kw'>NULL</span>,
-     filt = <span class='kw'>NULL</span>, filt.vect = <span class='kw'>F</span>, limit.sim = <span class='kw'>NULL</span>,  limit.intra = <span class='kw'>F</span>, par.limit = <span class='fl'>0.1</span>, 
-     coeff.lim.sim = <span class='fl'>1</span>, type.filt = <span class='st'>"immig"</span>, type.limit = <span class='st'>"death"</span>, add = <span class='kw'>add</span>, 
-     var.add = <span class='kw'>var.add</span>, new.index = <span class='kw'>new.index</span>, method.dist = <span class='st'>"euclidean"</span>)
-<span class='fu'>pick.mutate</span>(<span class='kw'>com</span>, d = <span class='fl'>1</span>, mu = <span class='fl'>0</span>, new.index = <span class='fl'>0</span>)
-<span class='fu'>pick.immigrate</span>(<span class='kw'>com</span>, d = <span class='fl'>1</span>, m = <span class='fl'>1</span>, <span class='kw'>pool</span>, prob.death = <span class='kw'>NULL</span>, 
-              filt = <span class='kw'>NULL</span>, filt.vect = <span class='kw'>F</span>, limit.sim = <span class='kw'>NULL</span>,  limit.intra = <span class='kw'>F</span>, 
-              par.limit = <span class='fl'>0.1</span>, coeff.lim.sim = <span class='fl'>1</span>, 
-              type.filt = <span class='st'>"immig"</span>, type.limit = <span class='st'>"death"</span>, add = <span class='kw'>F</span>, var.add = <span class='kw'>NULL</span>,
-              method.dist = <span class='st'>"euclidean"</span>)</pre>
+    <pre class="usage"><span class='fu'>forward</span><span class='op'>(</span><span class='va'>initial</span>, m <span class='op'>=</span> <span class='fl'>1</span>, theta <span class='op'>=</span> <span class='cn'>NULL</span>, d <span class='op'>=</span> <span class='fl'>1</span>, gens <span class='op'>=</span> <span class='fl'>150</span>, keep <span class='op'>=</span> <span class='cn'>FALSE</span>,
+        pool <span class='op'>=</span> <span class='cn'>NULL</span>, traits <span class='op'>=</span> <span class='cn'>NULL</span>, filt <span class='op'>=</span> <span class='cn'>NULL</span>, filt.vect <span class='op'>=</span> <span class='cn'>F</span>, limit.sim <span class='op'>=</span> <span class='cn'>NULL</span>,
+        limit.intra <span class='op'>=</span> <span class='cn'>F</span>, par.limit <span class='op'>=</span> <span class='fl'>0.1</span>, coeff.lim.sim <span class='op'>=</span> <span class='fl'>1</span>, 
+        type.filt <span class='op'>=</span> <span class='st'>"immig"</span>, type.limit <span class='op'>=</span> <span class='st'>"death"</span>, add <span class='op'>=</span> <span class='cn'>F</span>, var.add <span class='op'>=</span> <span class='cn'>NULL</span>, 
+        prob.death <span class='op'>=</span> <span class='cn'>NULL</span>, method.dist <span class='op'>=</span> <span class='st'>"euclidean"</span>, checks <span class='op'>=</span> <span class='cn'>T</span>, plot_gens <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='fu'>gauss_limit</span><span class='op'>(</span><span class='va'>dist</span>, <span class='va'>par</span><span class='op'>)</span>
+<span class='fu'>get_number_of_gens</span><span class='op'>(</span><span class='va'>given_size</span>, <span class='va'>pool</span>, traits <span class='op'>=</span> <span class='cn'>NULL</span>, nbrep <span class='op'>=</span> <span class='fl'>5</span>, m <span class='op'>=</span> <span class='fl'>1</span>, theta <span class='op'>=</span> <span class='cn'>NULL</span>,
+                   d <span class='op'>=</span> <span class='fl'>1</span>, gens <span class='op'>=</span> <span class='cn'>NULL</span>, filt <span class='op'>=</span> <span class='cn'>NULL</span>,  limit.sim <span class='op'>=</span> <span class='cn'>NULL</span>,
+                   par.limit <span class='op'>=</span> <span class='fl'>0.1</span>, coeff.lim.sim <span class='op'>=</span> <span class='fl'>1</span>, type.filt <span class='op'>=</span> <span class='st'>"immig"</span>, 
+                   type.limit <span class='op'>=</span> <span class='st'>"death"</span>, m.replace <span class='op'>=</span> <span class='cn'>T</span>, add <span class='op'>=</span> <span class='cn'>F</span>, var.add <span class='op'>=</span> <span class='cn'>NULL</span>, 
+                   prob.death <span class='op'>=</span> <span class='cn'>NULL</span>, method.dist <span class='op'>=</span> <span class='st'>"euclidean"</span>, 
+                   plot_gens <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='fu'>pick</span><span class='op'>(</span><span class='va'>com</span>, d <span class='op'>=</span> <span class='fl'>1</span>, m <span class='op'>=</span> <span class='fl'>1</span>, theta <span class='op'>=</span> <span class='cn'>NULL</span>, pool <span class='op'>=</span> <span class='cn'>NULL</span>, prob.death <span class='op'>=</span> <span class='cn'>NULL</span>,
+     filt <span class='op'>=</span> <span class='cn'>NULL</span>, filt.vect <span class='op'>=</span> <span class='cn'>F</span>, limit.sim <span class='op'>=</span> <span class='cn'>NULL</span>,  limit.intra <span class='op'>=</span> <span class='cn'>F</span>, par.limit <span class='op'>=</span> <span class='fl'>0.1</span>, 
+     coeff.lim.sim <span class='op'>=</span> <span class='fl'>1</span>, type.filt <span class='op'>=</span> <span class='st'>"immig"</span>, type.limit <span class='op'>=</span> <span class='st'>"death"</span>, 
+     m.replace <span class='op'>=</span> <span class='cn'>T</span>, add <span class='op'>=</span> <span class='cn'>F</span>, var.add <span class='op'>=</span> <span class='cn'>NULL</span>, new.index <span class='op'>=</span> <span class='fl'>0</span>, method.dist <span class='op'>=</span> <span class='st'>"euclidean"</span><span class='op'>)</span>
+<span class='fu'>pick.mutate</span><span class='op'>(</span><span class='va'>com</span>, d <span class='op'>=</span> <span class='fl'>1</span>, mu <span class='op'>=</span> <span class='fl'>0</span>, new.index <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span>
+<span class='fu'>pick.immigrate</span><span class='op'>(</span><span class='va'>com</span>, d <span class='op'>=</span> <span class='fl'>1</span>, m <span class='op'>=</span> <span class='fl'>1</span>, <span class='va'>pool</span>, prob.death <span class='op'>=</span> <span class='cn'>NULL</span>, 
+              filt <span class='op'>=</span> <span class='cn'>NULL</span>, filt.vect <span class='op'>=</span> <span class='cn'>F</span>, limit.sim <span class='op'>=</span> <span class='cn'>NULL</span>,  limit.intra <span class='op'>=</span> <span class='cn'>F</span>, 
+              par.limit <span class='op'>=</span> <span class='fl'>0.1</span>, coeff.lim.sim <span class='op'>=</span> <span class='fl'>1</span>, 
+              type.filt <span class='op'>=</span> <span class='st'>"immig"</span>, type.limit <span class='op'>=</span> <span class='st'>"death"</span>, m.replace <span class='op'>=</span> <span class='cn'>T</span>, 
+              add <span class='op'>=</span> <span class='cn'>F</span>, var.add <span class='op'>=</span> <span class='cn'>NULL</span>, method.dist <span class='op'>=</span> <span class='st'>"euclidean"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -267,6 +272,10 @@ trait <code>t</code> enters the local community.</p></td>
       <td><p>indicates whether the filtering function can be vectorized. It means that the function can take as input a vector of trait values and provide a vector of the corresponding weights.</p></td>
     </tr>
     <tr>
+      <th>m.replace</th>
+      <td><p>should the immigrants be drawn with replacement from the source pool. Default is <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
       <th>add</th>
       <td><p>indicates if additional variables must be passed to <code>filt</code>. It can be, for instance, environmental data conditioning the trait-based filtering in the community. Default is FALSE.</p></td>
     </tr>
@@ -370,89 +379,89 @@ MacArthur, R., Levins, R., 1967. The limiting similarity, convergence, and diver
     <p>F. Munoz, derived from the <code>untb</code> function of R. Hankin.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># Initial community composed of 10 species each including 10 individuals</span>
-<span class='kw'>initial1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span>(<span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>), each = <span class='fl'>10</span>)
+<span class='va'>initial1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span><span class='op'>)</span>, each <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
 
 <span class='co'># Simulation of speciation and drift dynamics over 1000 time steps</span>
-<span class='kw'>final1</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span>(initial = <span class='kw'>initial1</span>, theta = <span class='fl'>50</span>, gens = <span class='fl'>1000</span>)
+<span class='va'>final1</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span><span class='op'>(</span>initial <span class='op'>=</span> <span class='va'>initial1</span>, theta <span class='op'>=</span> <span class='fl'>50</span>, gens <span class='op'>=</span> <span class='fl'>1000</span><span class='op'>)</span>
 <span class='co'># The final community includes new species (by default names begins with "new")</span>
-<span class='kw'>final1</span><span class='op'>$</span><span class='kw'>com</span><span class='op'>$</span><span class='kw'>sp</span> <span class='co'># includes new species generated by speciation events</span>
+<span class='va'>final1</span><span class='op'>$</span><span class='va'>com</span><span class='op'>$</span><span class='va'>sp</span> <span class='co'># includes new species generated by speciation events</span>
 
 <span class='co'># A regional pool including 100 species each including 10 individuals</span>
-<span class='kw'>pool</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='st'>"pool.sp"</span>,<span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span>(<span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span>), sep=<span class='st'>""</span>), each = <span class='fl'>10</span>)
+<span class='va'>pool</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"pool.sp"</span>,<span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span><span class='op'>)</span>, sep<span class='op'>=</span><span class='st'>""</span><span class='op'>)</span>, each <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
 
 <span class='co'># Simulation of migration and drift dynamics over 1000 time steps</span>
-<span class='kw'>final2</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span>(initial = <span class='kw'>initial1</span>, m = <span class='fl'>0.1</span>, gens = <span class='fl'>1000</span>, pool = <span class='kw'>pool</span>)
+<span class='va'>final2</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span><span class='op'>(</span>initial <span class='op'>=</span> <span class='va'>initial1</span>, m <span class='op'>=</span> <span class='fl'>0.1</span>, gens <span class='op'>=</span> <span class='fl'>1000</span>, pool <span class='op'>=</span> <span class='va'>pool</span><span class='op'>)</span>
 <span class='co'># The final community includes species that have immigrated from the pool</span>
-<span class='kw'>final2</span><span class='op'>$</span><span class='kw'>com</span><span class='op'>$</span><span class='kw'>sp</span> <span class='co'># includes new species that immigrated from the pool</span>
+<span class='va'>final2</span><span class='op'>$</span><span class='va'>com</span><span class='op'>$</span><span class='va'>sp</span> <span class='co'># includes new species that immigrated from the pool</span>
 
 <span class='co'># Initial community composed of 10 species each including 10 individuals, </span>
 <span class='co'># with trait information for niche-based dynamics</span>
-<span class='kw'>initial2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(ind = <span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span>, sp = <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span>(<span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>), each = <span class='fl'>10</span>), 
-                      trait = <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>100</span>), stringsAsFactors = <span class='kw'>F</span>)
+<span class='va'>initial2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>ind <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span>, sp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span><span class='op'>)</span>, each <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>, 
+                      trait <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>100</span><span class='op'>)</span>, stringsAsFactors <span class='op'>=</span> <span class='cn'>F</span><span class='op'>)</span>
 
 <span class='co'># Simulation of stabilizing hab. filtering around t = 0.5, over 2000 time steps</span>
-<span class='kw'>sigm</span> <span class='op'>&lt;-</span> <span class='fl'>0.1</span>
-<span class='kw'>filt_gaussian</span> <span class='op'>&lt;-</span> <span class='fu'>function</span>(<span class='kw'>t</span>,<span class='kw'>x</span>) <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='op'>-</span>(<span class='kw'>x</span> <span class='op'>-</span> <span class='kw'>t</span>)<span class='op'>^</span><span class='fl'>2</span><span class='op'>/</span>(<span class='fl'>2</span><span class='op'>*</span><span class='kw'>sigm</span><span class='op'>^</span><span class='fl'>2</span>))
+<span class='va'>sigm</span> <span class='op'>&lt;-</span> <span class='fl'>0.1</span>
+<span class='va'>filt_gaussian</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>t</span>,<span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='op'>-</span><span class='op'>(</span><span class='va'>x</span> <span class='op'>-</span> <span class='va'>t</span><span class='op'>)</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>/</span><span class='op'>(</span><span class='fl'>2</span><span class='op'>*</span><span class='va'>sigm</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
 <span class='co'># Filtering only plays only on immigration (default type.filt = "immig")</span>
-<span class='kw'>final3</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span>(initial = <span class='kw'>initial2</span>, m = <span class='fl'>0.1</span>, gens = <span class='fl'>2000</span>, pool = <span class='kw'>pool</span>, 
-                 filt = <span class='fu'>function</span>(<span class='kw'>x</span>) <span class='fu'>filt_gaussian</span>(<span class='fl'>0.5</span>,<span class='kw'>x</span>))
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>final3</span>) <span class='co'># trait distribution in final community</span>
+<span class='va'>final3</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span><span class='op'>(</span>initial <span class='op'>=</span> <span class='va'>initial2</span>, m <span class='op'>=</span> <span class='fl'>0.1</span>, gens <span class='op'>=</span> <span class='fl'>2000</span>, pool <span class='op'>=</span> <span class='va'>pool</span>, 
+                 filt <span class='op'>=</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'>filt_gaussian</span><span class='op'>(</span><span class='fl'>0.5</span>,<span class='va'>x</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span><span class='op'>(</span><span class='va'>final3</span><span class='op'>)</span> <span class='co'># trait distribution in final community</span>
 <span class='co'># Filtering also plays on local mortality and recruitment</span>
-<span class='kw'>final4</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span>(initial = <span class='kw'>initial2</span>, m = <span class='fl'>0.1</span>, gens = <span class='fl'>2000</span>, pool = <span class='kw'>pool</span>, 
-                 filt = <span class='fu'>function</span>(<span class='kw'>x</span>) <span class='fu'>filt_gaussian</span>(<span class='fl'>0.5</span>,<span class='kw'>x</span>), 
-                 type.filt = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"immig"</span>, <span class='st'>"death"</span>, <span class='st'>"loc.recr"</span>))
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>final4</span>) <span class='co'># Stronger convergence around 0.5 </span>
+<span class='va'>final4</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span><span class='op'>(</span>initial <span class='op'>=</span> <span class='va'>initial2</span>, m <span class='op'>=</span> <span class='fl'>0.1</span>, gens <span class='op'>=</span> <span class='fl'>2000</span>, pool <span class='op'>=</span> <span class='va'>pool</span>, 
+                 filt <span class='op'>=</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'>filt_gaussian</span><span class='op'>(</span><span class='fl'>0.5</span>,<span class='va'>x</span><span class='op'>)</span>, 
+                 type.filt <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"immig"</span>, <span class='st'>"death"</span>, <span class='st'>"loc.recr"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span><span class='op'>(</span><span class='va'>final4</span><span class='op'>)</span> <span class='co'># Stronger convergence around 0.5 </span>
 
 <span class='co'># Simulation of stabilizing hab. filtering with two traits</span>
-<span class='kw'>pool</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(ind=<span class='fl'>1</span><span class='op'>:</span><span class='fl'>10000</span>, sp=<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span><span class='op'>:</span><span class='fl'>500</span>, <span class='fl'>20</span>), tra1=<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>NA</span>, <span class='fl'>10000</span>), tra2=<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>NA</span>, <span class='fl'>10000</span>))
+<span class='va'>pool</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>ind<span class='op'>=</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10000</span>, sp<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>500</span>, <span class='fl'>20</span><span class='op'>)</span>, tra1<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>10000</span><span class='op'>)</span>, tra2<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>10000</span><span class='op'>)</span><span class='op'>)</span>
 <span class='co'># Trait values in the pool</span>
-<span class='kw'>t1.sp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>500</span>)
-<span class='kw'>t2.sp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>500</span>)
-<span class='kw'>pool</span>[, <span class='fl'>3</span>] <span class='op'>&lt;-</span> <span class='kw'>t1.sp</span>[<span class='kw'>pool</span>[,<span class='fl'>2</span>]]
-<span class='kw'>pool</span>[, <span class='fl'>4</span>] <span class='op'>&lt;-</span> <span class='kw'>t2.sp</span>[<span class='kw'>pool</span>[,<span class='fl'>2</span>]]
-<span class='kw'>initial3</span> <span class='op'>&lt;-</span> <span class='kw'>pool</span>[<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>1</span><span class='op'>:</span><span class='fl'>10000</span>, <span class='fl'>100</span>),]
+<span class='va'>t1.sp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>500</span><span class='op'>)</span>
+<span class='va'>t2.sp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>500</span><span class='op'>)</span>
+<span class='va'>pool</span><span class='op'>[</span>, <span class='fl'>3</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>t1.sp</span><span class='op'>[</span><span class='va'>pool</span><span class='op'>[</span>,<span class='fl'>2</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>pool</span><span class='op'>[</span>, <span class='fl'>4</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>t2.sp</span><span class='op'>[</span><span class='va'>pool</span><span class='op'>[</span>,<span class='fl'>2</span><span class='op'>]</span><span class='op'>]</span>
+<span class='va'>initial3</span> <span class='op'>&lt;-</span> <span class='va'>pool</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10000</span>, <span class='fl'>100</span><span class='op'>)</span>,<span class='op'>]</span>
 <span class='co'># Parameters of filtering for first trait</span>
-<span class='kw'>topt1</span> <span class='op'>&lt;-</span> <span class='fl'>0.25</span>
-<span class='kw'>sigm1</span> <span class='op'>&lt;-</span> <span class='fl'>0.1</span>
+<span class='va'>topt1</span> <span class='op'>&lt;-</span> <span class='fl'>0.25</span>
+<span class='va'>sigm1</span> <span class='op'>&lt;-</span> <span class='fl'>0.1</span>
 <span class='co'># Parameters of filtering for second trait</span>
-<span class='kw'>topt2</span> <span class='op'>&lt;-</span> <span class='fl'>0.75</span>
-<span class='kw'>sigm2</span> <span class='op'>&lt;-</span> <span class='fl'>0.2</span>
-<span class='kw'>filt_gaussian</span> <span class='op'>&lt;-</span> <span class='fu'>function</span>(<span class='kw'>x</span>) <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='op'>-</span>(<span class='kw'>x</span>[<span class='fl'>1</span>] <span class='op'>-</span> <span class='kw'>topt1</span>)<span class='op'>^</span><span class='fl'>2</span><span class='op'>/</span>(<span class='fl'>2</span><span class='op'>*</span><span class='kw'>sigm1</span><span class='op'>^</span><span class='fl'>2</span>)) <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='op'>-</span>(<span class='kw'>x</span>[<span class='fl'>2</span>] <span class='op'>-</span> <span class='kw'>topt2</span>)<span class='op'>^</span><span class='fl'>2</span><span class='op'>/</span>(<span class='fl'>2</span><span class='op'>*</span><span class='kw'>sigm2</span><span class='op'>^</span><span class='fl'>2</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='kw'>final5</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span>(initial = <span class='kw'>initial3</span>, m = <span class='fl'>0.1</span>, gens = <span class='fl'>2000</span>, pool = <span class='kw'>pool</span>, 
-                 filt = <span class='kw'>filt_gaussian</span>))
+<span class='va'>topt2</span> <span class='op'>&lt;-</span> <span class='fl'>0.75</span>
+<span class='va'>sigm2</span> <span class='op'>&lt;-</span> <span class='fl'>0.2</span>
+<span class='va'>filt_gaussian</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='op'>-</span><span class='op'>(</span><span class='va'>x</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span> <span class='op'>-</span> <span class='va'>topt1</span><span class='op'>)</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>/</span><span class='op'>(</span><span class='fl'>2</span><span class='op'>*</span><span class='va'>sigm1</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='op'>-</span><span class='op'>(</span><span class='va'>x</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span> <span class='op'>-</span> <span class='va'>topt2</span><span class='op'>)</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>/</span><span class='op'>(</span><span class='fl'>2</span><span class='op'>*</span><span class='va'>sigm2</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span><span class='op'>(</span><span class='va'>final5</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span><span class='op'>(</span>initial <span class='op'>=</span> <span class='va'>initial3</span>, m <span class='op'>=</span> <span class='fl'>0.1</span>, gens <span class='op'>=</span> <span class='fl'>2000</span>, pool <span class='op'>=</span> <span class='va'>pool</span>, 
+                 filt <span class='op'>=</span> <span class='va'>filt_gaussian</span><span class='op'>)</span><span class='op'>)</span>
 <span class='co'># Here the filtering function can be vectorized</span>
-<span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span>(<span class='kw'>final5</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span>(initial = <span class='kw'>initial3</span>, m = <span class='fl'>0.1</span>, gens = <span class='fl'>2000</span>, pool = <span class='kw'>pool</span>, 
-                 filt = <span class='kw'>filt_gaussian</span>, filt.vect = <span class='kw'>T</span>))
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>final5</span>, seltrait = <span class='fl'>1</span>) <span class='co'># trait distribution in final community (first trait)</span>
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>final5</span>, seltrait = <span class='fl'>2</span>) <span class='co'># trait distribution in final community (second trait)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/system.time.html'>system.time</a></span><span class='op'>(</span><span class='va'>final5</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span><span class='op'>(</span>initial <span class='op'>=</span> <span class='va'>initial3</span>, m <span class='op'>=</span> <span class='fl'>0.1</span>, gens <span class='op'>=</span> <span class='fl'>2000</span>, pool <span class='op'>=</span> <span class='va'>pool</span>, 
+                 filt <span class='op'>=</span> <span class='va'>filt_gaussian</span>, filt.vect <span class='op'>=</span> <span class='cn'>T</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span><span class='op'>(</span><span class='va'>final5</span>, seltrait <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span> <span class='co'># trait distribution in final community (first trait)</span>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span><span class='op'>(</span><span class='va'>final5</span>, seltrait <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span> <span class='co'># trait distribution in final community (second trait)</span>
 
 <span class='co'># Simulation of limiting similarity, over 2000 time steps</span>
-<span class='kw'>final6</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span>(initial = <span class='kw'>initial2</span>, m = <span class='fl'>0.1</span>, gens = <span class='fl'>2000</span>, pool = <span class='kw'>pool</span>, 
-                 limit.sim = <span class='fl'>TRUE</span>)
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>final6</span>)
+<span class='va'>final6</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span><span class='op'>(</span>initial <span class='op'>=</span> <span class='va'>initial2</span>, m <span class='op'>=</span> <span class='fl'>0.1</span>, gens <span class='op'>=</span> <span class='fl'>2000</span>, pool <span class='op'>=</span> <span class='va'>pool</span>, 
+                 limit.sim <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span><span class='op'>(</span><span class='va'>final6</span><span class='op'>)</span>
 <span class='co'># Check temporal changes</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>final6</span><span class='op'>$</span><span class='kw'>sp_t</span>, xlab = <span class='st'>"Time step"</span>, ylab = <span class='st'>"Community richness"</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>final6</span><span class='op'>$</span><span class='va'>sp_t</span>, xlab <span class='op'>=</span> <span class='st'>"Time step"</span>, ylab <span class='op'>=</span> <span class='st'>"Community richness"</span><span class='op'>)</span>
 <span class='co'># Index of limiting similarity over time</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>final6</span><span class='op'>$</span><span class='kw'>dist.t</span>, xlab = <span class='st'>"Time step"</span>, ylab = <span class='st'>"Limiting similarity"</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>final6</span><span class='op'>$</span><span class='va'>dist.t</span>, xlab <span class='op'>=</span> <span class='st'>"Time step"</span>, ylab <span class='op'>=</span> <span class='st'>"Limiting similarity"</span><span class='op'>)</span>
 
 <span class='co'># Higher migration rate, 5000 time steps</span>
 <span class='co'># Limiting similarity only plays on mortality</span>
-<span class='kw'>final7</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span>(initial = <span class='kw'>initial2</span>, m = <span class='fl'>0.7</span>, gens = <span class='fl'>5000</span>, pool = <span class='kw'>pool</span>, 
-                 limit.sim = <span class='fl'>TRUE</span>)
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>final7</span>) <span class='co'># should be closer to regional distribution</span>
+<span class='va'>final7</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span><span class='op'>(</span>initial <span class='op'>=</span> <span class='va'>initial2</span>, m <span class='op'>=</span> <span class='fl'>0.7</span>, gens <span class='op'>=</span> <span class='fl'>5000</span>, pool <span class='op'>=</span> <span class='va'>pool</span>, 
+                 limit.sim <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span><span class='op'>(</span><span class='va'>final7</span><span class='op'>)</span> <span class='co'># should be closer to regional distribution</span>
 <span class='co'># Limiting similarity plays on immigration, mortality and local recruitment</span>
-<span class='kw'>final8</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span>(initial = <span class='kw'>initial2</span>, m = <span class='fl'>0.7</span>, gens = <span class='fl'>5000</span>, pool = <span class='kw'>pool</span>, 
-                 limit.sim = <span class='fl'>TRUE</span>, type.limit = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"immig"</span>, <span class='st'>"death"</span>, <span class='st'>"loc.recr"</span>))
-<span class='fu'><a href='plot_comm.html'>plot_comm</a></span>(<span class='kw'>final8</span>)
+<span class='va'>final8</span> <span class='op'>&lt;-</span> <span class='fu'>forward</span><span class='op'>(</span>initial <span class='op'>=</span> <span class='va'>initial2</span>, m <span class='op'>=</span> <span class='fl'>0.7</span>, gens <span class='op'>=</span> <span class='fl'>5000</span>, pool <span class='op'>=</span> <span class='va'>pool</span>, 
+                 limit.sim <span class='op'>=</span> <span class='cn'>TRUE</span>, type.limit <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"immig"</span>, <span class='st'>"death"</span>, <span class='st'>"loc.recr"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='plot_comm.html'>plot_comm</a></span><span class='op'>(</span><span class='va'>final8</span><span class='op'>)</span>
 <span class='co'># Check temporal changes</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>final8</span><span class='op'>$</span><span class='kw'>sp_t</span>, xlab = <span class='st'>"Time step"</span>, ylab = <span class='st'>"Community richness"</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span>(<span class='fl'>1</span><span class='op'>:</span><span class='fl'>5000</span>, <span class='kw'>final7</span><span class='op'>$</span><span class='kw'>sp_t</span>, col=<span class='st'>"blue"</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>final8</span><span class='op'>$</span><span class='va'>sp_t</span>, xlab <span class='op'>=</span> <span class='st'>"Time step"</span>, ylab <span class='op'>=</span> <span class='st'>"Community richness"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5000</span>, <span class='va'>final7</span><span class='op'>$</span><span class='va'>sp_t</span>, col<span class='op'>=</span><span class='st'>"blue"</span><span class='op'>)</span>
 <span class='co'># Index of limiting similarity over time</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>final8</span><span class='op'>$</span><span class='kw'>dist.t</span>, xlab = <span class='st'>"Time step"</span>, ylab = <span class='st'>"Limiting similarity"</span>)
-<span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span>(<span class='fl'>1</span><span class='op'>:</span><span class='fl'>5000</span>, <span class='kw'>final7</span><span class='op'>$</span><span class='kw'>dist.t</span>, col=<span class='st'>"blue"</span>)
-}
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>final8</span><span class='op'>$</span><span class='va'>dist.t</span>, xlab <span class='op'>=</span> <span class='st'>"Time step"</span>, ylab <span class='op'>=</span> <span class='st'>"Limiting similarity"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>5000</span>, <span class='va'>final7</span><span class='op'>$</span><span class='va'>dist.t</span>, col<span class='op'>=</span><span class='st'>"blue"</span><span class='op'>)</span>
+<span class='op'>}</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -465,11 +474,11 @@ MacArthur, R., Levins, R., 1967. The limiting similarity, convergence, and diver
 
       <footer>
       <div class="copyright">
-  <p>Developed by François Munoz, Matthias Grenié, Pierre Denelle, Elizabeth Barthelemy.</p>
+  <p><p>Developed by François Munoz, Matthias Grenié, Pierre Denelle, Elizabeth Barthelemy.</p></p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.0.9000.</p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
 </div>
 
       </footer>
@@ -477,6 +486,8 @@ MacArthur, R., Levins, R., 1967. The limiting similarity, convergence, and diver
 
   
 
+
+  
 
   </body>
 </html>
