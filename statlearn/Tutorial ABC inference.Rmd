@@ -201,10 +201,6 @@ The two first dimensions of the analysis represent: (i) a leaf "economics" on ab
 We note that these two basic dimensions are consistent with the two main dimensions of plant functional strategies worldwide [@diaz_global_2016].
 
 ```{r choler.env.mix}
-trait.pca <- dudi.pca(data$traits, scannf=F, nf=ncol(data$traits))
-s.arrow(trait.pca$co)
-barplot(trait.pca$eig)
-
 env.mix <- dudi.mix(data$envir, scannf=F, nf=ncol(data$envir))
 s.arrow(env.mix$co)
 barplot(env.mix$eig)
@@ -221,6 +217,7 @@ We can first examine the relationship between the average of species scores on t
 cwm.leaf <- data$comm%*%trait.pca$li[colnames(data$comm),1]/rowSums(data$comm)
 plot(cwm.leaf~env.mix$li[rownames(data$comm),1])
 ```
+
 Communities including plants with more acquisitive leaves are found in situations with longer snow cover.
 
 We then define the global pool of species including all the species of the dataset along with their coordinates on the abscissa of the multivariate analysis of functional traits
