@@ -282,6 +282,8 @@ for(i in 1:nrow(data$comm))
 ```{r load.choler.res}
 # Get the results from a previous run
 load("res.tab.Choler.RData")
+
+plot(res.tab[[1]]$abc, param=res.tab[[1]]$par)
 ```
 
 ```{r env.topt, eval=F}
@@ -297,50 +299,3 @@ load("res.tab1.cv.Choler.Rdata")
 plot(res.tab1.cv)
 ```
 
-# The pond macroinvertrebrate dataset 
-
-We will now analyze macroinvertebrate communities in ponds of different area [@jeliazkov_scale-effects_2013]. It includes 75 communities with 82 plant species.
-
-```{r get.jeliazkov}
-data <- LSmatred$Jeliazkov2013
-```
-
-In the following, we will assess how pond area can affect stochastic population dynamics and the migration-drift equilibrium in the *coalesc* model of community assembly.
-
-```{r jeliazkov.pool}
-pool <- data.frame(ind = as.character(1:sum(data$comm)), sp = rep(colnames(data$comm),colSums(data$comm)))
-```
-
-## ABC-based inference of community assembly parameters
-
-For simplicity sake, we consider in this case neutral community dynamics depending solely on the immigration parameter *m*.
-
-```{r abc.jeliazkov, eval=F}
-# Number of values to sample in prior distributions
-nb.samp <- 10000 # Should be large
-
-f.sumstats <- function(com) array(dimnames=list(c("S", "Es")),
-                                  c(vegan::specnumber(table(com[,2])),
-                                    vegan::diversity(table(com[,2]))))
-res.tab <- list()
-for(i in 1:nrow(data$comm))
-  res.tab[[i]] <- coalesc_abc(data.frame(ind=1:sum(data$comm[i,]),sp=rep(colnames(data$comm),data$comm[i,])), pool, multi = "single", f.sumstats = f.sumstats,
-                   nb.samp = nb.samp, parallel = TRUE, tol = 0.5, method.abc = "neuralnet",
-                   pkg = "vegan")
-
-```
-
-
-```{r abc.inf, eval=F}
-res.abc <- abc(f.sumstats(data$comm,data.frame(row.names=colnames(data$comm),trait.pca$li[colnames(data$comm),1])), param=res.tab$par, sumstat=res.tab$ss, tol=0.5, method="loclinear")
-plot(res.abc, param=res.tab$par)
-```
-
-```{r load.jeliazkov}
-load("res.tab.Jeliazkov.RData")
-```
-
-```{r m.space.jeliazkov}
-m.comm <- unlist(lapply(res.tab, function(x) ifelse(class(x$abc)!="abc",NA,median(x$abc$unadj.values[,1],na.rm=T))))
-plot(m.comm, data$envir$UrbanGradM)
-```
