@@ -2,7 +2,9 @@
 title: "Inference of multi-species ecological dynamics by ABC method"
 author: "F. Munoz"
 date: "2023-04-05"
-output: pdf_document
+output:
+  pdf_document: default
+  word_document: default
 bibliography: bibliography_statlearn.bibtex
 ---
 
@@ -144,20 +146,18 @@ As for *coalesc*, the user can define the composition of the species pool from w
 
 We can for instance simulate stabilizing environmental filtering in a way analogous to the previous example with *`coalesc()`*. *`d = 10`* represents the number of individuals that die in the community at each time step, *`prob = 0.5`* represents the immigration rate at each time step. The number of simulated time steps is *`gens = 500`*.
 
-```{r, message = F, eval = T}
+```{r, message = F, eval = F}
 # Initial community composed of 500 individuals
-J <- 500
 initial <- data.frame(ind = paste("init", 1:J, sep="."), sp = rep(as.character(1:50),J/50), 
                    tra = rep(NA,J), stringsAsFactors=F)
 initial$tra <- t.sp[initial$sp]
+
 # Forward-in-time simulation 
 sigma <- 0.1
 filt_gaussian <- function(t,x) exp(-(x-t)^2/(2*sigma^2))
 final.envfilt <- forward(initial = initial, m = 0.25, d = 10, gens = 500, 
                          pool = pool, filt = function(x) filt_gaussian(0.5,x))
-```
 
-```{r}
 plot_comm(final.envfilt)
 ```
 
@@ -166,12 +166,10 @@ A specific advantage of `forward()` is to simulate the sequence of community ass
 In the following example, community dynamics with limiting similarity are simulated.
 In this case, the probability of individual death depends on the similarity of trait values of each individual to the other individuals of the community.
 
-```{r, message = F, eval = T}
+```{r, message = F, eval = F}
 final.limsim <- forward(initial = initial, m = 0.25, d = 10, gens = 1000,
                  pool = pool, keep = F, limit.sim = T, coeff.lim.sim = 1)
-```
 
-```{r}
 plot(final.limsim$dist.t, xlab = "Time", ylab = "Average distance to other individuals")
 init.dist <- matrix(dist(initial$tra))
 diag(init.dist) <- NA
@@ -280,8 +278,22 @@ for(i in 1:nrow(data$comm))
                    pkg = c("vegan","Weighted.Desc.Stat"))
 
 ```
-```{r abc.cv}
+
+```{r load.choler.res}
+# Get the results from a previous run
+load("res.tab.Choler.RData")
+```
+
+```{r env.topt, eval=F}
+plot(env[,1],unlist(lapply(res.tab, function(x) mean(x$abc$unadj.values[,1]))))
+```
+
+```{r abc.cv, eval=F}
 res.tab1.cv  <- cv4abc(res.tab[[1]]$par, res.tab[[1]]$ss,nval=500,tols=c(0.1,0.25,0.5),method="neuralnet")
+```
+
+```{r abc.cv.plot}
+load("res.tab1.cv.Choler.Rdata")
 plot(res.tab1.cv)
 ```
 
@@ -303,7 +315,7 @@ pool <- data.frame(ind = as.character(1:sum(data$comm)), sp = rep(colnames(data$
 
 For simplicity sake, we consider in this case neutral community dynamics depending solely on the immigration parameter *m*.
 
-```{r abc.sim.single, eval=F}
+```{r abc.jeliazkov, eval=F}
 # Number of values to sample in prior distributions
 nb.samp <- 10000 # Should be large
 
@@ -317,50 +329,18 @@ for(i in 1:nrow(data$comm))
                    pkg = "vegan")
 
 ```
-```{r abc.cv}
-res.tab1.cv  <- cv4abc(res.tab[[1]]$par, res.tab[[1]]$ss,nval=500,tols=c(0.1,0.25,0.5),method="neuralnet")
-plot(res.tab1.cv)
-```
+
 
 ```{r abc.inf, eval=F}
 res.abc <- abc(f.sumstats(data$comm,data.frame(row.names=colnames(data$comm),trait.pca$li[colnames(data$comm),1])), param=res.tab$par, sumstat=res.tab$ss, tol=0.5, method="loclinear")
 plot(res.abc, param=res.tab$par)
 ```
 
-```{r m.space}
-m.comm <- lapply(res.abc, function(x mean(x$abc$unadj.val[,1])))
-plot(m.comm, data$envir$NetArea)
+```{r load.jeliazkov}
+load("res.tab.Jeliazkov.RData")
 ```
 
-```{r abc.topt}
-plot(env[,1], unlist(lapply(res.tab,function(x) mean(x$abc$unadj.values[,1]))))
-```
-
-```{r abc.sim, eval=F}
-# Number of values to sample in prior distributions
-nb.samp <- 10000 # Should be large
-
-res.tab <- coalesc_abc(data$comm, pool, multi = "tab", f.sumstats = f.sumstats,
-                   filt.abc = filt_gaussian_env, filt.vect = T, par.filt = par.range, 
-                   add = T, var.add = env,
-                   nb.samp = nb.samp, parallel = TRUE, tol = 0.5, method.abc = "neuralnet",
-                   pkg = c("vegan","Weighted.Desc.Stat"))
-
-```
-The more simulations are performed, the more robust the inference can be.
-Threfore, we propose to gather the results of simulations from the participants and merge them for subsequent ABC analysis.
-
-```{r abc.inf, eval=F}
-res.abc <- abc(f.sumstats(data$comm,data.frame(row.names=colnames(data$comm),trait.pca$li[colnames(data$comm),1])), param=res.tab$par, sumstat=res.tab$ss, tol=0.5, method="loclinear")
-plot(res.abc, param=res.tab$par)
-```
-
-```{r m.space}
-m.comm <- lapply(res.abc, function(x mean(x$abc$unadj.val[,3])))
-plot(m.comm, data$coord[,1])
-plot(m.comm, data$coord[,2])
-```
-
-```{r abc.topt}
-plot(env[,1], unlist(lapply(res.tab,function(x) mean(x$abc$unadj.values[,1]))))
+```{r m.space.jeliazkov}
+m.comm <- unlist(lapply(res.tab, function(x) ifelse(class(x$abc)!="abc",NA,median(x$abc$unadj.values[,1],na.rm=T))))
+plot(m.comm, data$envir$UrbanGradM)
 ```
