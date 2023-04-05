@@ -195,24 +195,6 @@ Approximate Bayesian Computation (ABC) is a method of inference of the parameter
 
 ![Methodological framework of Approximate Bayesian Computation (ABC)](ABC_scheme.png)
 
-```{r abc.init}
-# Trait-dependent filtering function
-filt_gaussian_env <- function(t, par, env) exp(-(t-par[1]*env-par[2])^2/(2*par[3]^2))
-
-# Definition of parameters of this function and their range
-par.range <- data.frame(rbind(c(-1, 1), c(-1, 1), c(0.01, 2)))
-row.names(par.range) <- c("a", "b", "sigmaopt")
-
-# Basic summary statistics describing local community composition
-f.sumstats <- function(tab, traits) array(dimnames=
-  list(c(paste(rep("cwm",nrow(tab)),1:nrow(tab)), paste(rep("cwv",nrow(tab)),1:nrow(tab)), 
-  paste(rep("S",nrow(tab)),1:nrow(tab)), paste(rep("Es",nrow(tab)),1:nrow(tab)))),
-  c(apply(tab, 1, function(x) Weighted.Desc.Stat::w.mean(traits[colnames(tab),], x)), 
-  apply(tab, 1, function(x) Weighted.Desc.Stat::w.var(traits[colnames(tab),], x)), 
-   apply(tab, 1, function(x) sum(x!=0)),
-  apply(tab, 1, vegan::diversity)))
-```
-
 Then we perform ABC estimation of the parameters of filtering and migration based on observed community composition.
 
 ```{r abc.sim.single, eval=F}
