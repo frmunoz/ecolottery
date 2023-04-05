@@ -152,6 +152,7 @@ Prior to inference of community assembly parameters, we first perform a multivar
 ```{r choler.trait.pca}
 trait.pca <- dudi.pca(data$traits, scannf=F, nf=ncol(data$traits))
 s.arrow(trait.pca$co)
+s.label(trait.pca$li)
 barplot(trait.pca$eig)
 ```
 The two first dimensions of the analysis represent: (i) a leaf "economics" on abscissa, i.e., a gradient from species that acquire resources through photosynthesis more quickly (with high SLA and high concentration of N in leaves) to more conservative strategies (leaves that acquire resources less quickly but survive longer), (ii) a stem "economics" on ordinates, i.e., a gradient from smaller species that spread mostly laterally to taller species with higher evapotranspiration (greater leaf area).
@@ -247,6 +248,10 @@ plot(res.tab[[1]]$abc, param=res.tab[[1]]$par)
 
 ```{r env.topt, eval=F}
 plot(env[,1],unlist(lapply(res.tab, function(x) mean(x$abc$unadj.values[,1]))))
+```
+
+```{r m.env, eval=F}
+plot(env[,1],unlist(lapply(res.tab, function(x) mean(x$abc$unadj.values[,3]))))
 ```
 
 ```{r abc.cv, eval=F}
