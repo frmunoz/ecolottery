@@ -139,47 +139,6 @@ plot_comm(com2e, main = "Disruptive filtering")
 
 Disruptive filtering here represents the greater success of species with trait values away from *t = 0.5*. It corresponds to a separation of ecological groups in the community, and represents a form of niche differentiation (Vergnon et al. 2009).
 
-## Forward-in-time simulation
-
-The *ecolottery* package also includes a function *forward* to perform simulation of community dynamics from an initial composition.
-As for *coalesc*, the user can define the composition of the species pool from which immigrants are drawn, and can specify environmental filtering based on one or several traits.
-
-We can for instance simulate stabilizing environmental filtering in a way analogous to the previous example with *`coalesc()`*. *`d = 10`* represents the number of individuals that die in the community at each time step, *`prob = 0.5`* represents the immigration rate at each time step. The number of simulated time steps is *`gens = 500`*.
-
-```{r, message = F, eval = F}
-# Initial community composed of 500 individuals
-initial <- data.frame(ind = paste("init", 1:J, sep="."), sp = rep(as.character(1:50),J/50), 
-                   tra = rep(NA,J), stringsAsFactors=F)
-initial$tra <- t.sp[initial$sp]
-
-# Forward-in-time simulation 
-sigma <- 0.1
-filt_gaussian <- function(t,x) exp(-(x-t)^2/(2*sigma^2))
-final.envfilt <- forward(initial = initial, m = 0.25, d = 10, gens = 500, 
-                         pool = pool, filt = function(x) filt_gaussian(0.5,x))
-
-plot_comm(final.envfilt)
-```
-
-A specific advantage of `forward()` is to simulate the sequence of community assembly events over time. If the birth, death and immigration probabilities depend on community composition at a specific time, the coalescent-based approach may not be appropriate. 
-
-In the following example, community dynamics with limiting similarity are simulated.
-In this case, the probability of individual death depends on the similarity of trait values of each individual to the other individuals of the community.
-
-```{r, message = F, eval = F}
-final.limsim <- forward(initial = initial, m = 0.25, d = 10, gens = 1000,
-                 pool = pool, keep = F, limit.sim = T, coeff.lim.sim = 1)
-
-plot(final.limsim$dist.t, xlab = "Time", ylab = "Average distance to other individuals")
-init.dist <- matrix(dist(initial$tra))
-diag(init.dist) <- NA
-abline(mean(init.dist, na.rm=T), 0, col="red")
-plot(final.limsim$sp_t, xlab = "Time", ylab = "Richness")
-abline(length(unique(initial$sp)), 0, col = "red")
-```
-
-The first figure represents the temporal trajectory of the average distance of each individual to the other individuals of the community. The distance fluctuates and increases over time due to the influence of limiting similarity. The second figure shows the variation of richness, basically decreasing due to limiting similarity, until reaching stationarity.
-
 # The alpine plant community dataset
 
 We will analyze data from alpine plant communities spanning a mesotopographical gradient [@choler_consistent_2005]. It includes 75 communities with 82 plant species.
@@ -209,7 +168,7 @@ The ordinates represent a gradient of zoogenic disturbance, i.e., of unvegetated
 In the following, for the sake of simplicity, we will infer environmental filtering playing on the leaf acquisition trait functional dimension along a gradient of snow cover.
 The fundamental hypothesis is that the longer is snow cover, the shorter if the time left for plant development, which should select more acquisitive strategies.
 
-We can first examine the relationship between the average of species scores on the leaf acquisition trait dimension in communities (COmmunity Weighted Mean, CWM), according to the snow cover gradient.
+We can first examine the relationship between the average of species scores on the leaf acquisition trait dimension in communities (Community Weighted Mean, CWM), according to the snow cover gradient.
 
 ```{r cwm.snow}
 cwm.leaf <- data$comm%*%trait.pca$li[colnames(data$comm),1]/rowSums(data$comm)
