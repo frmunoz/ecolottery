@@ -22,14 +22,25 @@ environment:
 
 # Adapt as necessary starting from here
 
-build_script:
-  - ps: cp ..\travis-tool.sh .\travis-tool.sh
-  - ps: cp travis-tool.sh.cmd pkg\travis-tool.sh.cmd
-  - ps: cd pkg
-  - travis-tool.sh install_deps
+# Use a Windows image that has R installed, or use a custom installation script
+image: Visual Studio 2019
 
+# 1. CRITICAL: Turn off the MSBuild engine
+build: off
+
+# 2. Install R and dependencies
+install:
+  - ps: |
+      $RVersion = "4.5.1" 
+      # Usually, you'd use a provider script like the one from r-lib
+      Invoke-WebRequest http://cran.rstudio.com/bin/windows/base/R-$RVersion-win.exe -OutFile R-install.exe
+      Start-Process .\R-install.exe -ArgumentList "/SILENT" -Wait
+  - SET PATH=%PATH%;C:\Program Files\R\R-%RVersion%\bin\x64
+
+# 3. Run your R commands
 test_script:
-  - travis-tool.sh run_tests
+  - Rscript -e "install.packages('remotes'); remotes::install_deps(dependencies = TRUE)"
+  - Rscript -e "devtools::check()"
 
 on_failure:
   - 7z a failure.zip *.Rcheck\*
