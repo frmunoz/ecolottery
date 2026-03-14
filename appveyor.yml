@@ -1,12 +1,11 @@
-# DO NOT CHANGE the "init" and "install" sections below
-
-# Download script file from GitHub
+# 1. Initialization: Fetch the R-AppVeyor helper script
 init:
   ps: |
-        $ErrorActionPreference = "Stop"
-        Invoke-WebRequest http://raw.github.com/krlmlr/r-appveyor/master/scripts/appveyor-tool.ps1 -OutFile "..\appveyor-tool.ps1"
-        Import-Module '..\appveyor-tool.ps1'
+    $ErrorActionPreference = "Stop"
+    Invoke-WebRequest http://raw.github.com/krlmlr/r-appveyor/master/scripts/appveyor-tool.ps1 -OutFile "..\appveyor-tool.ps1"
+    Import-Module '..\appveyor-tool.ps1'
 
+# 2. Installation: Use the Bootstrap command from the helper script
 install:
   ps: Bootstrap
 
@@ -15,29 +14,13 @@ cache:
 
 environment:
   NOT_CRAN: true
-  # env vars that may need to be set, at least temporarily, from time to time
-  # see https://github.com/krlmlr/r-appveyor#readme for details
-  # USE_RTOOLS: true
-  # R_REMOTES_STANDALONE: true
 
-# Adapt as necessary starting from here
-
-# Use a Windows image that has R installed, or use a custom installation script
 image: Visual Studio 2019
 
-# 1. CRITICAL: Turn off the MSBuild engine
+# 3. CRITICAL: This line stops the MSBuild error
 build: off
 
-# 2. Install R and dependencies
-install:
-  - ps: |
-      $RVersion = "4.5.1" 
-      # Usually, you'd use a provider script like the one from r-lib
-      Invoke-WebRequest http://cran.rstudio.com/bin/windows/base/R-$RVersion-win.exe -OutFile R-install.exe
-      Start-Process .\R-install.exe -ArgumentList "/SILENT" -Wait
-  - SET PATH=%PATH%;C:\Program Files\R\R-%RVersion%\bin\x64
-
-# 3. Run your R commands
+# 4. Testing: Run your R checks
 test_script:
   - Rscript -e "install.packages('remotes'); remotes::install_deps(dependencies = TRUE)"
   - Rscript -e "devtools::check()"
@@ -49,18 +32,13 @@ on_failure:
 artifacts:
   - path: '*.Rcheck\**\*.log'
     name: Logs
-
   - path: '*.Rcheck\**\*.out'
     name: Logs
-
   - path: '*.Rcheck\**\*.fail'
     name: Logs
-
   - path: '*.Rcheck\**\*.Rout'
     name: Logs
-
   - path: '\*_*.tar.gz'
     name: Bits
-
   - path: '\*_*.zip'
     name: Bits
